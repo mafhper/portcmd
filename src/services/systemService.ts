@@ -110,5 +110,29 @@ export const SystemService = {
     } catch (e) {
       return { valid: false, error: 'Network error' };
     }
+  },
+
+  getQualityReports: async (): Promise<{ filename: string; timestamp: string }[]> => {
+    const res = await fetch('/api/quality/reports');
+    const json = await res.json();
+    return json.data || [];
+  },
+
+  getQualityReport: async (filename: string): Promise<any> => {
+    const res = await fetch(`/api/quality/reports/${filename}`);
+    const json = await res.json();
+    return json.data;
+  },
+
+  getSystemLogs: async (): Promise<{ filename: string; timestamp: string }[]> => {
+    const res = await fetch('/api/system/logs');
+    const json = await res.json();
+    return json.data || [];
+  },
+
+  getSystemLog: async (filename: string): Promise<any> => {
+    const res = await fetch(`/api/system/logs/${filename}`);
+    const json = await res.json();
+    return json.data;
   }
 };

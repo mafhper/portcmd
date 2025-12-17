@@ -69,6 +69,19 @@ export interface AppSettings {
   bgImage?: string;
 }
 
+export interface SystemLog {
+  filename: string;
+  markdown: string;
+  html: string;
+}
+
+export interface ReportInfo {
+  filename: string;
+  timestamp: string;
+}
+
+export type ViewType = 'dashboard' | 'projects' | 'reports';
+
 export interface FilterState {
   search: string;
   type: ProcessType | 'All';

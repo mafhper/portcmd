@@ -1,6 +1,6 @@
 # PortCmd
 
-**PortCmd** is a premium, system-tray ready port and process manager for developers. It allows you to easily identify, kill, and manage processes running on specific ports, directly from a beautiful, dashboard-style interface.
+**PortCmd** is a port and process manager for developers. It allows you to easily identify, kill, and manage processes running on specific ports, directly from a beautiful, dashboard-style interface.
 
 ## Features
 

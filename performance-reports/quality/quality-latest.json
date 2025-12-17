@@ -1,0 +1,44 @@
+{
+  "meta": {
+    "timestamp": 1766010266497,
+    "preset": "github-pages",
+    "project": "portcmd",
+    "commit": "local"
+  },
+  "status": "pass",
+  "scores": {
+    "build": 70
+  },
+  "violations": [
+    {
+      "area": "build",
+      "metric": "bundle_total_kb",
+      "value": "370.5",
+      "threshold": 350,
+      "severity": "warn"
+    },
+    {
+      "area": "build",
+      "metric": "largest_chunk_kb",
+      "value": "370.5",
+      "threshold": 150,
+      "severity": "warn"
+    },
+    {
+      "area": "build",
+      "metric": "missing_404",
+      "value": "false",
+      "threshold": "true",
+      "severity": "warn"
+    }
+  ],
+  "raw": {
+    "build": {
+      "jsTotal": "370.5",
+      "cssTotal": "0.0",
+      "largestChunk": "370.5",
+      "assetsCount": 0,
+      "fileCount": 2
+    }
+  }
+}

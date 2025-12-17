@@ -12,18 +12,19 @@ import {
   ChevronRight,
   FolderKanban,
   ShieldCheck,
-  Globe
+  Globe,
+  FileText
 } from 'lucide-react';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
-import { ProcessType, FilterState } from '../types';
+import { ProcessType, FilterState, ViewType } from '../types';
 
 interface SidebarProps {
   filter: FilterState;
   setFilter: (f: any) => void;
   onOpenSettings: () => void;
-  currentView: 'dashboard' | 'projects';
-  setCurrentView: (v: 'dashboard' | 'projects') => void;
+  currentView: ViewType;
+  setCurrentView: (v: ViewType) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, currentView, setCurrentView }) => {
@@ -53,6 +54,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const menuItems = [
     { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard, view: 'dashboard' },
     { id: 'projects', label: t.projects, icon: FolderKanban, view: 'projects' },
+    { id: 'reports', label: 'Reports & Logs', icon: FileText, view: 'reports' },
   ];
 
   const categories = [

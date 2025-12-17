@@ -14,6 +14,10 @@ export default defineConfig({
     outDir: '../dist', // Builds to the root 'dist' folder
     emptyOutDir: true,
   },
+  server: {
+    port: 5174,
+    strictPort: true,
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

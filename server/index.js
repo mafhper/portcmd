@@ -4,11 +4,13 @@ import si from 'systeminformation';
 import fs from 'fs/promises';
 import path from 'path';
 import util from 'util';
-import { exec } from 'child_process';
+import { marked } from 'marked';
 
 const app = express();
 const PORT = 3001;
 const PROJECTS_FILE = path.resolve('projects.json');
+const REPORTS_DIR = path.resolve('performance-reports/quality');
+const LOGS_DIR = path.resolve('docs/logs');
 
 app.use(cors());
 app.use(express.json());
@@ -17,93 +19,73 @@ app.use(express.json());
 
 const execPromise = util.promisify(exec);
 
-function killProcessTree(pid) {
-  return new Promise((resolve) => {
-    if (process.platform === 'win32') {
-      exec(`taskkill /pid ${pid} /T /F`, (err) => {
-        resolve(); 
-      });
-    } else {
-      try {
-        process.kill(-pid); // Try killing process group
-      } catch (e) {
-        try { process.kill(pid); } catch(e) {}
-      }
-      resolve();
-    }
-  });
-}
-
-// Windows Netstat Fallback
-async function getNetstatConnections() {
-  if (process.platform !== 'win32') return [];
+async function ensureDirectory(dirPath) {
   try {
-    const { stdout } = await execPromise('netstat -ano');
-    const lines = stdout.split('\n');
-    const connections = [];
-    // Proto  Local Address          Foreign Address        State           PID
-    // TCP    0.0.0.0:135            0.0.0.0:0              LISTENING       960
-    for (const line of lines) {
-      const parts = line.trim().split(/\s+/);
-      if (parts.length >= 5 && parts[0].startsWith('TCP') && parts[3] === 'LISTENING') {
-        const localAddr = parts[1];
-        const pid = parseInt(parts[4]);
-        const lastColon = localAddr.lastIndexOf(':');
-        const port = parseInt(localAddr.substring(lastColon + 1));
-        const address = localAddr.substring(0, lastColon);
-        if (!isNaN(pid) && !isNaN(port)) {
-          connections.push({ pid, localPort: port, localAddress: address, state: 'LISTEN' });
-        }
-      }
-    }
-    return connections;
-  } catch (e) {
-    console.error('Netstat failed', e);
-    return [];
+    await fs.access(dirPath);
+  } catch {
+    await fs.mkdir(dirPath, { recursive: true });
   }
 }
 
-async function loadProjects() {
+async function readDirFiles(dirPath, extension) {
   try {
-    const data = await fs.readFile(PROJECTS_FILE, 'utf-8');
-    return JSON.parse(data);
-  } catch (e) {
-    return [];
-  }
+    await ensureDirectory(dirPath);
+    const files = await fs.readdir(dirPath);
+    const filtered = files.filter(f => f.endsWith(extension));
+    const data = await Promise.all(
+      filtered.map(async (file) => {
+        try {
+          const stats = await fs.stat(path.join(dirPath, file));
+          return { filename: file, timestamp: stats.mtime };
+        } catch { return null; }
+      })
+    );
+    return data.filter(Boolean).sort((a, b) => b.timestamp - a.timestamp);
+  } catch { return []; }
 }
 
-async function saveProjects(projects) {
-  await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
-}
-
-function detectType(p) {
-  const name = p.name.toLowerCase();
-  const cmd = p.command.toLowerCase();
-  if (name.includes('node') || cmd.includes('npm') || cmd.includes('yarn') || cmd.includes('bun') || cmd.includes('vite') || cmd.includes('deno')) return 'Development';
-  if (name.includes('java')) return 'Java';
-  if (name.includes('python')) return 'Python';
-  if (name.includes('postgres')) return 'Database';
-  if (name.includes('docker')) return 'Container';
-  return 'System';
-}
-
-function mapState(state) {
-  if (!state) return 'Running';
-  const s = state.toLowerCase();
-  if (s === 'running' || s === 'sleeping' || s === 'unknown') return 'Running';
-  if (s === 'blocked' || s === 'suspended') return 'Suspended';
-  if (s === 'zombie') return 'Zombie';
-  return 'Running';
-}
-
-// Runtime State
-const runtimeState = new Map(); //projectId -> { child, activeScript, logs: [], startTime }
-
-function getProjectState(id) {
-  return runtimeState.get(id) || { isRunning: false, logs: [], activeScript: null };
-}
+// ... existing code ...
 
 // --- Endpoints ---
+
+// Quality Reports
+app.get('/api/quality/reports', async (req, res) => {
+  const reports = await readDirFiles(REPORTS_DIR, '.json');
+  res.json({ success: true, data: reports });
+});
+
+app.get('/api/quality/reports/:filename', async (req, res) => {
+  try {
+    const filePath = path.join(REPORTS_DIR, req.params.filename);
+    const content = await fs.readFile(filePath, 'utf-8');
+    res.json({ success: true, data: JSON.parse(content) });
+  } catch (e) {
+    res.status(404).json({ success: false, error: 'Report not found' });
+  }
+});
+
+// System Logs
+app.get('/api/system/logs', async (req, res) => {
+  const logs = await readDirFiles(LOGS_DIR, '.md');
+  res.json({ success: true, data: logs });
+});
+
+app.get('/api/system/logs/:filename', async (req, res) => {
+  try {
+    const filePath = path.join(LOGS_DIR, req.params.filename);
+    const content = await fs.readFile(filePath, 'utf-8');
+    res.json({ 
+      success: true, 
+      data: {
+        filename: req.params.filename,
+        markdown: content,
+        html: marked.parse(content)
+      }
+    });
+  } catch (e) {
+    res.status(404).json({ success: false, error: 'Log not found' });
+  }
+});
 
 // Get Processes
 app.get('/api/processes', async (req, res) => {

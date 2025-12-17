@@ -5,7 +5,7 @@ import {
   Filter, 
 } from 'lucide-react';
 import { SystemService } from './services/systemService';
-import { ProcessEntry, FilterState, SavedProject } from './types';
+import { ProcessEntry, FilterState, SavedProject, ViewType } from './types';
 import { PreferencesProvider, usePreferences } from './contexts/PreferencesContext';
 import { translations } from './locales';
 import StatsOverview from './components/StatsOverview';
@@ -14,6 +14,7 @@ import SettingsModal from './components/SettingsModal';
 import Sidebar from './components/Sidebar';
 import ProjectManager from './components/ProjectManager';
 import ConsoleModal from './components/ConsoleModal';
+import ReportsView from './components/ReportsView';
 import { AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
@@ -23,7 +24,7 @@ const MainApp = () => {
   const [processes, setProcesses] = useState<ProcessEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'projects'>('dashboard');
+  const [currentView, setCurrentView] = useState<ViewType>('dashboard');
   const [selectedProjectLogs, setSelectedProjectLogs] = useState<SavedProject | null>(null);
 
   const [filter, setFilter] = useState<FilterState>({
@@ -164,8 +165,10 @@ const MainApp = () => {
                      />
                   </div>
                 </>
-              ) : (
+              ) : currentView === 'projects' ? (
                 <ProjectManager onViewLogs={setSelectedProjectLogs} />
+              ) : (
+                <ReportsView />
               )}
            </div>
         </div>
