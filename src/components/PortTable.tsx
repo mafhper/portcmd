@@ -68,7 +68,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
     const groups: Record<string, ProcessEntry[]> = { standalone: [] };
     
     // Sort first if needed
-    let procList = [...processes];
+    const procList = [...processes];
     if (sortConfig) {
       procList.sort((a, b) => {
         const aValue = a[sortConfig.key];
@@ -124,162 +124,325 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
     </th>
   );
 
-  const renderRow = (proc: ProcessEntry, isChild = false) => (
-    <React.Fragment key={proc.pid}>
-      <motion.tr
-        layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => toggleExpand(proc.pid)}
-        className={`group cursor-pointer transition-colors hover:bg-zinc-800/30 ${expandedPid === proc.pid ? 'bg-zinc-800/50' : ''} ${isChild ? 'bg-zinc-900/20' : ''}`}
-      >
-        <td className={`px-6 py-4 font-mono font-bold whitespace-nowrap align-middle ${isChild ? 'pl-10 text-indigo-400/70' : 'text-indigo-400'}`}>
-           <div className="flex items-center gap-2">
-             {isChild && <div className="w-2 h-[1px] bg-zinc-700" />}
-             {proc.port}
-           </div>
-        </td>
+    const renderRow = (proc: ProcessEntry, isChild = false) => (
 
-        <td className="px-6 py-4 align-middle">
-          <div className="flex items-center space-x-3 max-w-[250px]">
-            <div className={`p-2 rounded-lg border ${getTypeStyles(proc.type)} bg-opacity-10 shrink-0`}>
-              {getTypeIcon(proc.type)}
+      <React.Fragment key={proc.pid}>
+
+        <motion.tr
+
+          layout
+
+          initial={{ opacity: 0 }}
+
+          animate={{ opacity: 1 }}
+
+          exit={{ opacity: 0 }}
+
+          onClick={() => toggleExpand(proc.pid)}
+
+          className={`group cursor-pointer transition-colors hover:bg-black/10 dark:hover:bg-white/5 ${
+
+            expandedPid === proc.pid ? 'bg-black/5 dark:bg-white/5' : ''
+
+          } ${isChild ? 'bg-black/5 dark:bg-white/5' : ''}`}
+
+          style={{ color: 'var(--foreground)' }}
+
+        >
+
+          <td className={`px-6 py-4 font-mono font-bold whitespace-nowrap align-middle ${isChild ? 'pl-10 opacity-70' : ''}`}>
+
+             <div className="flex items-center gap-2">
+
+               {isChild && <div className="w-2 h-[1px] opacity-20" style={{ backgroundColor: 'var(--foreground)' }} />}
+
+               <span className="text-indigo-500 dark:text-indigo-400">{proc.port}</span>
+
+             </div>
+
+          </td>
+
+  
+
+          <td className="px-6 py-4 align-middle">
+
+            <div className="flex items-center space-x-3 max-w-[250px]">
+
+              <div className={`p-2 rounded-lg border ${getTypeStyles(proc.type)} bg-opacity-10 shrink-0`}>
+
+                {getTypeIcon(proc.type)}
+
+              </div>
+
+              <div className="min-w-0 overflow-hidden">
+
+                <div className="font-medium truncate" title={proc.name}>{proc.name}</div>
+
+                <div className="text-xs font-mono truncate opacity-60" style={{ color: 'var(--muted-foreground)' }} title={proc.user}>{proc.user}</div>
+
+              </div>
+
             </div>
-            <div className="min-w-0 overflow-hidden">
-              <div className="font-medium text-zinc-200 truncate" title={proc.name}>{proc.name}</div>
-              <div className="text-xs text-zinc-500 font-mono truncate" title={proc.user}>{proc.user}</div>
-            </div>
-          </div>
-        </td>
 
-        <td className="px-6 py-4 whitespace-nowrap align-middle">
-          <span className="font-mono text-xs text-zinc-500 px-2 py-1 bg-zinc-900 rounded border border-zinc-800 block w-fit">
-            {proc.pid}
-          </span>
-        </td>
+          </td>
 
-        <td className="px-6 py-4 whitespace-nowrap align-middle">
-          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border max-w-full ${getTypeStyles(proc.type)}`}>
-            <span className="truncate">{(t as any)[proc.type] || proc.type}</span>
-          </span>
-        </td>
+  
 
-        <td className="px-6 py-4 whitespace-nowrap align-middle">
-          <div className="flex items-center space-x-2">
-            <span className="relative flex h-2 w-2 shrink-0">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${proc.status === ProcessStatus.RUNNING ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${proc.status === ProcessStatus.RUNNING ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+          <td className="px-6 py-4 whitespace-nowrap align-middle">
+
+            <span className="font-mono text-xs px-2 py-1 bg-black/5 dark:bg-white/5 rounded border opacity-60" style={{ borderColor: 'var(--border-color)' }}>
+
+              {proc.pid}
+
             </span>
-            <span className="text-zinc-400 truncate">{(t as any)[proc.status] || proc.status}</span>
-          </div>
-        </td>
 
-        <td className="px-6 py-4 text-right whitespace-nowrap align-middle">
-          <div className="flex justify-end items-center space-x-1 opacity-60 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={(e) => { e.stopPropagation(); onToggleFavorite(proc.pid); }}
-              className={`p-2 rounded-lg transition-colors ${proc.isFavorite ? 'text-yellow-400 bg-yellow-400/10' : 'text-zinc-600 hover:bg-zinc-800 hover:text-zinc-300'}`}
-              title="Favorite"
-            >
-              <Star className={`w-4 h-4 ${proc.isFavorite ? 'fill-current' : ''}`} />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); toggleExpand(proc.pid); }}
-              className="p-2 rounded-lg text-zinc-600 hover:bg-zinc-800 hover:text-zinc-300"
-            >
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
-          </div>
-        </td>
-      </motion.tr>
+          </td>
 
-      <AnimatePresence>
-        {expandedPid === proc.pid && (
-          <tr className="bg-zinc-900/30">
-            <td colSpan={6} className="p-0 border-b border-zinc-800">
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
+  
+
+          <td className="px-6 py-4 whitespace-nowrap align-middle">
+
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border max-w-full ${getTypeStyles(proc.type)}`}>
+
+              <span className="truncate">{(t as any)[proc.type] || proc.type}</span>
+
+            </span>
+
+          </td>
+
+  
+
+          <td className="px-6 py-4 whitespace-nowrap align-middle">
+
+            <div className="flex items-center space-x-2">
+
+              <span className="relative flex h-2 w-2 shrink-0">
+
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${proc.status === ProcessStatus.RUNNING ? 'bg-green-400' : 'bg-yellow-400'}`}></span>
+
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${proc.status === ProcessStatus.RUNNING ? 'bg-green-500' : 'bg-yellow-500'}`}></span>
+
+              </span>
+
+              <span className="opacity-70 truncate">{(t as any)[proc.status] || proc.status}</span>
+
+            </div>
+
+          </td>
+
+  
+
+          <td className="px-6 py-4 text-right whitespace-nowrap align-middle">
+
+            <div className="flex justify-end items-center space-x-1 opacity-60 group-hover:opacity-100 transition-opacity">
+
+              <button
+
+                onClick={(e) => { e.stopPropagation(); onToggleFavorite(proc.pid); }}
+
+                className={`p-2 rounded-lg transition-colors ${proc.isFavorite ? 'text-yellow-400 bg-yellow-400/10' : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100'}`}
+
+                title="Favorite"
+
               >
-                <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8 bg-zinc-900/50">
-                  <div className="space-y-6 min-w-0">
-                    <div>
-                      <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">{t.addressNetwork}</label>
-                      <div className="mt-1 flex items-center space-x-2 text-sm text-zinc-300">
-                        <Globe className="w-4 h-4 text-zinc-500" />
-                        <span className="font-mono">{proc.address}:{proc.port}</span>
-                      </div>
-                    </div>
-                    
-                    {proc.projectPath && (
-                      <div className="min-w-0">
-                        <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">{t.projectSource}</label>
-                        <div className="mt-1 flex items-center space-x-2 text-sm text-zinc-400 font-mono" title={proc.projectPath}>
-                          <FolderOpen className="w-3.5 h-3.5 shrink-0" />
-                          <span className="truncate">{proc.projectPath}</span>
-                        </div>
-                      </div>
-                    )}
 
-                    {proc.type === ProcessType.DEVELOPMENT && proc.projectPath && (
-                      <ScriptRunner pid={proc.pid} projectPath={proc.projectPath} />
-                    )}
+                <Star className={`w-4 h-4 ${proc.isFavorite ? 'fill-current' : ''}`} />
 
-                    {!proc.projectPath && (
-                      <div className="min-w-0">
-                        <label className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">{t.commandLine}</label>
-                        <div className="mt-1 flex items-center justify-between p-3 bg-black/40 border border-zinc-800 rounded-md font-mono text-xs text-zinc-400 group">
-                          <span className="truncate">{proc.commandLine || t.na}</span>
-                          <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                            <Copy className="w-3 h-3 hover:text-white" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
+              </button>
 
-                  <div className="space-y-4 flex flex-col md:items-end">
-                    <div className="flex space-x-6 md:text-right">
+              <button
+
+                onClick={(e) => { e.stopPropagation(); toggleExpand(proc.pid); }}
+
+                className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100"
+
+              >
+
+                <MoreHorizontal className="w-4 h-4" />
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </motion.tr>
+
+  
+
+        <AnimatePresence>
+
+          {expandedPid === proc.pid && (
+
+            <tr style={{ backgroundColor: 'rgba(var(--shadow-color), 0.02)' }}>
+
+              <td colSpan={6} className="p-0 border-b" style={{ borderColor: 'var(--border-color)' }}>
+
+                <motion.div
+
+                  initial={{ height: 0, opacity: 0 }}
+
+                  animate={{ height: 'auto', opacity: 1 }}
+
+                  exit={{ height: 0, opacity: 0 }}
+
+                  className="overflow-hidden"
+
+                >
+
+                  <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    <div className="space-y-6 min-w-0">
+
                       <div>
-                        <div className="text-xs text-zinc-500 uppercase">{t.memory}</div>
-                        <div className="text-sm font-mono text-zinc-300">{proc.memoryUsage} MB</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-zinc-500 uppercase">{t.cpu}</div>
-                        <div className="text-sm font-mono text-zinc-300">{proc.cpuUsage}%</div>
-                      </div>
-                    </div>
 
-                    <div className="flex space-x-3 pt-2">
-                      {proc.type === ProcessType.DEVELOPMENT && (
-                        <button
-                          onClick={() => onRestart(proc.pid, proc.managedById)}
-                          className="flex items-center space-x-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-sm font-medium rounded-lg transition-colors border border-zinc-700"
-                        >
-                          <RotateCw className="w-4 h-4" />
-                          <span>{t.restart}</span>
-                        </button>
+                        <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.addressNetwork}</label>
+
+                        <div className="mt-1 flex items-center space-x-2 text-sm opacity-80">
+
+                          <Globe className="w-4 h-4 opacity-50" />
+
+                          <span className="font-mono">{proc.address}:{proc.port}</span>
+
+                        </div>
+
+                      </div>
+
+                      
+
+                      {proc.projectPath && (
+
+                        <div className="min-w-0">
+
+                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.projectSource}</label>
+
+                          <div className="mt-1 flex items-center space-x-2 text-sm font-mono opacity-70" title={proc.projectPath}>
+
+                            <FolderOpen className="w-3.5 h-3.5 shrink-0" />
+
+                            <span className="truncate">{proc.projectPath}</span>
+
+                          </div>
+
+                        </div>
+
                       )}
-                      <button
-                        onClick={() => onKill(proc.pid)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 text-sm font-medium rounded-lg transition-colors border border-red-500/20"
-                      >
-                        <ShieldAlert className="w-4 h-4" />
-                        <span>{t.killProcess}</span>
-                      </button>
+
+  
+
+                      {proc.type === ProcessType.DEVELOPMENT && proc.projectPath && (
+
+                        <ScriptRunner pid={proc.pid} projectPath={proc.projectPath} />
+
+                      )}
+
+  
+
+                      {!proc.projectPath && (
+
+                        <div className="min-w-0">
+
+                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.commandLine}</label>
+
+                          <div className="mt-1 flex items-center justify-between p-3 bg-black/5 dark:bg-white/5 border rounded-md font-mono text-xs opacity-60 group" style={{ borderColor: 'var(--border-color)' }}>
+
+                            <span className="truncate">{proc.commandLine || t.na}</span>
+
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+
+                              <Copy className="w-3 h-3 hover:opacity-100" />
+
+                            </button>
+
+                          </div>
+
+                        </div>
+
+                      )}
+
                     </div>
+
+  
+
+                    <div className="space-y-4 flex flex-col md:items-end">
+
+                      <div className="flex space-x-6 md:text-right">
+
+                        <div>
+
+                          <div className="text-xs uppercase opacity-50">{t.memory}</div>
+
+                          <div className="text-sm font-mono opacity-80">{proc.memoryUsage} MB</div>
+
+                        </div>
+
+                        <div>
+
+                          <div className="text-xs uppercase opacity-50">{t.cpu}</div>
+
+                          <div className="text-sm font-mono opacity-80">{proc.cpuUsage}%</div>
+
+                        </div>
+
+                      </div>
+
+  
+
+                      <div className="flex space-x-3 pt-2">
+
+                        {proc.type === ProcessType.DEVELOPMENT && (
+
+                          <button
+
+                            onClick={() => onRestart(proc.pid, proc.managedById)}
+
+                            className="flex items-center space-x-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-sm font-medium rounded-lg transition-colors border"
+
+                            style={{ borderColor: 'var(--border-color)' }}
+
+                          >
+
+                            <RotateCw className="w-4 h-4" />
+
+                            <span>{t.restart}</span>
+
+                          </button>
+
+                        )}
+
+                        <button
+
+                          onClick={() => onKill(proc.pid)}
+
+                          className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 dark:text-red-400 text-sm font-medium rounded-lg transition-colors border border-red-500/20"
+
+                        >
+
+                          <ShieldAlert className="w-4 h-4" />
+
+                          <span>{t.killProcess}</span>
+
+                        </button>
+
+                      </div>
+
+                    </div>
+
                   </div>
-                </div>
-              </motion.div>
-            </td>
-          </tr>
-        )}
-      </AnimatePresence>
-    </React.Fragment>
-  );
+
+                </motion.div>
+
+              </td>
+
+            </tr>
+
+          )}
+
+        </AnimatePresence>
+
+      </React.Fragment>
+
+    );
 
   if (isLoading) {
     return (
@@ -300,10 +463,16 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
   }
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 backdrop-blur-sm shadow-inner overflow-hidden flex flex-col">
+    <div 
+      className="rounded-xl border backdrop-blur-sm shadow-inner overflow-hidden flex flex-col transition-all"
+      style={{ 
+        backgroundColor: 'var(--card-bg)',
+        borderColor: 'var(--border-color)',
+      }}
+    >
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full min-w-[1000px] border-collapse text-left">
-          <thead className="bg-zinc-900/80 border-b border-zinc-800 text-xs font-semibold uppercase tracking-wider text-zinc-500 sticky top-0 z-10">
+          <thead className="border-b text-xs font-semibold uppercase tracking-wider sticky top-0 z-10" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', color: 'var(--muted-foreground)' }}>
             <tr>
               {renderHeader(t.port, 'port', 'w-24 whitespace-nowrap')}
               {renderHeader(t.process, 'name', 'w-auto min-w-[200px]')}
@@ -313,7 +482,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
               <th className="px-6 py-3 w-24 text-right whitespace-nowrap">{t.actions}</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-800/50 text-sm">
+          <tbody className="divide-y text-sm" style={{ borderColor: 'var(--border-color)' }}>
             {Object.entries(groupedProcesses).map(([groupId, groupItems]) => {
               if (groupId === 'standalone') {
                 return groupItems.map(p => renderRow(p));
@@ -331,22 +500,23 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
               return (
                 <React.Fragment key={groupId}>
                   <tr 
-                    className="bg-zinc-800/80 hover:bg-zinc-800 cursor-pointer border-b border-white/5 transition-colors"
+                    className="cursor-pointer border-b transition-colors"
+                    style={{ backgroundColor: 'rgba(var(--shadow-color), 0.05)', borderColor: 'var(--border-color)' }}
                     onClick={() => toggleGroup(groupId)}
                   >
                     <td colSpan={6} className="px-4 py-3">
-                      <div className="flex items-center justify-between text-zinc-300">
+                      <div className="flex items-center justify-between" style={{ color: 'var(--foreground)' }}>
                         <div className="flex items-center gap-3">
                            {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                            <div className="flex items-center gap-2 font-semibold">
                              {isManaged ? <Layers className="w-4 h-4 text-indigo-400" /> : <Box className="w-4 h-4 text-emerald-400" />}
                              <span>{displayName}</span>
                            </div>
-                           <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs text-zinc-400">
+                           <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs opacity-60">
                              {groupItems.length} processes
                            </span>
                         </div>
-                        <div className="flex items-center gap-6 text-xs font-mono text-zinc-500 mr-4">
+                        <div className="flex items-center gap-6 text-xs font-mono opacity-50 mr-4">
                            <span>MEM: {totalMem} MB</span>
                            <span>CPU: {totalCpu.toFixed(1)}%</span>
                         </div>

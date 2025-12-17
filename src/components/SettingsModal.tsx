@@ -20,36 +20,43 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 text-zinc-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-end p-4 md:p-12 text-zinc-200 overflow-hidden pointer-events-none">
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+        className="absolute inset-0 bg-transparent backdrop-blur-none pointer-events-auto"
       />
       <motion.div
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-[#18181b] border border-zinc-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+        initial={{ x: 300, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        exit={{ x: 300, opacity: 0 }}
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full border pointer-events-auto transition-all"
+        style={{ 
+          backgroundColor: 'var(--card-bg)', 
+          borderColor: 'var(--border-color)',
+          backdropFilter: 'blur(20px)',
+          color: 'var(--foreground)'
+        }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-700 bg-zinc-900/50">
-          <h2 className="text-lg font-semibold text-white">{t.settings}</h2>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-zinc-700 transition-colors"><X className="w-5 h-5" /></button>
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
+          <h2 className="text-lg font-semibold">{t.settings}</h2>
+          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar Tabs */}
-          <div className="w-48 border-r border-zinc-700 bg-zinc-900/30 p-4 space-y-2">
+          <div className="w-16 md:w-40 border-r p-4 space-y-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'rgba(0,0,0,0.05)' }}>
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${activeTab === tab.id ? 'bg-indigo-600 text-white' : 'text-zinc-400 hover:bg-zinc-800'}`}
+                  ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'opacity-60 hover:bg-white/5'}`}
+                title={tab.label}
               >
-                <tab.icon className="w-4 h-4" />
-                <span>{tab.label}</span>
+                <tab.icon className="w-4 h-4 shrink-0" />
+                <span className="hidden md:block">{tab.label}</span>
               </button>
             ))}
           </div>
@@ -61,13 +68,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'general' && (
               <div className="space-y-6">
                 <section>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">{t.language}</label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.language}</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {['en', 'pt-BR', 'es'].map(lang => (
                       <button
                         key={lang}
                         onClick={() => updateSettings({ language: lang as any })}
-                        className={`px-3 py-2 rounded border text-sm ${settings.language === lang ? 'border-indigo-500 bg-indigo-500/20 text-indigo-300' : 'border-zinc-700 bg-zinc-800'}`}
+                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-indigo-500 bg-indigo-500/20 text-indigo-500 font-bold' : 'border-zinc-700 bg-black/20 hover:bg-black/40'}`}
                       >
                         {lang === 'pt-BR' ? 'Português' : lang === 'es' ? 'Español' : 'English'}
                       </button>
@@ -76,30 +83,33 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">{t.pollingInterval}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.pollingInterval}</label>
                   <input 
                     type="range" min="1000" max="10000" step="1000"
                     value={settings.refreshRate}
                     onChange={(e) => updateSettings({ refreshRate: Number(e.target.value) })}
                     className="w-full accent-indigo-500"
                   />
-                  <div className="flex justify-between text-xs text-zinc-500 mt-1">
+                  <div className="flex justify-between text-[10px] font-mono opacity-50 mt-1">
                     <span>1s (Realtime)</span>
                     <span>{settings.refreshRate / 1000}s</span>
-                    <span>10s (Battery Saver)</span>
+                    <span>10s (Saver)</span>
                   </div>
                 </section>
 
-                <section className="flex items-center justify-between p-3 rounded-lg border border-zinc-700 bg-zinc-800/30">
+                <section className="flex items-center justify-between p-4 rounded-xl border bg-black/10" style={{ borderColor: 'var(--border-color)' }}>
                   <div className="flex items-center space-x-3">
-                    <ShieldAlert className="w-5 h-5 text-emerald-500" />
-                    <span className="text-sm font-medium">{t.safety}: {t.confirmKill}</span>
+                    <ShieldAlert className="w-5 h-5 text-indigo-500" />
+                    <div className="flex flex-col">
+                       <span className="text-sm font-medium">{t.safety}</span>
+                       <span className="text-[10px] opacity-50">{t.confirmKill}</span>
+                    </div>
                   </div>
                   <input 
                     type="checkbox"
                     checked={settings.confirmKill}
                     onChange={(e) => updateSettings({ confirmKill: e.target.checked })}
-                    className="w-5 h-5 accent-indigo-500 rounded"
+                    className="w-5 h-5 accent-indigo-500 rounded cursor-pointer"
                   />
                 </section>
               </div>
@@ -109,13 +119,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'appearance' && (
               <div className="space-y-6">
                 <section>
-                   <label className="block text-sm font-medium text-zinc-400 mb-2">{t.theme}</label>
-                   <div className="flex p-1 bg-zinc-800 rounded-lg">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.theme}</label>
+                   <div className="flex p-1 bg-black/20 rounded-xl border border-white/5">
                      {['light', 'auto', 'dark'].map((mode) => (
                        <button
                          key={mode}
                          onClick={() => updateSettings({ themeMode: mode as any })}
-                         className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-md capitalize transition-all ${settings.themeMode === mode ? 'bg-zinc-600 text-white shadow' : 'text-zinc-400'}`}
+                         className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-indigo-600 text-white shadow-lg' : 'opacity-50 hover:opacity-100'}`}
                        >
                          {mode}
                        </button>
@@ -124,25 +134,27 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                   <label className="block text-sm font-medium text-zinc-400 mb-2">{t.palette}</label>
-                   <div className="grid grid-cols-5 gap-2">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.palette}</label>
+                   <div className="grid grid-cols-5 gap-3">
                       {Object.entries(PALETTES).map(([key, val]) => (
                         <button
                           key={key}
                           onClick={() => updateSettings({ paletteId: key })}
-                          className={`h-8 rounded-full border-2 transition-transform hover:scale-110 ${settings.paletteId === key ? 'border-white scale-110' : 'border-transparent'}`}
+                          className={`h-10 rounded-xl border-2 transition-all hover:scale-110 flex items-center justify-center ${settings.paletteId === key ? 'border-indigo-500 scale-110 shadow-lg shadow-indigo-500/20' : 'border-transparent'}`}
                           style={{ backgroundColor: val.primary }}
                           title={val.name}
-                        />
+                        >
+                           {settings.paletteId === key && <div className="w-2 h-2 rounded-full bg-white shadow-sm" />}
+                        </button>
                       ))}
                    </div>
                 </section>
 
                 <section>
-                   <label className="block text-sm font-medium text-zinc-400 mb-2">{t.glassEffect} (Sidebar)</label>
-                   <div className="space-y-4">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.glassEffect} (Sidebar)</label>
+                   <div className="space-y-5 bg-black/10 p-4 rounded-xl border border-white/5">
                      <div>
-                       <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                       <div className="flex justify-between text-[10px] font-mono opacity-50 mb-2">
                          <span>{t.opacity}</span>
                          <span>{Math.round(settings.glassOpacity * 100)}%</span>
                        </div>
@@ -154,7 +166,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         />
                      </div>
                      <div>
-                       <div className="flex justify-between text-xs text-zinc-500 mb-1">
+                       <div className="flex justify-between text-[10px] font-mono opacity-50 mb-2">
                          <span>{t.blur}</span>
                          <span>{settings.glassBlur}px</span>
                        </div>
@@ -169,7 +181,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">{t.shadows}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.shadows}</label>
                   <input 
                     type="range" min="0" max="1" step="0.1"
                     value={settings.shadowIntensity}
@@ -184,25 +196,26 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'accessibility' && (
               <div className="space-y-6">
                 <section>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">{t.fontScale}</label>
-                  <div className="flex items-center space-x-4">
-                    <Type className="w-4 h-4" />
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.fontScale}</label>
+                  <div className="flex items-center space-x-4 bg-black/10 p-4 rounded-xl border border-white/5">
+                    <Type className="w-4 h-4 opacity-50" />
                     <input 
                       type="range" min="0.8" max="1.5" step="0.05"
                       value={settings.fontScale}
                       onChange={(e) => updateSettings({ fontScale: Number(e.target.value) })}
-                      className="w-full accent-indigo-500"
+                      className="flex-1 accent-indigo-500"
                     />
-                    <span className="w-12 text-right text-xs">{Math.round(settings.fontScale * 100)}%</span>
+                    <span className="w-12 text-right text-xs font-mono">{Math.round(settings.fontScale * 100)}%</span>
                   </div>
                 </section>
 
                 <section>
-                  <label className="block text-sm font-medium text-zinc-400 mb-2">{t.colorBlindness}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.colorBlindness}</label>
                   <select 
                     value={settings.colorBlindMode}
                     onChange={(e) => updateSettings({ colorBlindMode: e.target.value as ColorBlindMode })}
-                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-sm text-white focus:ring-2 focus:ring-indigo-500"
+                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    style={{ color: 'inherit' }}
                   >
                     <option value="none">None (Normal)</option>
                     <option value="protanopia">Protanopia (Red-Blind)</option>
@@ -218,13 +231,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'background' && (
               <div className="space-y-6">
                  <section>
-                   <label className="block text-sm font-medium text-zinc-400 mb-2">{t.bgType}</label>
-                   <div className="grid grid-cols-3 gap-2">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.bgType}</label>
+                   <div className="grid grid-cols-3 gap-2 bg-black/20 p-1 rounded-xl border border-white/5">
                      {['solid', 'gradient', 'image'].map((type) => (
                        <button
                          key={type}
                          onClick={() => updateSettings({ bgType: type as BackgroundType })}
-                         className={`py-2 text-xs font-medium rounded border capitalize ${settings.bgType === type ? 'bg-indigo-600 border-indigo-500 text-white' : 'bg-zinc-800 border-zinc-700'}`}
+                         className={`py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.bgType === type ? 'bg-indigo-600 text-white shadow-lg' : 'opacity-50 hover:opacity-100'}`}
                        >
                          {type}
                        </button>
@@ -233,29 +246,29 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                  </section>
 
                  {settings.bgType === 'solid' && (
-                   <div className="space-y-2">
-                     <label className="text-xs text-zinc-500">Color Picker</label>
+                   <div className="space-y-3 bg-black/10 p-4 rounded-xl border border-white/5">
+                     <label className="text-[10px] font-bold uppercase opacity-50">Color Picker</label>
                      <div className="flex space-x-2">
-                        <input type="color" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="h-10 w-20 rounded cursor-pointer" />
-                        <input type="text" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="flex-1 bg-zinc-800 border border-zinc-700 rounded px-3 text-sm" />
+                        <input type="color" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="h-10 w-20 rounded-lg cursor-pointer bg-transparent border-none" />
+                        <input type="text" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 text-sm font-mono focus:ring-1 focus:ring-indigo-500 outline-none" />
                      </div>
                    </div>
                  )}
 
                  {settings.bgType === 'gradient' && (
-                   <div className="space-y-4">
+                   <div className="space-y-5 bg-black/10 p-4 rounded-xl border border-white/5">
                      <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-xs text-zinc-500 block mb-1">Start Color</label>
-                          <input type="color" value={settings.bgGradientStart} onChange={(e) => updateSettings({ bgGradientStart: e.target.value })} className="w-full h-8 rounded" />
+                          <label className="text-[10px] font-bold uppercase opacity-50 block mb-2">Start Color</label>
+                          <input type="color" value={settings.bgGradientStart} onChange={(e) => updateSettings({ bgGradientStart: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer bg-transparent border-none" />
                         </div>
                         <div>
-                          <label className="text-xs text-zinc-500 block mb-1">End Color</label>
-                          <input type="color" value={settings.bgGradientEnd} onChange={(e) => updateSettings({ bgGradientEnd: e.target.value })} className="w-full h-8 rounded" />
+                          <label className="text-[10px] font-bold uppercase opacity-50 block mb-2">End Color</label>
+                          <input type="color" value={settings.bgGradientEnd} onChange={(e) => updateSettings({ bgGradientEnd: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer bg-transparent border-none" />
                         </div>
                      </div>
                      <div>
-                       <label className="text-xs text-zinc-500 block mb-1">Angle: {settings.bgGradientAngle}deg</label>
+                       <label className="text-[10px] font-bold uppercase opacity-50 block mb-2">Angle: {settings.bgGradientAngle}deg</label>
                        <input 
                           type="range" min="0" max="360" 
                           value={settings.bgGradientAngle}
@@ -267,7 +280,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                  )}
 
                  {settings.bgType === 'image' && (
-                   <div className="p-4 border-2 border-dashed border-zinc-700 rounded-lg text-center cursor-pointer hover:border-indigo-500 transition-colors relative">
+                   <div className="p-8 border-2 border-dashed border-white/10 rounded-xl text-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all relative">
                       <input 
                         type="file" 
                         accept="image/*" 
@@ -281,9 +294,9 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                           }
                         }}
                       />
-                      <ImageIcon className="w-8 h-8 mx-auto text-zinc-500 mb-2" />
-                      <p className="text-sm text-zinc-400">Click to upload image</p>
-                      {settings.bgImage && <div className="mt-2 text-xs text-emerald-400">Image Loaded</div>}
+                      <ImageIcon className="w-10 h-10 mx-auto opacity-30 mb-3" />
+                      <p className="text-sm opacity-50">Click or drag image to upload</p>
+                      {settings.bgImage && <div className="mt-3 text-xs text-indigo-400 font-bold bg-indigo-500/10 py-1 px-3 rounded-full inline-block border border-indigo-500/20">Custom Image Active</div>}
                    </div>
                  )}
               </div>

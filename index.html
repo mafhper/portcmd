@@ -28,23 +28,30 @@
     </script>
     <style>
       body {
-        background-color: #09090b;
-        color: #e4e4e7;
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
-      /* Custom Scrollbar for a premium feel */
+      /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
         height: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #09090b;
+        background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: #27272a;
-        border-radius: 4px;
+        background: rgba(128, 128, 128, 0.2);
+        border-radius: 10px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #3f3f46;
+        background: rgba(128, 128, 128, 0.4);
+      }
+      .dark ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .dark ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
       }
     </style>
   <script type="importmap">

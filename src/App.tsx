@@ -17,7 +17,7 @@ import ConsoleModal from './components/ConsoleModal';
 import { AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
-  const { settings, isDark } = usePreferences();
+  const { settings } = usePreferences();
   const t = translations[settings.language];
   
   const [processes, setProcesses] = useState<ProcessEntry[]>([]);
@@ -91,23 +91,10 @@ const MainApp = () => {
     });
   }, [processes, filter]);
 
-  const textColor = isDark || settings.bgType !== 'solid' ? 'text-zinc-100' : 'text-zinc-900';
-  const subTextColor = isDark || settings.bgType !== 'solid' ? 'text-zinc-400' : 'text-zinc-600';
-
-  const bgStyle = useMemo(() => {
-    if (settings.bgType === 'image' && settings.bgImage) {
-      return { backgroundImage: `url(${settings.bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' };
-    }
-    if (settings.bgType === 'gradient') {
-      return { background: `linear-gradient(${settings.bgGradientAngle}deg, ${settings.bgGradientStart}, ${settings.bgGradientEnd})` };
-    }
-    return { backgroundColor: settings.bgColor || (isDark ? '#09090b' : '#f4f4f5') };
-  }, [settings, isDark]);
-
   return (
     <div 
       className={`flex h-screen overflow-hidden font-sans selection:bg-indigo-500/30 transition-colors duration-500`}
-      style={bgStyle}
+      style={{ color: 'var(--foreground)' }}
     >
       <AnimatePresence>
         {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
@@ -127,13 +114,14 @@ const MainApp = () => {
           <div className="flex-1 max-w-xl">
              {currentView === 'dashboard' && (
               <div className="relative group">
-                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${subTextColor} group-focus-within:text-indigo-500 transition-colors`} />
+                <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors`} style={{ color: 'var(--muted-foreground)' }} />
                 <input 
                   type="text" 
                   placeholder={t.searchPlaceholder}
                   value={filter.search}
                   onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value }))}
-                  className={`w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm ${textColor} placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all backdrop-blur-md`}
+                  className={`w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all backdrop-blur-md`}
+                  style={{ color: 'var(--foreground)' }}
                 />
               </div>
              )}
@@ -142,7 +130,8 @@ const MainApp = () => {
           <div className="flex items-center space-x-3 ml-4">
              <button 
               onClick={() => loadProcesses()}
-              className={`p-2 ${subTextColor} hover:text-white hover:bg-white/10 rounded-lg transition-all`}
+              className={`p-2 hover:bg-white/10 rounded-lg transition-all`}
+              style={{ color: 'var(--muted-foreground)' }}
               title="Refresh"
              >
                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -151,7 +140,7 @@ const MainApp = () => {
         </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-8">
-           <div className={`max-w-7xl mx-auto space-y-8 ${textColor}`}>
+           <div className={`max-w-7xl mx-auto space-y-8`}>
               {currentView === 'dashboard' ? (
                 <>
                   <StatsOverview processes={processes} />

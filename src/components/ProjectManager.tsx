@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FolderPlus, Play, Square, FileText, Trash, Loader2 } from 'lucide-react';
 import { SavedProject } from '../types';
@@ -18,17 +18,18 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  useEffect(() => {
-    loadProjects();
-    const interval = setInterval(loadProjects, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     const data = await SystemService.getSavedProjects();
     setProjects(data);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadProjects();
+    const interval = setInterval(loadProjects, 2000);
+    return () => clearInterval(interval);
+  }, [loadProjects]);
 
   const handleAddProjectConfirm = async (name: string, path: string) => {
     await SystemService.addProject(path, name);
@@ -53,7 +54,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
   };
 
   return (
-    <div className="space-y-6 relative">
+    <div className="space-y-6 relative" style={{ color: 'var(--foreground)' }}>
       <AnimatePresence>
         {isAddModalOpen && (
           <AddProjectModal 
@@ -78,9 +79,12 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
       {loading ? (
         <div className="flex justify-center p-12"><Loader2 className="animate-spin w-8 h-8 text-indigo-500" /></div>
       ) : projects.length === 0 ? (
-        <div className="text-center p-12 border-2 border-dashed border-white/10 rounded-xl bg-white/5">
-           <FolderPlus className="w-12 h-12 mx-auto text-zinc-500 mb-3" />
-           <p className="text-zinc-400">{t.noProjects}</p>
+        <div 
+          className="text-center p-12 border-2 border-dashed rounded-xl transition-all"
+          style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
+        >
+           <FolderPlus className="w-12 h-12 mx-auto mb-3 opacity-30" />
+           <p className="opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t.noProjects}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,24 +92,25 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
             <motion.div 
               key={project.id}
               layout
-              className="bg-white/5 border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
+              className="border rounded-xl p-5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-sm"
+              style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
             >
                <div className="flex justify-between items-start mb-4">
                  <div>
                    <h3 className="font-bold text-lg">{project.name}</h3>
-                   <p className="text-xs text-zinc-400 font-mono truncate max-w-[200px]">{project.path}</p>
+                   <p className="text-xs font-mono truncate max-w-[200px] opacity-50" style={{ color: 'var(--muted-foreground)' }}>{project.path}</p>
                  </div>
                  <div className="flex space-x-1">
                    <button 
                      onClick={() => onViewLogs(project)}
-                     className="p-2 text-zinc-400 hover:text-indigo-400 transition-colors"
+                     className="p-2 opacity-50 hover:opacity-100 hover:text-indigo-500 transition-colors"
                      title="View Console"
                     >
                      <FileText className="w-4 h-4" />
                    </button>
                    <button 
                      onClick={() => handleDelete(project.id)}
-                     className="p-2 text-zinc-400 hover:text-red-400 transition-colors"
+                     className="p-2 opacity-50 hover:opacity-100 hover:text-red-500 transition-colors"
                    >
                      <Trash className="w-4 h-4" />
                    </button>
@@ -113,7 +118,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                </div>
 
                <div className="space-y-2">
-                 <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">{t.scripts}</div>
+                 <div className="text-[10px] font-bold uppercase tracking-widest opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t.scripts}</div>
                  <div className="flex flex-wrap gap-2">
                    {Object.keys(project.scripts).map(script => (
                      <button
@@ -122,11 +127,12 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                        disabled={project.isRunning && project.activeScript !== script}
                        className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-mono border transition-all
                          ${project.isRunning && project.activeScript === script
-                            ? 'bg-red-500/20 border-red-500 text-red-300 animate-pulse'
-                            : 'bg-zinc-800/50 border-zinc-700 text-zinc-300 hover:bg-zinc-700'
+                            ? 'bg-red-500/20 border-red-500 text-red-500 animate-pulse'
+                            : 'bg-black/5 dark:bg-white/5 border-zinc-700/30 hover:border-zinc-500 opacity-70 hover:opacity-100'
                          }
                          ${project.isRunning && project.activeScript !== script ? 'opacity-30 cursor-not-allowed' : ''}
                        `}
+                       style={{ color: project.isRunning && project.activeScript === script ? '' : 'var(--foreground)' }}
                      >
                        {project.isRunning && project.activeScript === script ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3" />}
                        <span>{script}</span>
@@ -136,7 +142,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                </div>
                
                {project.isRunning && (
-                 <div className="mt-4 flex items-center space-x-2 text-xs text-emerald-400">
+                 <div className="mt-4 flex items-center space-x-2 text-xs text-emerald-500">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>

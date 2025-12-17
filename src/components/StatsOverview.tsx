@@ -57,19 +57,24 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ processes }) => {
       {cards.map((card, idx) => (
         <div 
           key={idx} 
-          className={`relative overflow-hidden rounded-xl border ${card.border} bg-zinc-900/50 p-4 transition-all hover:bg-zinc-900/80`}
+          className={`relative overflow-hidden rounded-xl border transition-all`}
+          style={{ 
+            backgroundColor: 'var(--card-bg)',
+            borderColor: 'var(--border-color)',
+            boxShadow: `0 4px 6px -1px rgba(var(--shadow-color), ${Number(settings.shadowIntensity) * 0.1}), 0 2px 4px -1px rgba(var(--shadow-color), ${Number(settings.shadowIntensity) * 0.06})`
+          }}
         >
-          <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-50`} />
-          <div className="relative z-10 flex flex-col justify-between h-full">
+          <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-20`} />
+          <div className="relative z-10 flex flex-col justify-between h-full p-4">
             <div className="flex justify-between items-start mb-2">
-              <span className="text-zinc-400 text-xs font-medium uppercase tracking-wider">{card.title}</span>
+              <span className="text-xs font-medium uppercase tracking-wider opacity-70" style={{ color: 'var(--muted-foreground)' }}>{card.title}</span>
               <div className="p-1.5 rounded-lg bg-white/5 backdrop-blur-sm border border-white/5">
                 {card.icon}
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-white tracking-tight">{card.value}</div>
-              <div className="text-zinc-500 text-xs mt-1">{card.sub}</div>
+              <div className="text-2xl font-bold tracking-tight" style={{ color: 'var(--foreground)' }}>{card.value}</div>
+              <div className="text-xs mt-1 opacity-60" style={{ color: 'var(--muted-foreground)' }}>{card.sub}</div>
             </div>
           </div>
         </div>

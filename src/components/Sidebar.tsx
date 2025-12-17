@@ -47,7 +47,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       : `rgba(255, 255, 255, ${settings.glassOpacity})`,
     backdropFilter: `blur(${settings.glassBlur}px)`,
     color: 'var(--sidebar-text)',
-    boxShadow: `4px 0px 20px rgba(var(--shadow-color), ${settings.shadowIntensity * 0.2})`
+    boxShadow: `4px 0px 20px rgba(var(--shadow-color), ${Number(settings.shadowIntensity) * 0.2})`
   };
 
   const menuItems = [
@@ -56,10 +56,10 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   ];
 
   const categories = [
-    { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-400' },
-    { type: ProcessType.DATABASE, icon: Database, color: 'text-blue-400' },
-    { type: ProcessType.SYSTEM, icon: Server, color: 'text-zinc-400' },
-    { type: ProcessType.OTHER, icon: Cpu, color: 'text-purple-400' },
+    { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-500' },
+    { type: ProcessType.DATABASE, icon: Database, color: 'text-blue-500' },
+    { type: ProcessType.SYSTEM, icon: Server, color: 'text-zinc-500' },
+    { type: ProcessType.OTHER, icon: Cpu, color: 'text-purple-500' },
   ];
 
   const textVariants = {
@@ -72,12 +72,12 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       initial={false}
       animate={{ width: collapsed ? 80 : 260 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex-shrink-0 flex flex-col h-full border-r border-white/10 relative z-20 overflow-hidden"
-      style={glassStyle}
+      className="flex-shrink-0 flex flex-col h-full border-r relative z-20 overflow-hidden"
+      style={{ ...glassStyle, borderColor: 'var(--border-color)' }}
     >
       {/* Header */}
-      <div className="h-16 flex items-center justify-center relative border-b border-white/5 shrink-0">
-        <div className="flex items-center space-x-2 text-indigo-500 overflow-hidden px-4">
+      <div className="h-16 flex items-center justify-center relative border-b shrink-0" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-500 overflow-hidden px-4">
           <ShieldCheck className="w-8 h-8 shrink-0" />
           <AnimatePresence>
             {!collapsed && (
@@ -112,8 +112,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               onClick={() => setCurrentView(item.view as any)}
               className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                 ${currentView === item.view 
-                  ? 'bg-indigo-500/20 text-indigo-400 shadow-[0_0_15px_rgba(99,102,241,0.2)]' 
-                  : 'hover:bg-white/5 opacity-80 hover:opacity-100'}`}
+                  ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 shadow-sm' 
+                  : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+              style={{ color: currentView === item.view ? '' : 'var(--sidebar-text)' }}
               title={collapsed ? item.label : ''}
             >
               <item.icon className="w-5 h-5 shrink-0" />
@@ -141,7 +142,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               {!collapsed && (
                 <motion.div 
                   initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} exit={{ opacity: 0 }}
-                  className="px-3 text-xs font-bold uppercase tracking-wider whitespace-nowrap"
+                  className="px-3 text-[10px] font-bold uppercase tracking-widest opacity-50"
                 >
                   {t.categories}
                 </motion.div>
@@ -151,10 +152,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             <div className="space-y-1">
               <button
                  onClick={() => setFilter((prev: any) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
-                 className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5`}
+                 className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100`}
+                 style={{ color: 'var(--sidebar-text)' }}
               >
                  <div className="flex items-center">
-                    <Globe className="w-4 h-4 shrink-0" />
+                    <Globe className="w-4 h-4 shrink-0 opacity-50" />
                     <AnimatePresence>
                       {!collapsed && (
                         <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
@@ -168,8 +170,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 <button
                   key={cat.type}
                   onClick={() => setFilter((prev: any) => ({ ...prev, type: cat.type, onlyFavorites: false, onlyManaged: false }))}
-                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/5 
-                    ${filter.type === cat.type ? 'bg-white/5' : ''}`}
+                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100 
+                    ${filter.type === cat.type ? 'bg-black/5 dark:bg-white/5 !opacity-100' : ''}`}
+                  style={{ color: 'var(--sidebar-text)' }}
                   title={collapsed ? cat.type : ''}
                 >
                   <div className="flex items-center min-w-0">
@@ -183,7 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                     </AnimatePresence>
                   </div>
                   {!collapsed && filter.type === cat.type && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0 ml-2"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-500 shrink-0 ml-2 shadow-sm"></div>
                   )}
                 </button>
               ))}
@@ -194,10 +197,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               <button 
                 onClick={() => setFilter((prev: any) => ({ ...prev, onlyManaged: true, onlyFavorites: false, type: 'All' }))}
                 className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filter.onlyManaged ? 'bg-emerald-500/20 text-emerald-500' : 'hover:bg-white/5'}`}
+                  ${filter.onlyManaged ? 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+                style={{ color: filter.onlyManaged ? '' : 'var(--sidebar-text)' }}
                 title={collapsed ? "My Projects" : ''}
               >
-                <FolderKanban className={`w-4 h-4 shrink-0 ${filter.onlyManaged ? 'text-emerald-500' : ''}`} />
+                <FolderKanban className={`w-4 h-4 shrink-0`} />
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
@@ -210,7 +214,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               <button 
                 onClick={() => setFilter((prev: any) => ({ ...prev, onlyFavorites: true, onlyManaged: false, type: 'All' }))}
                 className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filter.onlyFavorites ? 'bg-yellow-500/20 text-yellow-500' : 'hover:bg-white/5'}`}
+                  ${filter.onlyFavorites ? 'bg-yellow-600/10 text-yellow-600 dark:text-yellow-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+                style={{ color: filter.onlyFavorites ? '' : 'var(--sidebar-text)' }}
                 title={collapsed ? t.favorites : ''}
               >
                 <Star className={`w-4 h-4 shrink-0 ${filter.onlyFavorites ? 'fill-current' : ''}`} />
@@ -228,10 +233,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-white/5 shrink-0">
+      <div className="p-4 border-t shrink-0" style={{ borderColor: 'var(--border-color)' }}>
         <button 
           onClick={onOpenSettings}
-          className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-colors`}
+          className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-2 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-all`}
+          style={{ color: 'var(--sidebar-text)' }}
           title={t.settings}
         >
           <Settings className="w-5 h-5 shrink-0" />

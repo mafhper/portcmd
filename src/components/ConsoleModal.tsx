@@ -50,26 +50,27 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-       <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
+       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
        <motion.div 
          initial={{ scale: 0.9 }} animate={{ scale: 1 }}
-         className="relative w-full max-w-4xl bg-[#0d1117] border border-zinc-700 rounded-xl shadow-2xl flex flex-col max-h-[85vh]"
+         className="relative w-full max-w-4xl border rounded-xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden"
+         style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', color: 'var(--foreground)' }}
        >
-         <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700 bg-zinc-900">
-           <div className="flex items-center space-x-2 text-zinc-300">
+         <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--border-color)', backgroundColor: 'rgba(0,0,0,0.05)' }}>
+           <div className="flex items-center space-x-2 opacity-80">
              <Terminal className="w-5 h-5" />
              <span className="font-mono font-bold">{currentProject.name}</span>
            </div>
            <div className="flex items-center space-x-2">
-             <button onClick={downloadLogs} className="flex items-center space-x-2 px-3 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded transition-colors">
+             <button onClick={downloadLogs} className="flex items-center space-x-2 px-3 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded transition-colors shadow-lg shadow-indigo-500/20">
                <Download className="w-3 h-3" />
                <span>{t.saveLogs}</span>
              </button>
-             <button onClick={onClose} className="p-1 text-zinc-400 hover:text-white"><X className="w-5 h-5" /></button>
+             <button onClick={onClose} className="p-1 opacity-50 hover:opacity-100 transition-colors"><X className="w-5 h-5" /></button>
            </div>
          </div>
 
-         <div className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-black/50">
+         <div className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-[#0d1117] text-zinc-300">
            {currentProject.logs.length === 0 ? (
              <div className="text-zinc-600 italic text-center mt-10">No output generated yet.</div>
            ) : (
