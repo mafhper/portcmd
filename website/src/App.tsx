@@ -2,6 +2,10 @@ import React from 'react';
 import { Terminal, Shield, Zap, Download, Layout, Github, ArrowLeft, Activity, Command } from 'lucide-react';
 
 const App = () => {
+  const appUrl = typeof window !== 'undefined' && window.location.port === '5174' 
+    ? 'http://localhost:5173/portcmd/app/' 
+    : '/portcmd/app/';
+
   return (
     <div className="min-h-screen font-sans selection:bg-brand-500/30">
       {/* Navbar */}
@@ -21,7 +25,7 @@ const App = () => {
             <a href="https://github.com/mafhper/portcmd" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               <Github size={20} />
             </a>
-            <a href="./app/" className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
+            <a href={appUrl} className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
               <span className="hidden sm:inline">Launch Web App</span>
               <span className="sm:hidden">Launch</span>
             </a>
@@ -55,7 +59,7 @@ const App = () => {
               <Download size={20} />
               <span>Windows, Mac & Linux (Coming Soon)</span>
             </button>
-            <a href="./app/" className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
+            <a href={appUrl} className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
               <Zap size={20} />
               <span>Try Web Demo</span>
             </a>

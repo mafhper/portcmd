@@ -45,7 +45,89 @@ async function readDirFiles(dirPath, extension) {
   } catch { return []; }
 }
 
-// ... existing code ...
+function detectType(p) {
+  const name = p.name.toLowerCase();
+  const cmd = p.command.toLowerCase();
+  if (name.includes('node') || cmd.includes('npm') || cmd.includes('yarn') || cmd.includes('bun') || cmd.includes('vite') || cmd.includes('deno')) return 'Development';
+  if (name.includes('java')) return 'Java';
+  if (name.includes('python')) return 'Python';
+  if (name.includes('postgres')) return 'Database';
+  if (name.includes('docker')) return 'Container';
+  return 'System';
+}
+
+function mapState(state) {
+  if (!state) return 'Running';
+  const s = state.toLowerCase();
+  if (s === 'running' || s === 'sleeping' || s === 'unknown') return 'Running';
+  if (s === 'blocked' || s === 'suspended') return 'Suspended';
+  if (s === 'zombie') return 'Zombie';
+  return 'Running';
+}
+
+// Windows Netstat Fallback
+async function getNetstatConnections() {
+  if (process.platform !== 'win32') return [];
+  try {
+    const { stdout } = await execPromise('netstat -ano');
+    const lines = stdout.split('\n');
+    const connections = [];
+    for (const line of lines) {
+      const parts = line.trim().split(/\s+/);
+      if (parts.length >= 5 && parts[0].startsWith('TCP') && parts[3] === 'LISTENING') {
+        const localAddr = parts[1];
+        const pid = parseInt(parts[4]);
+        const lastColon = localAddr.lastIndexOf(':');
+        const port = parseInt(localAddr.substring(lastColon + 1));
+        const address = localAddr.substring(0, lastColon);
+        if (!isNaN(pid) && !isNaN(port)) {
+          connections.push({ pid, localPort: port, localAddress: address, state: 'LISTEN' });
+        }
+      }
+    }
+    return connections;
+  } catch (e) {
+    console.error('Netstat failed', e);
+    return [];
+  }
+}
+
+async function killProcessTree(pid) {
+  return new Promise((resolve) => {
+    if (process.platform === 'win32') {
+      exec(`taskkill /pid ${pid} /T /F`, (err) => {
+        resolve(); 
+      });
+    } else {
+      try {
+        process.kill(-pid); // Try killing process group
+      } catch (e) {
+        try { process.kill(pid); } catch(e) {}
+      }
+      resolve();
+    }
+  });
+}
+
+async function loadProjects() {
+  try {
+    const data = await fs.readFile(PROJECTS_FILE, 'utf-8');
+    return JSON.parse(data);
+  } catch (e) {
+    return [];
+  }
+}
+
+async function saveProjects(projects) {
+  await fs.writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
+}
+
+// Runtime State
+const runtimeState = new Map(); // projectId -> { child, activeScript, logs: [], startTime }
+
+function getProjectState(id) {
+  return runtimeState.get(id) || { isRunning: false, logs: [], activeScript: null };
+}
 
 // --- Endpoints ---
 
@@ -75,7 +157,7 @@ app.get('/api/system/logs/:filename', async (req, res) => {
   try {
     const filePath = path.join(LOGS_DIR, req.params.filename);
     const content = await fs.readFile(filePath, 'utf-8');
-    res.json({ 
+    res.json({
       success: true, 
       data: {
         filename: req.params.filename,
@@ -98,7 +180,6 @@ app.get('/api/processes', async (req, res) => {
       loadProjects()
     ]);
 
-    // Create map of running managed projects: PID -> Project
     const managedPids = new Map();
     projects.forEach(p => {
       const state = getProjectState(p.id);
@@ -107,7 +188,6 @@ app.get('/api/processes', async (req, res) => {
       }
     });
 
-    // Create a map of PID -> Connections
     const connMap = new Map();
     const addConns = (list) => {
         list.forEach(conn => {
@@ -219,7 +299,7 @@ app.post('/api/projects', async (req, res) => {
     id: Date.now().toString(),
     name,
     path: projectPath,
-    scripts: {}, 
+    scripts: {},
     isRunning: false,
     logs: []
   };
@@ -412,7 +492,7 @@ app.post('/api/fs/validate', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Port Command API is running. Visit the frontend application to interact.');
+  res.send('Port Cmd API is running. Visit the frontend application to interact.');
 });
 
 app.listen(PORT, () => {
