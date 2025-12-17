@@ -50,7 +50,7 @@
     "eslint": "^8.45.0",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",
-    "lighthouse": "^11.4.0",
+    "lighthouse": "^13.0.1",
     "postcss": "^8.4.27",
     "prettier": "^3.2.4",
     "puppeteer": "^21.7.0",
