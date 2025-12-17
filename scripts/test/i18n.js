@@ -15,12 +15,17 @@ if (!fs.existsSync(localesPath)) {
 const content = fs.readFileSync(localesPath, 'utf-8');
 
 const extractKeys = (lang) => {
-  const regex = new RegExp(`${lang}:\\s*{([^}]+)}`, 's');
+  // Matches 'lang': { ... } or lang: { ... }
+  const regex = new RegExp(`['"]?${lang}['"]?\\s*:\\s*{([\\s\\S]+?)}\\s*[,}]`, 'm');
   const match = content.match(regex);
-  if (!match) return [];
+  if (!match) {
+    Logger.warn(`Language block for ${lang} not found`);
+    return [];
+  }
   const block = match[1];
   const keys = [];
-  const keyRegex = /([a-zA-Z0-9_]+):/g;
+  // Matches key: or 'key':
+  const keyRegex = /^\s*['"]?([a-zA-Z0-9_]+)['"]?\s*:/gm;
   let keyMatch;
   while ((keyMatch = keyRegex.exec(block)) !== null) {
     keys.push(keyMatch[1]);
