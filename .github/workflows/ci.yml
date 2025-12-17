@@ -1,0 +1,41 @@
+name: PortCommand CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm ci
+
+    - name: Verify Structure
+      run: npm run test:structure
+
+    - name: Verify i18n
+      run: npm run test:i18n
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Build App
+      run: npm run build
+
+    - name: Build Website
+      run: npm run build:website
+
+    # Note: Full lighthouse audit often requires a running server in a separate background process
+    # Skipping actual lighthouse run in basic CI to save time, but the script is available.

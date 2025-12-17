@@ -1,0 +1,5 @@
+{
+  "name": "PortCommand_v0",
+  "description": "A premium, system-tray ready port and process manager for developers. Monitor, filter, and kill processes with a modern UI.",
+  "requestFramePermissions": []
+}
