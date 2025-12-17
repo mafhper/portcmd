@@ -11,14 +11,15 @@ const App = () => {
             <div className="bg-brand-500/20 p-1.5 rounded-lg text-brand-500">
               <Terminal size={20} />
             </div>
-            <span>PortCommand</span>
+            <span>PortCmd</span>
           </div>
-          <div className="flex items-center space-x-6">
-            <a href="https://github.com/mafhper/portcommand" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
+          <div className="flex items-center space-x-4 md:space-x-6">
+            <a href="https://github.com/mafhper/portcmd" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               <Github size={20} />
             </a>
             <a href="./app/" className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
-              Launch Web App
+              <span className="hidden sm:inline">Launch Web App</span>
+              <span className="sm:hidden">Launch</span>
             </a>
           </div>
         </div>
@@ -35,22 +36,22 @@ const App = () => {
             <span>v1.0 Public Beta Available</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
             Control your ports.<br/>
             <span className="text-white">Master your workflow.</span>
           </h1>
           
-          <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
             The premium system-tray utility for developers. visualize active processes, 
             kill hanging ports, and manage dev servers without touching the command line.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <button disabled className="px-8 py-4 bg-zinc-800 text-zinc-500 rounded-xl font-semibold flex items-center space-x-2 cursor-not-allowed border border-zinc-700">
+            <button disabled className="px-8 py-4 bg-zinc-800 text-zinc-500 rounded-xl font-semibold flex items-center space-x-2 cursor-not-allowed border border-zinc-700 w-full sm:w-auto justify-center">
               <Download size={20} />
               <span>Windows, Mac & Linux (Coming Soon)</span>
             </button>
-            <a href="./app/" className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105">
+            <a href="./app/" className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
               <Zap size={20} />
               <span>Try Web Demo</span>
             </a>
@@ -111,11 +112,11 @@ const App = () => {
                         <div key={i} className="flex items-center px-6 py-4 text-sm hover:bg-white/5 transition-colors cursor-default">
                            <div className="w-24 font-mono font-bold text-brand-400">{row.port}</div>
                            <div className="flex-1 font-medium text-zinc-300">{row.name}</div>
-                           <div className="w-20 font-mono text-zinc-500">{row.pid}</div>
-                           <div className="w-32"><span className={`text-xs px-2 py-1 rounded-full bg-white/5 border border-white/5 ${row.color}`}>{row.type}</span></div>
+                           <div className="w-20 font-mono text-zinc-500 hidden sm:block">{row.pid}</div>
+                           <div className="w-32 hidden sm:block"><span className={`text-xs px-2 py-1 rounded-full bg-white/5 border border-white/5 ${row.color}`}>{row.type}</span></div>
                            <div className="w-24 flex items-center space-x-2 text-zinc-400">
                               <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-                              <span>{row.status}</span>
+                              <span className="hidden sm:inline">{row.status}</span>
                            </div>
                         </div>
                       ))}
@@ -147,10 +148,5 @@ const App = () => {
       </section>
 
       <footer className="border-t border-white/5 py-12 text-center text-zinc-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} PortCommand. Open Source Software.</p>
+        <p>&copy; {new Date().getFullYear()} PortCmd. Open Source Software.</p>
       </footer>
-    </div>
-  );
-};
-
-export default App;
