@@ -1,5 +1,5 @@
 import React from 'react';
-import { Terminal, Shield, Zap, Download, Layout, Github, ArrowRight, Activity, Command } from 'lucide-react';
+import { Terminal, Shield, Zap, Download, Layout, Github, ArrowLeft, Activity, Command } from 'lucide-react';
 
 const App = () => {
   return (
@@ -7,12 +7,16 @@ const App = () => {
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-black/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-2 font-bold text-xl tracking-tight">
-            <div className="bg-brand-500/20 p-1.5 rounded-lg text-brand-500">
-              <Terminal size={20} />
+          
+          {/* Logo with Hover Effect */}
+          <a href="/portcmd/" className="flex items-center gap-2 font-bold text-xl tracking-tight group">
+            <div className="relative bg-brand-500/20 p-1.5 rounded-lg text-brand-500 overflow-hidden group-hover:bg-brand-500 group-hover:text-white transition-colors">
+              <Terminal size={20} className="transition-transform duration-300 group-hover:translate-x-full group-hover:opacity-0" />
+              <ArrowLeft size={20} className="absolute top-1.5 left-1.5 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
             </div>
-            <span>PortCmd</span>
-          </div>
+            <span className="group-hover:text-white transition-colors">PortCmd</span>
+          </a>
+
           <div className="flex items-center space-x-4 md:space-x-6">
             <a href="https://github.com/mafhper/portcmd" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               <Github size={20} />
@@ -150,3 +154,8 @@ const App = () => {
       <footer className="border-t border-white/5 py-12 text-center text-zinc-500 text-sm">
         <p>&copy; {new Date().getFullYear()} PortCmd. Open Source Software.</p>
       </footer>
+    </div>
+  );
+};
+
+export default App;
