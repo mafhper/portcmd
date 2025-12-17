@@ -70,17 +70,14 @@ async function checkBuild() {
     return runCommand('npm', ['run', 'build']);
 }
 
-async function runQualityAudit() {
-    log('Running Quality Core Audit...', 'check');
-    // Start preview server in background or assume it's handled?
-    // For CI, we usually build then run quality against static.
-    // Quality CLI expects a URL.
-    // Let's rely on `npm run preview` to serve it, but we need to background it.
-    // For simplicity, we skip live render audit here OR try to serve dist via a simple http server script.
-    
-    // Using `vite preview` is tricky in a synchronous script without detach.
-    // We will run the static analysis parts (build audit).
-    return runCommand('node', ['quality-core/cli/quality.cjs', '--quick']);
+async function runQualityAuditApp() {
+    log('Running Quality Audit: APP...', 'check');
+    return runCommand('node', ['quality-core/cli/quality.cjs', '--target=app', '--quick']);
+}
+
+async function runQualityAuditPromo() {
+    log('Running Quality Audit: PROMO...', 'check');
+    return runCommand('node', ['quality-core/cli/quality.cjs', '--target=promo', '--quick']);
 }
 
 async function main() {
@@ -92,7 +89,8 @@ async function main() {
         { name: 'I18n', fn: checkI18n },
         { name: 'Lint', fn: checkLint },
         { name: 'Build', fn: checkBuild },
-        { name: 'Quality Audit (Static)', fn: runQualityAudit }
+        { name: 'Quality: APP (Static)', fn: runQualityAuditApp },
+        { name: 'Quality: PROMO (Static)', fn: runQualityAuditPromo }
     ];
 
     let failed = false;

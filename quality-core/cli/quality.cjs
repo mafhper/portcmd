@@ -22,15 +22,19 @@ const AVAILABLE_AUDITS = {
 async function main() {
     const args = process.argv.slice(2);
     const presetName = args.find(a => a.startsWith('--preset='))?.split('=')[1] || 'github-pages';
+    const target = args.find(a => a.startsWith('--target='))?.split('=')[1] || 'app';
     const isQuick = args.includes('--quick');
     const isFailOnError = args.includes('--fail-on-error');
 
     console.log(`Quality Core CLI v1.0.0`);
+    console.log(`Target: ${target.toUpperCase()}`);
     console.log(`Preset: ${presetName}`);
 
     // Context Setup
-    // Ensure we have a URL to test.
-    let url = args.find(a => a.startsWith('--url='))?.split('=')[1] || 'http://localhost:4173';
+    let baseUrl = args.find(a => a.startsWith('--url='))?.split('=')[1] || 'http://localhost:4173';
+    // Normalize URL for target
+    let url = target === 'app' ? `${baseUrl}/portcmd/app/` : `${baseUrl}/portcmd/`;
+    let distDir = target === 'app' ? path.join(process.cwd(), 'dist/app') : path.join(process.cwd(), 'dist');
 
     // Preset Config
     const preset = presetName === 'github-pages' ? GITHUB_PAGES_PRESET : GITHUB_PAGES_PRESET;
@@ -38,12 +42,11 @@ async function main() {
     const context = {
         url: url,
         preset: presetName,
+        target: target,
         device: preset.device || 'mobile',
         thresholds: DEFAULT_THRESHOLDS,
         projectRoot: process.cwd(),
-        // Point to dist/app for the application audit, or dist for promo?
-        // Let's default to dist/app for now as it's the main app.
-        distDir: path.join(process.cwd(), 'dist/app') 
+        distDir: distDir
     };
 
     // Select Audits
