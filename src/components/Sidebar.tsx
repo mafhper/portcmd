@@ -11,9 +11,9 @@ import {
   ChevronLeft,
   ChevronRight,
   FolderKanban,
-  ShieldCheck,
   Globe,
-  FileText
+  FileText,
+  ArrowLeft
 } from 'lucide-react';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
@@ -79,8 +79,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
     >
       {/* Header */}
       <div className="h-16 flex items-center justify-center relative border-b shrink-0" style={{ borderColor: 'var(--border-color)' }}>
-        <div className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-500 overflow-hidden px-4">
-          <ShieldCheck className="w-8 h-8 shrink-0" />
+        <a href="/portcmd/" className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-500 overflow-hidden px-4 group">
+          <div className="relative bg-indigo-600/10 p-1.5 rounded-lg overflow-hidden group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+            <Terminal size={20} className="transition-transform duration-300 group-hover:translate-x-full group-hover:opacity-0" />
+            <ArrowLeft size={20} className="absolute top-1.5 left-1.5 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
+          </div>
           <AnimatePresence>
             {!collapsed && (
               <motion.span 
@@ -88,13 +91,13 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="font-bold text-lg tracking-tight whitespace-nowrap"
+                className="font-bold text-lg tracking-tight whitespace-nowrap group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
               >
                 PortCmd
               </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </a>
         
         <button 
           onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}

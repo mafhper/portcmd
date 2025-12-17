@@ -171,12 +171,12 @@ const ReportsView: React.FC = () => {
               className="relative w-full max-w-5xl h-full max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col border"
               style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b bg-black/10" style={{ borderColor: 'var(--border-color)' }}>
-                <div className="flex items-center gap-3">
-                  <div className="flex space-x-1.5 mr-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
+              <div className="flex items-center justify-between px-6 py-4 border-b bg-black/20 backdrop-blur-md" style={{ borderColor: 'var(--border-color)' }}>
+                <div className="flex items-center gap-4">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-[#ff5f56] shadow-sm"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-sm"></div>
+                    <div className="w-3 h-3 rounded-full bg-[#27c93f] shadow-sm"></div>
                   </div>
                   <h3 className="font-mono text-xs font-bold uppercase tracking-widest opacity-70 flex items-center gap-2">
                     <FileText size={14} />
@@ -191,8 +191,7 @@ const ReportsView: React.FC = () => {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-auto p-8 md:p-12 prose prose-invert max-w-none custom-scrollbar bg-[#0d1117]/50">
-                {/* We use dangerouslySetInnerHTML for the converted Markdown */}
+              <div className="flex-1 overflow-auto p-8 md:p-12 prose prose-invert max-w-none custom-scrollbar bg-[#0d1117] text-zinc-300 font-sans selection:bg-indigo-500/30">
                 <div 
                   className="report-content"
                   dangerouslySetInnerHTML={{ __html: selectedLog.html }} 
