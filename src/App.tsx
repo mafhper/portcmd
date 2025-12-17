@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Search, 
   RefreshCw, 
@@ -34,7 +34,7 @@ const MainApp = () => {
     onlyManaged: false,
   });
 
-  const loadProcesses = async () => {
+  const loadProcesses = useCallback(async () => {
     if (processes.length === 0) setLoading(true);
     try {
       const data = await SystemService.getProcesses();
@@ -44,7 +44,7 @@ const MainApp = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [processes.length]);
 
   useEffect(() => {
     loadProcesses();
@@ -60,7 +60,7 @@ const MainApp = () => {
       });
     }, settings.refreshRate);
     return () => clearInterval(interval);
-  }, [settings.refreshRate]);
+  }, [settings.refreshRate, loadProcesses]);
 
   const handleKill = async (pid: number) => {
     if (settings.confirmKill) {

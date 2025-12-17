@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { FileText, Shield, Clock, ChevronRight, X } from 'lucide-react';
 import { SystemService } from '../services/systemService';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,11 +9,7 @@ const ReportsView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<{ filename: string; html: string } | null>(null);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     const [qData, sData] = await Promise.all([
       SystemService.getQualityReports(),
@@ -22,7 +18,12 @@ const ReportsView: React.FC = () => {
     setQualityReports(qData);
     setSystemLogs(sData);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    loadData();
+  }, [loadData]);
 
   const handleViewLog = async (filename: string) => {
     const data = await SystemService.getSystemLog(filename);
