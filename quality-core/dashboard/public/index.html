@@ -321,14 +321,25 @@
       icon.className = 'animate-spin';
       
       try {
-        const res = await fetch('https://api.github.com/user', {
-          headers: { Authorization: `token ${token}` }
+        const res = await fetch(`${API_BASE}/verify/github`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
         });
-        if (res.ok) {
+        const json = await res.json();
+        
+        if (json.success) {
           input.classList.remove('border-white/10', 'border-error');
           input.classList.add('border-success');
           icon.innerHTML = '✅';
           icon.className = '';
+          
+          // Display scopes
+          const settings = getSettings();
+          settings.githubScopes = json.scopes;
+          saveSettingsData(settings);
+          
+          alert(`Token Valid! Scopes: ${json.scopes.join(', ')}`);
         } else {
           throw new Error();
         }
