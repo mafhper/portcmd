@@ -65,7 +65,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
       >
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border-color)', backgroundColor: 'rgba(0,0,0,0.05)' }}>
           <h3 className="text-lg font-semibold">{t.addProject}</h3>
-          <button onClick={onClose} className="opacity-50 hover:opacity-100 transition-colors">
+          <button onClick={onClose} aria-label="Close modal" className="opacity-50 hover:opacity-100 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -96,6 +96,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
                 type="button"
                 onClick={handleValidate}
                 disabled={validating || !path}
+                aria-label="Validate path"
                 className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
               >
                 {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}

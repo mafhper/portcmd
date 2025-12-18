@@ -28,6 +28,7 @@ async function withPage(context, fn) {
         // await browserContext.route('**/*', route => route.continue());
 
         const page = await browserContext.newPage();
+        page.on('console', msg => console.log('BROWSER:', msg.text()));
         await page.goto(context.url, { waitUntil: 'load' }); // or 'networkidle'
 
         const result = await fn(page);

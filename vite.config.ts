@@ -13,6 +13,14 @@ export default defineConfig({
   build: {
     outDir: 'dist/app', // Builds to 'dist/app' subfolder
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+        }
+      }
+    }
   },
   server: {
     port: 5173,
@@ -23,6 +31,9 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  optimizeDeps: {
+    include: ['framer-motion', 'lucide-react'],
   },
   resolve: {
     alias: {

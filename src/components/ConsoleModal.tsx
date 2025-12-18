@@ -15,11 +15,28 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
   const { settings } = usePreferences();
   const t = translations[settings.language];
   const endRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
   const [currentProject, setCurrentProject] = useState<SavedProject | null>(project);
 
-  useEffect(() => {
-    setCurrentProject(project);
-  }, [project]);
+  // Handle scroll events to enable/disable auto-scroll
+  const handleScroll = () => {
+    if (!scrollRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+    
+    // Check if user is near bottom (within 50px)
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 50;
+    setShouldAutoScroll(isNearBottom);
+  };
+
+  // Effect removed: syncing state from props handled by key={} in parent
+  // If project prop changes, we still update specific fields if needed, 
+  // but better to rely on parent unmount/mount or simpler logic.
+  // Sync state from props (Render-cycle update pattern)
+  if (project && project.id !== currentProject?.id) {
+     setCurrentProject(project);
+     setShouldAutoScroll(true);
+  }
 
   useEffect(() => {
     if (!project) return;
@@ -31,14 +48,20 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
   }, [project]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [currentProject?.logs]);
+    if (shouldAutoScroll && endRef.current) {
+      endRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentProject?.logs, shouldAutoScroll]);
 
   if (!currentProject) return null;
 
+  // Utility to remove ANSI escape codes
+  // eslint-disable-next-line no-control-regex
+  const stripAnsi = (str: string) => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+
   const downloadLogs = () => {
     const md = `# Console Logs - ${currentProject.name}\nGenerated at ${new Date().toLocaleString()}\n\n` + 
-      currentProject.logs.map((l: LogEntry) => `[${l.timestamp}] [${l.level.toUpperCase()}] ${l.message}`).join('\n\n');
+      currentProject.logs.map((l: LogEntry) => `[${l.timestamp}] [${l.level.toUpperCase()}] ${stripAnsi(l.message)}`).join('\n\n');
     
     const blob = new Blob([md], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
@@ -66,11 +89,15 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
                <Download className="w-3 h-3" />
                <span>{t.saveLogs}</span>
              </button>
-             <button onClick={onClose} className="p-1 opacity-50 hover:opacity-100 transition-colors"><X className="w-5 h-5" /></button>
+              <button onClick={onClose} aria-label="Close console" className="p-1 opacity-50 hover:opacity-100 transition-colors"><X className="w-5 h-5" /></button>
            </div>
          </div>
 
-         <div className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-[#0d1117] text-zinc-300">
+         <div 
+           ref={scrollRef}
+           onScroll={handleScroll}
+           className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-[#0d1117] text-zinc-300"
+         >
            {currentProject.logs.length === 0 ? (
              <div className="text-zinc-600 italic text-center mt-10">No output generated yet.</div>
            ) : (
@@ -78,7 +105,7 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
                <div key={i} className="flex space-x-2 border-b border-white/5 pb-0.5 mb-0.5">
                  <span className="text-zinc-500 shrink-0">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
                  <span className={log.level === 'error' ? 'text-red-400' : log.level === 'warn' ? 'text-yellow-400' : 'text-zinc-300'}>
-                   {log.message}
+                   {stripAnsi(log.message)}
                  </span>
                </div>
              ))

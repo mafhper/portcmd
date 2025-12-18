@@ -11,9 +11,7 @@ import {
   ChevronRight,
   FolderKanban,
   Globe,
-  ArrowLeft,
-  Activity,
-  ShieldCheck
+  ArrowLeft
 } from 'lucide-react';import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
 import { ProcessType, FilterState, ViewType } from '../types';
@@ -53,8 +51,6 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const menuItems = [
     { id: 'dashboard', label: 'Development', icon: Terminal, view: 'dashboard' },
     { id: 'projects', label: 'Workspaces', icon: FolderKanban, view: 'projects' },
-    { id: 'reports', label: 'Quality Audit', icon: ShieldCheck, view: 'reports' },
-    { id: 'monitor', label: 'Production', icon: Activity, view: 'monitor' },
   ];
   const categories = [
     { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-500' },
@@ -77,11 +73,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       style={{ ...glassStyle, borderColor: 'var(--border-color)' }}
     >
       {/* Header */}
-      <div className="h-16 flex items-center justify-center relative border-b shrink-0" style={{ borderColor: 'var(--border-color)' }}>
-        <a href="/portcmd/" className="flex items-center space-x-2 text-indigo-600 dark:text-indigo-500 overflow-hidden px-4 group">
-          <div className="relative bg-indigo-600/10 p-1.5 rounded-lg overflow-hidden group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-            <Terminal size={20} className="transition-transform duration-300 group-hover:translate-x-full group-hover:opacity-0" />
-            <ArrowLeft size={20} className="absolute top-1.5 left-1.5 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
+      <div className="h-16 flex items-center relative border-b shrink-0 px-3" style={{ borderColor: 'var(--border-color)' }}>
+        <a href="/portcmd/" className={`flex items-center ${collapsed ? 'justify-center w-full' : ''} gap-3 text-indigo-600 dark:text-indigo-500 overflow-hidden group px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
+          <div className="relative w-8 h-8 bg-indigo-600/10 rounded-lg flex items-center justify-center overflow-hidden group-hover:bg-indigo-600 transition-all duration-300">
+            <Terminal size={18} className="transition-all duration-300 group-hover:translate-x-8 group-hover:opacity-0" />
+            <ArrowLeft size={18} className="absolute text-white -translate-x-8 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
           </div>
           <AnimatePresence>
             {!collapsed && (
@@ -90,7 +86,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className="font-bold text-lg tracking-tight whitespace-nowrap group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors"
+                className="font-bold text-lg tracking-tight whitespace-nowrap"
+                style={{ color: 'var(--sidebar-text)' }}
               >
                 PortCmd
               </motion.span>
@@ -101,13 +98,14 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         <button 
           onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
           className="absolute -right-3 top-6 bg-indigo-600 rounded-full p-1 text-white shadow-lg hover:bg-indigo-500 transition-colors z-50"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-6 space-y-6 overflow-y-auto custom-scrollbar overflow-x-hidden">
+      <nav className={`flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar overflow-hidden`}>
         {/* Main Views */}
         <div className="space-y-1">
           {menuItems.map(item => (
@@ -120,6 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                   : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
               style={{ color: currentView === item.view ? '' : 'var(--sidebar-text)' }}
               title={collapsed ? item.label : ''}
+              aria-label={item.label}
             >
               <item.icon className="w-5 h-5 shrink-0" />
               <AnimatePresence>
@@ -158,6 +157,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                  onClick={() => setFilter((prev: any) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100`}
                  style={{ color: 'var(--sidebar-text)' }}
+                 aria-label="Show all processes"
               >
                  <div className="flex items-center">
                     <Globe className="w-4 h-4 shrink-0 opacity-50" />
@@ -178,6 +178,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                     ${filter.type === cat.type ? 'bg-black/5 dark:bg-white/5 !opacity-100' : ''}`}
                   style={{ color: 'var(--sidebar-text)' }}
                   title={collapsed ? cat.type : ''}
+                  aria-label={`Filter by ${cat.type}`}
                 >
                   <div className="flex items-center min-w-0">
                     <cat.icon className={`w-4 h-4 shrink-0 ${cat.color}`} />
@@ -204,6 +205,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                   ${filter.onlyManaged ? 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
                 style={{ color: filter.onlyManaged ? '' : 'var(--sidebar-text)' }}
                 title={collapsed ? "My Projects" : ''}
+                aria-label="Show my projects only"
               >
                 <FolderKanban className={`w-4 h-4 shrink-0`} />
                 <AnimatePresence>
@@ -221,6 +223,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                   ${filter.onlyFavorites ? 'bg-yellow-600/10 text-yellow-600 dark:text-yellow-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
                 style={{ color: filter.onlyFavorites ? '' : 'var(--sidebar-text)' }}
                 title={collapsed ? t.favorites : ''}
+                aria-label="Show favorites only"
               >
                 <Star className={`w-4 h-4 shrink-0 ${filter.onlyFavorites ? 'fill-current' : ''}`} />
                 <AnimatePresence>
@@ -243,6 +246,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
           className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-2 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-all`}
           style={{ color: 'var(--sidebar-text)' }}
           title={t.settings}
+          aria-label="Open settings"
         >
           <Settings className="w-5 h-5 shrink-0" />
           <AnimatePresence>

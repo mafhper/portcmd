@@ -243,6 +243,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
                 className={`p-2 rounded-lg transition-colors ${proc.isFavorite ? 'text-yellow-400 bg-yellow-400/10' : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100'}`}
 
                 title="Favorite"
+                aria-label={proc.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
 
               >
 
@@ -255,6 +256,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
                 onClick={(e) => { e.stopPropagation(); toggleExpand(proc.pid); }}
 
                 className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100"
+                aria-label="Show more options"
 
               >
 
@@ -348,7 +350,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                             <span className="truncate">{proc.commandLine || t.na}</span>
 
-                            <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-2">
+                            <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-2" aria-label="Copy command line">
 
                               <Copy className="w-3 h-3 hover:opacity-100" />
 

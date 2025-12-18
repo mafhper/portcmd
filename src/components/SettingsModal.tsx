@@ -41,7 +41,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
           <h2 className="text-lg font-semibold">{t.settings}</h2>
-          <button onClick={onClose} className="p-1 rounded-lg hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Close settings" className="p-1 rounded-lg hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">

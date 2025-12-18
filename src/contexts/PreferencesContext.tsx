@@ -128,7 +128,8 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Set dynamic text colors based on background
     const foreground = getContrastColor(currentBg);
     root.style.setProperty('--foreground', foreground);
-    root.style.setProperty('--muted-foreground', foreground === '#ffffff' ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)');
+    // WCAG 2.1 requires 4.5:1 contrast ratio - use higher opacity for light theme
+    root.style.setProperty('--muted-foreground', foreground === '#ffffff' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.75)');
     
     // Shadow
     const shadowColor = isDark ? '0, 0, 0' : '100, 116, 139';
@@ -138,14 +139,15 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Glass Effect variables
     root.style.setProperty('--glass-opacity', settings.glassOpacity.toString());
     root.style.setProperty('--glass-blur', `${settings.glassBlur}px`);
-    root.style.setProperty('--card-bg', isDark ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.6)');
-    root.style.setProperty('--border-color', isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)');
+    // Higher opacity backgrounds for better text contrast in light theme
+    root.style.setProperty('--card-bg', isDark ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.85)');
+    root.style.setProperty('--border-color', isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)');
 
     // WCAG Contrast Adjustment for Sidebar Text
     if (settings.glassOpacity < 0.4) {
       root.style.setProperty('--sidebar-text', foreground);
     } else {
-       root.style.setProperty('--sidebar-text', isDark ? '#e4e4e7' : '#18181b');
+       root.style.setProperty('--sidebar-text', isDark ? '#e4e4e7' : '#1f1f23');
     }
 
   }, [settings, isDark]);

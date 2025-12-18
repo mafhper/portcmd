@@ -10,6 +10,8 @@ const SeoAudit = {
     async run(context) {
         return withPage(context, async page => {
             const data = await page.evaluate(() => {
+                console.log("PAGE TITLE:", document.title);
+                console.log("HTML:", document.documentElement.outerHTML.slice(0, 500));
                 return {
                     title: document.title,
                     description: document.querySelector('meta[name="description"]')?.content,

@@ -1,44 +1,37 @@
 {
   "meta": {
-    "timestamp": 1766018311629,
+    "timestamp": 1766063226936,
     "preset": "github-pages",
     "project": "portcmd",
     "commit": "local"
   },
   "status": "pass",
   "scores": {
-    "build": 70
+    "build": 80
   },
   "violations": [
     {
       "area": "build",
       "metric": "bundle_total_kb",
-      "value": "585.4",
+      "value": "403.0",
       "threshold": 350,
       "severity": "warn"
     },
     {
       "area": "build",
       "metric": "largest_chunk_kb",
-      "value": "386.0",
+      "value": "238.1",
       "threshold": 150,
-      "severity": "warn"
-    },
-    {
-      "area": "build",
-      "metric": "missing_404",
-      "value": "false",
-      "threshold": "true",
       "severity": "warn"
     }
   ],
   "raw": {
     "build": {
-      "jsTotal": "585.4",
-      "cssTotal": "0.0",
-      "largestChunk": "386.0",
-      "assetsCount": 0,
-      "fileCount": 4
+      "jsTotal": "373.0",
+      "cssTotal": "29.9",
+      "largestChunk": "238.1",
+      "assetsCount": 1,
+      "fileCount": 7
     }
   }
 }

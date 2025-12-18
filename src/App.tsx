@@ -14,8 +14,6 @@ import SettingsModal from './components/SettingsModal';
 import Sidebar from './components/Sidebar';
 import ProjectManager from './components/ProjectManager';
 import ConsoleModal from './components/ConsoleModal';
-import ReportsView from './components/ReportsView';
-import MonitorView from './components/MonitorView';
 import { AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
@@ -112,6 +110,7 @@ const MainApp = () => {
       />
 
       <main className="flex-1 flex flex-col min-w-0 bg-transparent transition-colors duration-500 relative z-10">
+        <h1 className="sr-only">PortCmd - Process and Port Manager</h1>
         <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-transparent backdrop-blur-sm sticky top-0 z-30">
           <div className="flex-1 max-w-xl">
              {currentView === 'dashboard' && (
@@ -120,6 +119,7 @@ const MainApp = () => {
                 <input 
                   type="text" 
                   placeholder={t.searchPlaceholder}
+                  aria-label="Search processes"
                   value={filter.search}
                   onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value }))}
                   className={`w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all backdrop-blur-md`}
@@ -135,6 +135,7 @@ const MainApp = () => {
               className={`p-2 hover:bg-white/10 rounded-lg transition-all`}
               style={{ color: 'var(--muted-foreground)' }}
               title="Refresh"
+              aria-label="Refresh processes"
              >
                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
              </button>
@@ -166,12 +167,8 @@ const MainApp = () => {
                      />
                   </div>
                 </>
-              ) : currentView === 'projects' ? (
-                <ProjectManager onViewLogs={setSelectedProjectLogs} />
-              ) : currentView === 'reports' ? (
-                <ReportsView />
               ) : (
-                <MonitorView />
+                <ProjectManager onViewLogs={setSelectedProjectLogs} />
               )}
            </div>
         </div>
