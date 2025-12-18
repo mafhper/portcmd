@@ -1,6 +1,6 @@
 {
   "meta": {
-    "timestamp": 1766018311629,
+    "timestamp": 1766018310785,
     "preset": "github-pages",
     "project": "portcmd",
     "commit": "local"
@@ -13,7 +13,7 @@
     {
       "area": "build",
       "metric": "bundle_total_kb",
-      "value": "585.4",
+      "value": "386.0",
       "threshold": 350,
       "severity": "warn"
     },
@@ -34,11 +34,11 @@
   ],
   "raw": {
     "build": {
-      "jsTotal": "585.4",
+      "jsTotal": "386.0",
       "cssTotal": "0.0",
       "largestChunk": "386.0",
       "assetsCount": 0,
-      "fileCount": 4
+      "fileCount": 2
     }
   }
 }

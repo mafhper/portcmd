@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  LayoutDashboard,
-  Settings,
-  Terminal,
-  Database,
-  Server,
-  Cpu,
+import { 
+  Settings, 
+  Terminal, 
+  Database, 
+  Server, 
+  Cpu, 
   Star,
   ChevronLeft,
   ChevronRight,
   FolderKanban,
   Globe,
-  FileText,
   ArrowLeft,
-  Activity
-} from 'lucide-react';
-import { usePreferences } from '../contexts/PreferencesContext';
+  Activity,
+  ShieldCheck
+} from 'lucide-react';import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
 import { ProcessType, FilterState, ViewType } from '../types';
 
@@ -53,10 +51,10 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   };
 
   const menuItems = [
-    { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard, view: 'dashboard' },
-    { id: 'projects', label: t.projects, icon: FolderKanban, view: 'projects' },
-    { id: 'monitor', label: 'Monitor', icon: Activity, view: 'monitor' },
-    { id: 'reports', label: 'Reports & Logs', icon: FileText, view: 'reports' },
+    { id: 'dashboard', label: 'Development', icon: Terminal, view: 'dashboard' },
+    { id: 'projects', label: 'Workspaces', icon: FolderKanban, view: 'projects' },
+    { id: 'reports', label: 'Quality Audit', icon: ShieldCheck, view: 'reports' },
+    { id: 'monitor', label: 'Production', icon: Activity, view: 'monitor' },
   ];
   const categories = [
     { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-500' },

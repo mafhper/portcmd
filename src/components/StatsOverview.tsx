@@ -1,8 +1,9 @@
-import React from 'react';
-import { Activity, Cpu, HardDrive, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Activity, Cpu, Zap, ShieldCheck } from 'lucide-react';
 import { ProcessEntry, ProcessType } from '../types';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
+import { SystemService } from '../services/systemService';
 
 interface StatsOverviewProps {
   processes: ProcessEntry[];
@@ -11,28 +12,41 @@ interface StatsOverviewProps {
 const StatsOverview: React.FC<StatsOverviewProps> = ({ processes }) => {
   const { settings } = usePreferences();
   const t = translations[settings.language];
+  const [lastAuditScore, setLastAuditScore] = useState<number | null>(null);
+
+  useEffect(() => {
+    SystemService.getQualityReports().then(reports => {
+      if (reports.length > 0) {
+        SystemService.getQualityReport(reports[0].filename).then(report => {
+          if (report && report.scores) {
+            const avg = Object.values(report.scores as Record<string, number>).reduce((a, b) => a + b, 0) / 5;
+            setLastAuditScore(Math.round(avg));
+          }
+        });
+      }
+    });
+  }, []);
 
   const totalProcesses = processes.length;
   const devProcesses = processes.filter(p => p.type === ProcessType.DEVELOPMENT).length;
-  const totalMemory = processes.reduce((acc, curr) => acc + curr.memoryUsage, 0).toFixed(0);
   const avgCpu = (processes.reduce((acc, curr) => acc + curr.cpuUsage, 0) / (totalProcesses || 1)).toFixed(1);
 
   const cards = [
     {
-      title: t.activePorts,
+      title: 'Local Services',
       value: totalProcesses,
       icon: <Zap className="w-5 h-5 text-yellow-400" />,
-      sub: `${devProcesses} ${t.devServers}`,
+      sub: `${devProcesses} dev instances`,
       color: 'from-yellow-500/10 to-orange-500/10',
       border: 'border-yellow-500/20'
     },
     {
-      title: t.memoryUsage,
-      value: `${totalMemory} MB`,
-      icon: <HardDrive className="w-5 h-5 text-blue-400" />,
-      sub: t.totalAllocation,
-      color: 'from-blue-500/10 to-cyan-500/10',
-      border: 'border-blue-500/20'
+      title: 'Build Health',
+      value: lastAuditScore !== null ? `${lastAuditScore}%` : '--',
+      icon: <ShieldCheck className="w-5 h-5 text-indigo-400" />,
+      sub: 'Latest quality score',
+      color: 'from-indigo-500/10 to-purple-500/10',
+      border: 'border-indigo-500/20'
     },
     {
       title: t.avgCpuLoad,
