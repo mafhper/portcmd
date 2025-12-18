@@ -172,7 +172,7 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg><span class="sidebar-text">Site Monitor</span>
       </button>
       <button onclick="switchTab('pagespeed')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative">
-         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">PageSpeed</span>
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">PageSpeed</span>
       </button>
       <button onclick="switchTab('git')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg><span class="sidebar-text">Git & Deploy</span>
@@ -698,36 +698,60 @@
     function formatQualityReport(data, filename) {
       if (!data) return '<div class="text-muted">No data available</div>';
       
-      const statusClass = data.status === 'pass' ? 'text-success' : 'text-error';
-      const statusIcon = data.status === 'pass' ? '✓' : '✗';
+      const statusClass = data.status === 'pass' ? 'text-success' : (data.status === 'fail' ? 'text-error' : 'text-warning');
+      const statusIcon = data.status === 'pass' ? '✓' : (data.status === 'fail' ? '✗' : '⚠');
       
       let html = `
         <div class="space-y-6">
           <div class="flex items-center justify-between pb-4 border-b border-white/10">
             <div>
               <h2 class="text-2xl font-bold text-white">${filename.replace('.json', '')}</h2>
-              <p class="text-sm text-muted">${new Date(data.timestamp || Date.now()).toLocaleString()}</p>
+              <p class="text-sm text-muted">${new Date(data.timestamp || Date.now()).toLocaleString()} • ${data.meta?.preset || 'Unknown Preset'}</p>
             </div>
-            <div class="flex items-center gap-2 px-4 py-2 rounded-lg ${data.status === 'pass' ? 'bg-success/10' : 'bg-error/10'}">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-lg ${data.status === 'pass' ? 'bg-success/10' : (data.status === 'fail' ? 'bg-error/10' : 'bg-warning/10')}">
               <span class="text-2xl ${statusClass}">${statusIcon}</span>
               <span class="${statusClass} font-bold uppercase">${data.status || 'Unknown'}</span>
             </div>
           </div>
       `;
       
-      // Scores
-      if (data.scores) {
+      // Validator Summary Cards
+      const raw = data.raw || {};
+      const stats = [
+         { label: 'Bundle Size', value: raw.build?.jsTotal ? `${raw.build.jsTotal}KB` : 'N/A', icon: '📦', color: 'text-blue-400' },
+         { label: 'Lint Errors', value: raw.lint?.errorCount ?? '0', icon: '🧹', color: 'text-purple-400' },
+         { label: 'Contrast', value: raw.contrast?.violationCount ?? 'N/A', icon: '👁️', color: 'text-yellow-400' },
+         { label: 'i18n Issues', value: raw.i18n?.issueCount ?? 'N/A', icon: '🌐', color: 'text-pink-400' }
+      ];
+
+      html += `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          ${stats.map(s => `
+            <div class="bg-surfaceHighlight/50 p-4 rounded-xl border border-white/5 flex flex-col items-center">
+               <span class="text-2xl mb-2">${s.icon}</span>
+               <span class="text-xs text-muted uppercase font-bold">${s.label}</span>
+               <span class="text-xl font-mono font-bold ${s.color}">${s.value}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      // Scores (if any)
+      if (data.scores && Object.keys(data.scores).length > 0) {
         html += `
-          <div class="grid grid-cols-5 gap-3">
-            ${Object.entries(data.scores).map(([key, score]) => {
-              const color = score >= 90 ? 'text-success' : (score >= 50 ? 'text-warning' : 'text-error');
-              return `
-                <div class="bg-surfaceHighlight/50 p-4 rounded-lg text-center">
-                  <div class="text-xs text-muted uppercase mb-1">${key}</div>
-                  <div class="text-2xl font-bold ${color}">${Math.round(score)}</div>
-                </div>
-              `;
-            }).join('')}
+          <div class="mt-6">
+             <h3 class="text-sm font-bold text-muted uppercase mb-3">Audit Scores</h3>
+             <div class="grid grid-cols-5 gap-3">
+               ${Object.entries(data.scores).map(([key, score]) => {
+                 const color = score >= 90 ? 'text-success' : (score >= 50 ? 'text-warning' : 'text-error');
+                 return `
+                   <div class="bg-surfaceHighlight/30 p-3 rounded-lg text-center border border-white/5">
+                     <div class="text-[10px] text-muted uppercase mb-1">${key}</div>
+                     <div class="text-xl font-bold ${color}">${Math.round(score)}</div>
+                   </div>
+                 `;
+               }).join('')}
+             </div>
           </div>
         `;
       }
@@ -735,30 +759,44 @@
       // Violations
       if (data.violations && data.violations.length > 0) {
         html += `
-          <div>
-            <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <span class="text-error">⚠️</span> Violations (${data.violations.length})
+          <div class="mt-8">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <span class="text-error bg-error/10 p-1 rounded">⚠️</span> Detailed Violations (${data.violations.length})
             </h3>
-            <div class="space-y-2">
-              ${data.violations.map(v => `
-                <div class="p-3 bg-error/5 border border-error/20 rounded-lg">
-                  <div class="flex items-center justify-between">
-                    <span class="font-mono text-sm text-error">[${v.id}]</span>
-                    <span class="text-xs text-muted">${v.audit}</span>
+            <div class="space-y-3">
+              ${data.violations.map(v => {
+                const isFail = v.severity === 'error' || v.severity === 'fail';
+                return `
+                <div class="p-4 ${isFail ? 'bg-error/5 border-error/20' : 'bg-warning/5 border-warning/20'} border rounded-xl transition hover:bg-surfaceHighlight">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                       <span class="font-mono text-xs px-2 py-1 rounded ${isFail ? 'bg-error/20 text-error' : 'bg-warning/20 text-warning'}">${v.area || v.audit}</span>
+                       <span class="font-medium text-sm text-white">${v.metric || v.message || v.id}</span>
+                    </div>
+                    <span class="text-xs uppercase font-bold ${isFail ? 'text-error' : 'text-warning'}">${v.severity}</span>
                   </div>
-                  <div class="mt-1 text-sm text-white">${v.value} <span class="text-muted">/ Threshold: ${v.threshold}</span></div>
+                  ${v.value ? `
+                    <div class="mt-2 flex items-center gap-4 text-xs font-mono">
+                      <span class="text-white">Value: <span class="font-bold">${v.value}</span></span>
+                      ${v.threshold ? `<span class="text-muted">Limit: ${v.threshold}</span>` : ''}
+                    </div>
+                  ` : ''}
+                  ${v.selector ? `<div class="mt-2 text-xs font-mono text-muted bg-black/20 p-2 rounded truncate block w-full">${v.selector}</div>` : ''}
+                  ${v.text ? `<div class="mt-1 text-xs text-muted italic">"${v.text}"</div>` : ''}
                 </div>
-              `).join('')}
+              `}).join('')}
             </div>
           </div>
         `;
+      } else {
+         html += `<div class="mt-8 p-8 text-center bg-success/5 border border-success/10 rounded-xl text-success">✨ No violations found! Great job.</div>`;
       }
       
       // Raw data
       html += `
-        <details class="mt-6">
-          <summary class="text-sm text-muted cursor-pointer hover:text-white transition">Show Raw JSON</summary>
-          <pre class="mt-2 text-xs text-blue-300 font-mono leading-relaxed bg-black/20 p-4 rounded-xl border border-white/5 overflow-auto max-h-96">${JSON.stringify(data, null, 2)}</pre>
+        <details class="mt-8">
+          <summary class="text-sm text-muted cursor-pointer hover:text-white transition select-none">Show Raw JSON Data</summary>
+          <pre class="mt-3 text-[10px] text-blue-300 font-mono leading-relaxed bg-[#0d1117] p-4 rounded-xl border border-white/5 overflow-auto max-h-96 shadow-inner">${JSON.stringify(data, null, 2)}</pre>
         </details>
       `;
       
@@ -1848,31 +1886,66 @@
           <span>🛡️</span> Quality Scans 
           <button onclick="runCommand('quality')" class="text-xs bg-primary/10 text-primary px-3 py-1 rounded hover:bg-primary/20 transition">New Scan</button>
         </h1>
+        <div id="quality-summary-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 hidden">
+           <!-- Injected via JS -->
+        </div>
         <div id="quality-table-container"></div>
       `;
       
       try {
         const res = await fetch(`${API_BASE}/reports/quality`);
         const json = await res.json();
+        const reports = json.data || [];
+
+        // Render Summary Cards (Top Row)
+        if (reports.length > 0) {
+            const latest = reports[0]; // Assumes sorted new -> old
+            const raw = latest.data?.raw || {};
+            const cards = document.getElementById('quality-summary-cards');
+            cards.classList.remove('hidden');
+            
+            const stats = [
+               { label: 'Bundle Size', value: raw.build?.jsTotal ? `${raw.build.jsTotal}KB` : '-', icon: '📦', color: 'text-blue-400' },
+               { label: 'Lint Errors', value: raw.lint?.errorCount ?? '-', icon: '🧹', color: 'text-purple-400' },
+               { label: 'Contrast', value: raw.contrast?.violationCount ?? '-', icon: '👁️', color: 'text-yellow-400' },
+               { label: 'i18n Issues', value: raw.i18n?.issueCount ?? '-', icon: '🌐', color: 'text-pink-400' }
+            ];
+
+            cards.innerHTML = stats.map(s => `
+                <div class="glass-card p-4 flex flex-col items-center justify-center text-center">
+                    <span class="text-2xl mb-2">${s.icon}</span>
+                    <span class="text-xs text-muted uppercase font-bold">${s.label}</span>
+                    <span class="text-xl font-mono font-bold ${s.color}">${s.value}</span>
+                </div>
+            `).join('');
+        }
         
         new DataTable({
             id: 'quality',
             containerId: 'quality-table-container',
-            data: json.data || [],
+            data: reports,
             pageSize: 10,
             columns: [
-                { key: 'data.status', label: 'Status', render: r => r.data?.status === 'pass' ? '<span class="text-success">✅ PASS</span>' : '<span class="text-error">❌ FAIL</span>' },
+                { key: 'data.status', label: 'Status', render: r => {
+                    if (r.data?.status === 'pass') return '<span class="text-success font-bold">✅ PASS</span>';
+                    if (r.data?.status === 'fail') return '<span class="text-error font-bold">❌ FAIL</span>';
+                    return '<span class="text-warning font-bold">⚠ WARN</span>';
+                }},
                 { key: 'filename', label: 'Report Name', render: r => `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="viewQualityReport('${r.filename}')">${r.filename.replace('.json','')}</span>` },
                 { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
                 { key: 'data.scores', label: 'Scores', render: r => {
                     const s = r.data?.scores || {};
                     const formatScore = (val) => isNaN(Number(val)) ? '-' : Math.round(Number(val));
                     return `
-                      <div class="flex gap-3 text-xs font-mono">
-                        <span class="${s.build>0?'text-blue-400':'text-muted'}">B:${formatScore(s.build)}</span>
-                        <span class="${s.render>0?'text-orange-400':'text-muted'}">R:${formatScore(s.render)}</span>
-                        <span class="${s.ux>0?'text-green-400':'text-muted'}">U:${formatScore(s.ux)}</span>
+                      <div class="flex gap-2 text-[10px] font-mono">
+                        <span class="${s.build>0?'text-blue-400':'text-muted'}" title="Build">B:${formatScore(s.build)}</span>
+                        <span class="${s.render>0?'text-orange-400':'text-muted'}" title="Render">R:${formatScore(s.render)}</span>
+                        <span class="${s.ux>0?'text-green-400':'text-muted'}" title="UX">U:${formatScore(s.ux)}</span>
                      </div>`;
+                }},
+                { key: 'data.violations', label: 'Issues', render: r => {
+                    const count = r.data?.violations?.length || 0;
+                    return count > 0 ? `<span class="text-error font-bold text-xs">${count}</span>` : `<span class="text-success text-xs">-</span>`;
                 }}
             ],
             actions: [
@@ -1880,7 +1953,7 @@
                 { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'quality', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
             ]
         });
-      } catch(e) { document.getElementById('quality-table-container').innerHTML = 'Error loading scans.'; }
+      } catch(e) { document.getElementById('quality-table-container').innerHTML = `<div class="p-8 text-center text-error border border-error/20 rounded-xl bg-error/5">Error loading scans: ${e.message}</div>`; }
     }
 
     function renderMiniScore(label, value) {

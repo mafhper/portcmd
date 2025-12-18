@@ -16,11 +16,17 @@ const GITHUB_PAGES_PRESET = require('../presets/github-pages.json');
 
 // Import Audits
 const AVAILABLE_AUDITS = {
+    // Existing audits (likely in quality-core/packages)
     'build': require('../packages/audits/build.cjs'),
     'render': require('../packages/audits/render.cjs'),
     'ux': require('../packages/audits/ux.cjs'),
     'a11y': require('../packages/audits/a11y.cjs'),
-    'seo': require('../packages/audits/seo.cjs')
+    'seo': require('../packages/audits/seo.cjs'),
+    // New Validators (in root packages)
+    'contrast': require('../../packages/validators/contrast.cjs'),
+    'i18n': require('../../packages/validators/i18n.cjs'),
+    'lint': require('../../packages/validators/lint.cjs'),
+    'bundle': require('../../packages/validators/bundle.cjs')
 };
 
 /**
@@ -184,11 +190,17 @@ async function main() {
     const auditsToRun = [];
     if (isQuick) {
         auditsToRun.push(AVAILABLE_AUDITS.build);
+        auditsToRun.push(AVAILABLE_AUDITS.lint); // Quick lint
+        auditsToRun.push(AVAILABLE_AUDITS.bundle); // Check bundle size
     } else {
         auditsToRun.push(AVAILABLE_AUDITS.build);
+        auditsToRun.push(AVAILABLE_AUDITS.lint);
+        auditsToRun.push(AVAILABLE_AUDITS.bundle);
         auditsToRun.push(AVAILABLE_AUDITS.render);
         auditsToRun.push(AVAILABLE_AUDITS.ux);
         auditsToRun.push(AVAILABLE_AUDITS.a11y);
+        auditsToRun.push(AVAILABLE_AUDITS.contrast); // Real contrast check
+        auditsToRun.push(AVAILABLE_AUDITS.i18n); // i18n check
         auditsToRun.push(AVAILABLE_AUDITS.seo);
     }
 

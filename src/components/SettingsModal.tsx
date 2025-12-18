@@ -20,39 +20,33 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-end p-4 md:p-12 text-zinc-200 overflow-hidden pointer-events-none">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-12 overflow-hidden pointer-events-none">
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-transparent backdrop-blur-none pointer-events-auto"
+        className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto"
       />
       <motion.div
-        initial={{ x: 300, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: 300, opacity: 0 }}
-        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full border pointer-events-auto transition-all"
-        style={{ 
-          backgroundColor: 'var(--card-bg)', 
-          borderColor: 'var(--border-color)',
-          backdropFilter: 'blur(20px)',
-          color: 'var(--foreground)'
-        }}
+        initial={{ y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 20, opacity: 0 }}
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full border pointer-events-auto transition-all bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--border-color)' }}>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
           <h2 className="text-lg font-semibold">{t.settings}</h2>
-          <button onClick={onClose} aria-label="Close settings" className="p-1 rounded-lg hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Close settings" className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar Tabs */}
-          <div className="w-16 md:w-40 border-r p-4 space-y-2" style={{ borderColor: 'var(--border-color)', backgroundColor: 'rgba(0,0,0,0.05)' }}>
+          <div className="w-16 md:w-40 border-r border-zinc-200 dark:border-zinc-800 p-4 space-y-2 bg-zinc-50 dark:bg-black/20">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'opacity-60 hover:bg-white/5'}`}
+                  ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/5'}`}
                 title={tab.label}
               >
                 <tab.icon className="w-4 h-4 shrink-0" />
@@ -74,7 +68,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                       <button
                         key={lang}
                         onClick={() => updateSettings({ language: lang as any })}
-                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-indigo-500 bg-indigo-500/20 text-indigo-500 font-bold' : 'border-zinc-700 bg-black/20 hover:bg-black/40'}`}
+                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-indigo-500 bg-indigo-500/20 text-indigo-500 font-bold' : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-black/20 hover:bg-zinc-100 dark:hover:bg-black/40'}`}
                       >
                         {lang === 'pt-BR' ? 'Português' : lang === 'es' ? 'Español' : 'English'}
                       </button>
@@ -97,7 +91,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   </div>
                 </section>
 
-                <section className="flex items-center justify-between p-4 rounded-xl border bg-black/10" style={{ borderColor: 'var(--border-color)' }}>
+                <section className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-black/10">
                   <div className="flex items-center space-x-3">
                     <ShieldAlert className="w-5 h-5 text-indigo-500" />
                     <div className="flex flex-col">
@@ -120,12 +114,12 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
               <div className="space-y-6">
                 <section>
                    <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.theme}</label>
-                   <div className="flex p-1 bg-black/20 rounded-xl border border-white/5">
+                   <div className="flex p-1 bg-zinc-100 dark:bg-black/20 rounded-xl border border-zinc-200 dark:border-white/5">
                      {['light', 'auto', 'dark'].map((mode) => (
                        <button
                          key={mode}
                          onClick={() => updateSettings({ themeMode: mode as any })}
-                         className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-indigo-600 text-white shadow-lg' : 'opacity-50 hover:opacity-100'}`}
+                         className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm dark:shadow-lg' : 'opacity-50 hover:opacity-100'}`}
                        >
                          {mode}
                        </button>
@@ -152,7 +146,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
 
                 <section>
                    <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.glassEffect} (Sidebar)</label>
-                   <div className="space-y-5 bg-black/10 p-4 rounded-xl border border-white/5">
+                   <div className="space-y-5 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
                      <div>
                        <div className="flex justify-between text-[10px] font-mono opacity-50 mb-2">
                          <span>{t.opacity}</span>
@@ -197,7 +191,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
               <div className="space-y-6">
                 <section>
                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.fontScale}</label>
-                  <div className="flex items-center space-x-4 bg-black/10 p-4 rounded-xl border border-white/5">
+                  <div className="flex items-center space-x-4 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
                     <Type className="w-4 h-4 opacity-50" />
                     <input 
                       type="range" min="0.8" max="1.5" step="0.05"
@@ -214,7 +208,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   <select 
                     value={settings.colorBlindMode}
                     onChange={(e) => updateSettings({ colorBlindMode: e.target.value as ColorBlindMode })}
-                    className="w-full bg-black/20 border border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                    className="w-full bg-zinc-50 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
                     style={{ color: 'inherit' }}
                   >
                     <option value="none">None (Normal)</option>
@@ -232,12 +226,12 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
               <div className="space-y-6">
                  <section>
                    <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.bgType}</label>
-                   <div className="grid grid-cols-3 gap-2 bg-black/20 p-1 rounded-xl border border-white/5">
+                   <div className="grid grid-cols-3 gap-2 bg-zinc-100 dark:bg-black/20 p-1 rounded-xl border border-zinc-200 dark:border-white/5">
                      {['solid', 'gradient', 'image'].map((type) => (
                        <button
                          key={type}
                          onClick={() => updateSettings({ bgType: type as BackgroundType })}
-                         className={`py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.bgType === type ? 'bg-indigo-600 text-white shadow-lg' : 'opacity-50 hover:opacity-100'}`}
+                         className={`py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.bgType === type ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm dark:shadow-lg' : 'opacity-50 hover:opacity-100'}`}
                        >
                          {type}
                        </button>
@@ -246,17 +240,17 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                  </section>
 
                  {settings.bgType === 'solid' && (
-                   <div className="space-y-3 bg-black/10 p-4 rounded-xl border border-white/5">
+                   <div className="space-y-3 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
                      <label className="text-[10px] font-bold uppercase opacity-50">Color Picker</label>
                      <div className="flex space-x-2">
                         <input type="color" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="h-10 w-20 rounded-lg cursor-pointer bg-transparent border-none" />
-                        <input type="text" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 text-sm font-mono focus:ring-1 focus:ring-indigo-500 outline-none" />
+                        <input type="text" value={settings.bgColor} onChange={(e) => updateSettings({ bgColor: e.target.value })} className="flex-1 bg-zinc-100 dark:bg-black/20 border border-zinc-200 dark:border-white/10 rounded-lg px-3 text-sm font-mono focus:ring-1 focus:ring-indigo-500 outline-none" />
                      </div>
                    </div>
                  )}
 
                  {settings.bgType === 'gradient' && (
-                   <div className="space-y-5 bg-black/10 p-4 rounded-xl border border-white/5">
+                   <div className="space-y-5 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
                      <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="text-[10px] font-bold uppercase opacity-50 block mb-2">Start Color</label>
@@ -280,7 +274,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                  )}
 
                  {settings.bgType === 'image' && (
-                   <div className="p-8 border-2 border-dashed border-white/10 rounded-xl text-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all relative">
+                   <div className="p-8 border-2 border-dashed border-zinc-300 dark:border-white/10 rounded-xl text-center cursor-pointer hover:border-indigo-500/50 hover:bg-indigo-500/5 transition-all relative">
                       <input 
                         type="file" 
                         accept="image/*" 
