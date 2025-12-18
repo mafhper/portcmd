@@ -26,6 +26,7 @@
     "quality": "node quality-core/cli/quality.cjs",
     "quality:quick": "node quality-core/cli/quality.cjs --quick",
     "quality:gate": "node quality-core/cli/run.cjs",
+    "perf:lighthouse": "node quality-core/cli/run-lighthouse.cjs",
     "dashboard": "node quality-core/dashboard/server.cjs",
     "// --- TEST & QA ---": "",
     "test:structure": "node scripts/test/structure.js",
