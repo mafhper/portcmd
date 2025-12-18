@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  Settings, 
-  Terminal, 
-  Database, 
-  Server, 
-  Cpu, 
+import {
+  LayoutDashboard,
+  Settings,
+  Terminal,
+  Database,
+  Server,
+  Cpu,
   Star,
   ChevronLeft,
   ChevronRight,
   FolderKanban,
   Globe,
   FileText,
-  ArrowLeft
+  ArrowLeft,
+  Activity
 } from 'lucide-react';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
@@ -54,9 +55,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const menuItems = [
     { id: 'dashboard', label: t.dashboard, icon: LayoutDashboard, view: 'dashboard' },
     { id: 'projects', label: t.projects, icon: FolderKanban, view: 'projects' },
+    { id: 'monitor', label: 'Monitor', icon: Activity, view: 'monitor' },
     { id: 'reports', label: 'Reports & Logs', icon: FileText, view: 'reports' },
   ];
-
   const categories = [
     { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-500' },
     { type: ProcessType.DATABASE, icon: Database, color: 'text-blue-500' },

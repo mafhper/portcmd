@@ -31,8 +31,8 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
     return () => clearInterval(interval);
   }, [loadProjects]);
 
-  const handleAddProjectConfirm = async (name: string, path: string) => {
-    await SystemService.addProject(path, name);
+  const handleAddProjectConfirm = async (name: string, path: string, url?: string, githubRepo?: string) => {
+    await SystemService.addProject(path, name, url, githubRepo);
     loadProjects();
   };
 

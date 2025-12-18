@@ -1,4 +1,4 @@
-import { ProcessEntry, SavedProject } from '../types';
+import { ProcessEntry, SavedProject, GitHubStatus, SiteStatus } from '../types';
 
 export const SystemService = {
   getProcesses: async (): Promise<ProcessEntry[]> => {
@@ -73,14 +73,31 @@ export const SystemService = {
     }
   },
 
-  addProject: async (path: string, name: string): Promise<SavedProject> => {
+  addProject: async (path: string, name: string, url?: string, githubRepo?: string): Promise<SavedProject> => {
     const res = await fetch('/api/projects', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, name })
+      body: JSON.stringify({ path, name, url, githubRepo })
     });
     if (!res.ok) throw new Error('Failed to add project');
     return await res.json();
+  },
+
+  getGitHubStatus: async (repo: string): Promise<GitHubStatus | null> => {
+    try {
+      const res = await fetch(`/api/github/status?repo=${encodeURIComponent(repo)}`);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch { return null; }
+  },
+
+  pingSite: async (url: string): Promise<SiteStatus> => {
+    try {
+      const res = await fetch(`/api/ping?url=${encodeURIComponent(url)}`);
+      return await res.json();
+    } catch { 
+      return { url, status: 'offline', latency: 0, lastCheck: Date.now() }; 
+    }
   },
 
   removeProject: async (id: string): Promise<void> => {

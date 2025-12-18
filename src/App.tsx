@@ -15,6 +15,7 @@ import Sidebar from './components/Sidebar';
 import ProjectManager from './components/ProjectManager';
 import ConsoleModal from './components/ConsoleModal';
 import ReportsView from './components/ReportsView';
+import MonitorView from './components/MonitorView';
 import { AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
@@ -167,8 +168,10 @@ const MainApp = () => {
                 </>
               ) : currentView === 'projects' ? (
                 <ProjectManager onViewLogs={setSelectedProjectLogs} />
-              ) : (
+              ) : currentView === 'reports' ? (
                 <ReportsView />
+              ) : (
+                <MonitorView />
               )}
            </div>
         </div>

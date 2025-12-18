@@ -80,7 +80,41 @@ export interface ReportInfo {
   timestamp: string;
 }
 
-export type ViewType = 'dashboard' | 'projects' | 'reports';
+export type ViewType = 'dashboard' | 'projects' | 'reports' | 'monitor';
+
+export interface SavedProject {
+  id: string;
+  name: string;
+  path: string;
+  url?: string;         // Live URL for monitoring
+  githubRepo?: string;  // owner/repo
+  scripts: Record<string, string>;
+  isRunning: boolean;
+  activeScript?: string;
+  logs: LogEntry[];
+}
+
+export interface SiteStatus {
+  url: string;
+  status: 'online' | 'slow' | 'offline' | 'unknown';
+  latency: number;
+  lastCheck: number;
+}
+
+export interface GitHubStatus {
+  repo: string;
+  lastCommit?: {
+    sha: string;
+    message: string;
+    author: string;
+    date: string;
+  };
+  latestWorkflow?: {
+    name: string;
+    status: string;
+    conclusion: string;
+  };
+}
 
 export interface FilterState {
   search: string;

@@ -292,14 +292,16 @@ app.get('/api/projects/:id', async (req, res) => {
 
 // Add Project
 app.post('/api/projects', async (req, res) => {
-  const { name, path: projectPath } = req.body;
+  const { name, path: projectPath, url, githubRepo } = req.body;
   const projects = await loadProjects();
   
   const newProject = {
     id: Date.now().toString(),
     name,
     path: projectPath,
-    scripts: {},
+    url: url || '',
+    githubRepo: githubRepo || '',
+    scripts: {}, 
     isRunning: false,
     logs: []
   };
@@ -318,6 +320,70 @@ app.post('/api/projects', async (req, res) => {
   await saveProjects(projects);
   res.json(newProject);
 });
+
+// GitHub Status Proxy
+app.get('/api/github/status', async (req, res) => {
+  const { repo } = req.query;
+  if (!repo) return res.status(400).json({ error: 'Repo required' });
+
+  const https = require('https');
+  const options = {
+    hostname: 'api.github.com',
+    path: `/repos/${repo}/commits?per_page=1`,
+    headers: { 'User-Agent': 'PortCmd-App' }
+  };
+
+  https.get(options, (apiRes) => {
+    let body = '';
+    apiRes.on('data', d => body += d);
+    apiRes.on('end', () => {
+      try {
+        const commits = JSON.parse(body);
+        if (apiRes.statusCode !== 200) throw new Error('GitHub API Error');
+        
+        const last = commits[0];
+        res.json({
+          repo,
+          lastCommit: {
+            sha: last.sha.substring(0, 7),
+            message: last.commit.message.split('\n')[0],
+            author: last.commit.author.name,
+            date: last.commit.author.date
+          }
+        });
+      } catch (e) { res.status(500).json({ error: e.message }); }
+    });
+  }).on('error', e => res.status(500).json({ error: e.message }));
+});
+
+// Ping Service
+app.get('/api/ping', async (req, res) => {
+  const { url } = req.query;
+  if (!url) return res.status(400).json({ error: 'URL required' });
+
+  const start = Date.now();
+  const https = require('https');
+  const http = require('http');
+  const client = url.startsWith('https') ? https : http;
+
+  try {
+    const pingReq = client.get(url, { timeout: 5000 }, (pingRes) => {
+      res.json({
+        url,
+        status: pingRes.statusCode < 400 ? 'online' : 'slow',
+        latency: Date.now() - start,
+        lastCheck: Date.now()
+      });
+      pingRes.destroy();
+    });
+    pingReq.on('error', () => res.json({ url, status: 'offline', latency: 0, lastCheck: Date.now() }));
+    pingReq.on('timeout', () => { pingReq.destroy(); res.json({ url, status: 'offline', latency: 0, lastCheck: Date.now() }); });
+  } catch (e) {
+    res.json({ url, status: 'offline', latency: 0, lastCheck: Date.now() });
+  }
+});
+
+// Quality Reports
 
 // Run Project
 app.post('/api/projects/:id/run', async (req, res) => {

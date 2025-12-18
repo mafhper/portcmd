@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { X, FolderOpen, Type, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { X, FolderOpen, Type, CheckCircle, AlertCircle, Loader2, Globe, Github } from 'lucide-react';
 import { usePreferences } from '../contexts/PreferencesContext';
 import { translations } from '../locales';
 import { SystemService } from '../services/systemService';
@@ -8,7 +8,7 @@ import { SystemService } from '../services/systemService';
 interface AddProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (name: string, path: string) => void;
+  onConfirm: (name: string, path: string, url?: string, githubRepo?: string) => void;
 }
 
 const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onConfirm }) => {
@@ -16,6 +16,8 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
   const t = translations[settings.language];
   const [name, setName] = useState('');
   const [path, setPath] = useState('');
+  const [url, setUrl] = useState('');
+  const [githubRepo, setGithubRepo] = useState('');
   const [validating, setValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<{valid: boolean; error?: string; warning?: string} | null>(null);
 
@@ -24,10 +26,12 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name && path) {
-      onConfirm(name, path);
+      onConfirm(name, path, url, githubRepo);
       onClose();
       setName('');
       setPath('');
+      setUrl('');
+      setGithubRepo('');
     }
   };
 
@@ -120,6 +124,38 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
               className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
               style={{ color: 'inherit' }}
             />
+          </div>
+
+          {/* Monitoring Inputs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-2">
+                <Globe className="w-3 h-3" />
+                Live URL
+              </label>
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://..."
+                className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
+                style={{ color: 'inherit' }}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-2">
+                <Github className="w-3 h-3" />
+                GitHub Repo
+              </label>
+              <input
+                type="text"
+                value={githubRepo}
+                onChange={(e) => setGithubRepo(e.target.value)}
+                placeholder="owner/repo"
+                className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
+                style={{ color: 'inherit' }}
+              />
+            </div>
           </div>
 
           <div className="pt-4 flex justify-end space-x-3">

@@ -1,6 +1,6 @@
 {
   "meta": {
-    "timestamp": 1766017710464,
+    "timestamp": 1766017635200,
     "preset": "github-pages",
     "project": "portcmd",
     "commit": "local"
@@ -20,7 +20,7 @@
     {
       "area": "build",
       "metric": "largest_chunk_kb",
-      "value": "385.3",
+      "value": "385.2",
       "threshold": 150,
       "severity": "warn"
     },
@@ -36,7 +36,7 @@
     "build": {
       "jsTotal": "584.7",
       "cssTotal": "0.0",
-      "largestChunk": "385.3",
+      "largestChunk": "385.2",
       "assetsCount": 0,
       "fileCount": 4
     }
