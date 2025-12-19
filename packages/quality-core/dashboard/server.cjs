@@ -191,7 +191,8 @@ async function handleVerifyGemini(req, res) {
 }
 
 // --- AI Modules Import ---
-const { generateWithFallback } = require("./server/ai/aiClient.cjs");
+// --- AI Modules Import ---
+const { generateWithFallback } = require("../ai/index.cjs"); // New AI Facade
 const { getCached, setCached } = require("./server/ai/aiCache.cjs");
 const { enqueue } = require("./server/ai/aiQueue.cjs");
 const { save: saveToHistory } = require("./server/ai/aiHistory.cjs");
