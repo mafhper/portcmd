@@ -10,6 +10,8 @@ const __dirname = path.dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   base: '/portcmd/app/', // Base URL for the App subdirectory
+  clearScreen: false, // Don't compete with orchestrator
+  logLevel: process.env.PORTCMD_INTEGRATED ? 'warn' : 'info',
   build: {
     outDir: 'dist/app', // Builds to 'dist/app' subfolder
     emptyOutDir: true,

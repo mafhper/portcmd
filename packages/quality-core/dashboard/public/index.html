@@ -37,17 +37,32 @@
       --bg-background: #050505;
       --bg-surface: #0f0f0f;
       --bg-highlight: #1A1A1A;
-      --border-color: rgba(255, 255, 255, 0.12);
+      --border-color: rgba(255, 255, 255, 0.08);
       --text-main: #EAEAEA;
       --text-muted: #a3a3a3;
+      /* Primary & Secondary Colors */
       --color-primary: #22d3ee;
-      --color-primary-glow: rgba(34, 211, 238, 0.2);
+      --color-primary-glow: rgba(34, 211, 238, 0.25);
+      --color-secondary: #a855f7;
+      --color-secondary-glow: rgba(168, 85, 247, 0.25);
+      --color-accent: #f59e0b;
+      --color-accent-glow: rgba(245, 158, 11, 0.25);
+      /* Gradients */
+      --gradient-primary: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+      --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+      --gradient-success: linear-gradient(135deg, #10b981 0%, #22d3ee 100%);
+      /* Glass Effects */
+      --glass-bg: rgba(15, 15, 15, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.06);
     }
 
     body {
       font-family: 'Inter', sans-serif;
       background-color: var(--bg-background);
-      background-image: radial-gradient(circle at 50% -10%, #1a1a1a 0%, #050505 50%);
+      background-image: 
+        radial-gradient(ellipse at 20% 0%, rgba(34, 211, 238, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 50% -10%, #1a1a1a 0%, #050505 50%);
       background-attachment: fixed;
       color: var(--text-main);
       -webkit-font-smoothing: antialiased;
@@ -61,26 +76,139 @@
       pointer-events: none;
       z-index: 50;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      opacity: 0.5;
+      opacity: 0.4;
       mix-blend-mode: overlay;
     }
 
+    /* Enhanced Glassmorphism */
     .glass-card {
-      background: var(--bg-surface);
-      background-image: linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
-      box-shadow: 0 0 0 1px var(--border-color);
-      border-radius: 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      transition: all 0.3s ease;
     }
     .glass-card:hover {
-      box-shadow: 0 0 0 1px var(--border-color), inset 0 0 20px rgba(255,255,255,0.02);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
     }
 
-    .sidebar-link {
-      transition: all 0.2s;
-      border-left: 2px solid transparent;
+    /* Gradient Border Card */
+    .gradient-border {
+      position: relative;
+      background: var(--glass-bg);
+      border-radius: 16px;
     }
-    .sidebar-link:hover, .sidebar-link.active {
-      background: rgba(34, 211, 238, 0.05);
+    .gradient-border::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: var(--gradient-primary);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0.5;
+    }
+
+    /* Radial Score Gauge */
+    .score-gauge {
+      width: 80px;
+      height: 80px;
+    }
+    .score-gauge .gauge-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 8;
+    }
+    .score-gauge .gauge-fill {
+      fill: none;
+      stroke: url(#gaugeGradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      transition: stroke-dashoffset 1s ease;
+    }
+    .score-gauge .gauge-value {
+      fill: var(--text-main);
+      font-size: 18px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+    .score-gauge .gauge-label {
+      fill: var(--text-muted);
+      font-size: 8px;
+      text-anchor: middle;
+    }
+    .score-gauge.good .gauge-fill { stroke: #10b981; }
+    .score-gauge.average .gauge-fill { stroke: #f59e0b; }
+    .score-gauge.poor .gauge-fill { stroke: #ef4444; }
+
+    /* Stat Cards */
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      background: var(--glass-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      min-width: 120px;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--color-primary);
+      box-shadow: 0 8px 24px rgba(34, 211, 238, 0.15);
+    }
+    .stat-card .stat-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-card .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-card .stat-trend {
+      font-size: 0.7rem;
+      margin-top: 0.25rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+    }
+    .stat-card .stat-trend.up { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .stat-card .stat-trend.down { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    /* Enhanced Sidebar */
+    .sidebar-link {
+      transition: all 0.3s ease;
+      border-left: 2px solid transparent;
+      position: relative;
+    }
+    .sidebar-link:hover {
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.08) 0%, transparent 100%);
+      color: var(--color-primary);
+      border-left-color: var(--color-primary);
+    }
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.12) 0%, transparent 100%);
       color: var(--color-primary);
       border-left-color: var(--color-primary);
     }
@@ -88,28 +216,106 @@
       content: "";
       position: absolute;
       right: 12px;
-      width: 6px;
-      height: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--color-primary);
-      box-shadow: 0 0 8px var(--color-primary);
+      box-shadow: 0 0 12px var(--color-primary), 0 0 24px var(--color-primary-glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
+      50% { opacity: 0.7; transform: translateY(-50%) scale(1.2); }
     }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+    ::-webkit-scrollbar-thumb { 
+      background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-secondary) 100%); 
+      border-radius: 10px; 
+      opacity: 0.5;
+    }
+    ::-webkit-scrollbar-thumb:hover { opacity: 1; }
 
-    /* Table Column Widths - Content-Based */
-    table { table-layout: auto; width: 100%; }
+    /* Enhanced Tables */
+    table { 
+      table-layout: auto; 
+      width: 100%; 
+      border-collapse: separate;
+      border-spacing: 0;
+    }
     table th, table td { 
       white-space: nowrap; 
-      padding: 0.75rem 1rem;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    table th {
+      background: rgba(34, 211, 238, 0.05);
+      color: var(--color-primary);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    table tbody tr {
+      transition: all 0.2s ease;
+    }
+    table tbody tr:hover {
+      background: linear-gradient(90deg, rgba(34, 211, 238, 0.08) 0%, rgba(168, 85, 247, 0.04) 100%);
+    }
+    table tbody tr:hover td {
+      border-bottom-color: var(--color-primary);
     }
     table th:last-child, table td:last-child { width: 1%; white-space: nowrap; }
     table .col-fixed { width: 1%; white-space: nowrap; }
     table .col-expand { width: auto; }
+
+    /* Score Badges */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .score-badge.good { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .score-badge.average { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .score-badge.poor { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+
+    /* Action Buttons */
+    .btn-primary {
+      background: var(--gradient-primary);
+      color: #000;
+      font-weight: 600;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 4px 20px var(--color-primary-glow);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      font-weight: 500;
+      padding: 0.625rem 1.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--glass-border);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-primary);
+    }
 
 
     /* Prose */
@@ -144,6 +350,131 @@
     }
     .animate-slide-in { animation: slide-in 0.3s ease-out; }
     .animate-slide-out { animation: slide-out 0.3s ease-in forwards; }
+
+    /* ================================================================
+       MODERN CSS 2025 - Best Practices
+       ================================================================ */
+
+    /* 1. Fluid Typography with clamp() */
+    .fluid-title {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      line-height: 1.2;
+    }
+    .fluid-text {
+      font-size: clamp(0.875rem, 1.5vw, 1rem);
+    }
+
+    /* 2. Aspect Ratio for Media (prevents CLS) */
+    .aspect-video {
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+    .aspect-square {
+      aspect-ratio: 1 / 1;
+    }
+    .aspect-card {
+      aspect-ratio: 4 / 3;
+    }
+
+    /* 3. Container Queries for Component Responsiveness */
+    .card-container {
+      container-type: inline-size;
+    }
+    @container (min-width: 400px) {
+      .card-responsive {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+      }
+    }
+    @container (max-width: 399px) {
+      .card-responsive {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+    }
+
+    /* 4. Content Visibility for Performance (long lists) */
+    .content-lazy {
+      content-visibility: auto;
+      contain-intrinsic-size: 0 200px;
+    }
+    .content-lazy-row {
+      content-visibility: auto;
+      contain-intrinsic-size: 0 60px;
+    }
+
+    /* 5. :has() for Interactive States */
+    .interactive-card:has(input:checked) {
+      background: linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+      border-color: var(--color-primary);
+    }
+    .interactive-card:has(input:focus) {
+      box-shadow: 0 0 0 2px var(--color-primary-glow);
+    }
+    .interactive-card:has(:hover) {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    /* 6. Subgrid for Aligned Card Layouts */
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .subgrid-card {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 0.75rem;
+    }
+
+    /* 7. Enhanced Focus States (Accessibility) */
+    :focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    /* 8. Smooth Scroll Behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* 9. Loading Skeleton */
+    .skeleton {
+      background: linear-gradient(90deg, 
+        var(--glass-bg) 25%, 
+        rgba(255,255,255,0.1) 50%, 
+        var(--glass-bg) 75%
+      );
+      background-size: 200% 100%;
+      animation: skeleton-shimmer 1.5s ease-in-out infinite;
+      border-radius: 8px;
+    }
+    @keyframes skeleton-shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* 10. Gradient Text Helper */
+    .gradient-text {
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
   </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-primary selection:text-black">
@@ -283,6 +614,7 @@
       <div class="flex border-b border-white/10 px-6">
         <button onclick="switchSettingsTab('profile')" class="settings-tab active px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="profile" data-i18n="profile">📋 Profile</button>
         <button onclick="switchSettingsTab('api')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="api" data-i18n="apiKeys">🔑 API Keys</button>
+        <button onclick="switchSettingsTab('data')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="data">📊 Data</button>
       </div>
 
       <div class="p-6 overflow-y-auto flex-1">
@@ -357,6 +689,38 @@
           </div>
           
           <button onclick="clearApiKeys()" class="text-xs text-error hover:underline" data-i18n="clearKeys">Clear All API Keys</button>
+        </div>
+
+        <!-- Data Tab -->
+        <div id="settings-data-tab" class="space-y-6 hidden">
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2">📅 Report Retention Policy</label>
+            <select id="retention-policy-select" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none">
+              <option value="all">Keep All Data</option>
+              <option value="1y">1 Year</option>
+              <option value="6m">6 Months</option>
+              <option value="3m">3 Months</option>
+              <option value="1m">1 Month</option>
+              <option value="15d">15 Days</option>
+              <option value="1w">1 Week</option>
+              <option value="1d">1 Day</option>
+            </select>
+            <p class="text-xs text-muted mt-2">Reports older than the selected period will be automatically deleted on server start.</p>
+          </div>
+          
+          <div>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="auto-cleanup-checkbox" checked class="w-4 h-4 accent-primary">
+              <span class="text-sm text-muted">Enable auto-cleanup on server start</span>
+            </label>
+          </div>
+          
+          <div class="pt-4 border-t border-white/10">
+            <button onclick="runManualCleanup()" class="w-full py-3 bg-error/20 text-error font-medium rounded-lg hover:bg-error/30 transition flex items-center justify-center gap-2">
+              🗑️ Run Cleanup Now
+            </button>
+            <p id="cleanup-result" class="text-xs text-muted mt-2 text-center"></p>
+          </div>
         </div>
       </div>
       
@@ -689,6 +1053,12 @@
       });
       document.getElementById('settings-profile-tab').classList.toggle('hidden', tab !== 'profile');
       document.getElementById('settings-api-tab').classList.toggle('hidden', tab !== 'api');
+      document.getElementById('settings-data-tab').classList.toggle('hidden', tab !== 'data');
+      
+      // Load server settings when switching to data tab
+      if (tab === 'data') {
+        loadServerSettings();
+      }
     }
 
     // Auto-detect GitHub repo from .github.io URLs
@@ -1101,6 +1471,10 @@
       };
       saveSettingsData(data);
       setLanguage(data.language); // Apply immediately
+      
+      // Save server-side settings (retention policy)
+      saveServerSettings();
+      
       closeSettings();
       // Refresh current view
       if (currentTab === 'monitor') loadMonitorView();
@@ -1117,6 +1491,57 @@
         document.getElementById('github-token-input').value = '';
         document.getElementById('pagespeed-key-input').value = '';
         document.getElementById('gemini-key-input').value = '';
+      }
+    }
+
+    // --- Server Settings (Retention Policy) ---
+    async function loadServerSettings() {
+      try {
+        const res = await fetch(`${API_BASE}/settings`);
+        const json = await res.json();
+        if (json.settings) {
+          document.getElementById('retention-policy-select').value = json.settings.retentionPolicy || 'all';
+          document.getElementById('auto-cleanup-checkbox').checked = json.settings.autoCleanup !== false;
+        }
+      } catch (e) {
+        console.error('Failed to load server settings:', e);
+      }
+    }
+
+    async function saveServerSettings() {
+      const retentionPolicy = document.getElementById('retention-policy-select').value;
+      const autoCleanup = document.getElementById('auto-cleanup-checkbox').checked;
+      
+      try {
+        const res = await fetch(`${API_BASE}/settings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ retentionPolicy, autoCleanup })
+        });
+        const json = await res.json();
+        if (json.success) {
+          showToast('Retention settings saved!', 'success');
+        }
+      } catch (e) {
+        showToast('Failed to save settings', 'error');
+      }
+    }
+
+    async function runManualCleanup() {
+      const resultEl = document.getElementById('cleanup-result');
+      resultEl.textContent = 'Cleaning up...';
+      
+      try {
+        const res = await fetch(`${API_BASE}/cleanup`, { method: 'POST' });
+        const json = await res.json();
+        if (json.success) {
+          resultEl.textContent = `✅ Deleted ${json.deleted} old reports (policy: ${json.policy})`;
+          showToast(`Cleanup complete: ${json.deleted} reports deleted`, 'success');
+        } else {
+          resultEl.textContent = `❌ Error: ${json.error}`;
+        }
+      } catch (e) {
+        resultEl.textContent = `❌ Failed: ${e.message}`;
       }
     }
     
@@ -1266,7 +1691,32 @@
           </div>
         </header>
         
-        <!-- Score Cards -->
+        <!-- Summary Stats (Primary) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="stat-card" style="animation: fadeInUp 0.3s ease-out">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">${filteredReports.length}</div>
+            <div class="stat-label">Total Reports</div>
+          </div>
+          <div class="stat-card" style="animation: fadeInUp 0.4s ease-out">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-value">${bestScore >= 0 ? bestScore : '-'}</div>
+            <div class="stat-label">Best Score</div>
+            <div class="stat-trend ${bestScore >= 90 ? 'up' : ''}">${bestCategory}</div>
+          </div>
+          <div class="stat-card" style="animation: fadeInUp 0.5s ease-out">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">${filteredReports.length > 0 ? Math.round((filteredReports.filter(r => r.data?.status === 'pass').length / filteredReports.length) * 100) : 0}%</div>
+            <div class="stat-label">Pass Rate</div>
+          </div>
+          <div class="stat-card" style="animation: fadeInUp 0.6s ease-out">
+            <div class="stat-icon">🕐</div>
+            <div class="stat-value" style="font-size: 1rem;">${latest ? new Date(latest.meta?.generatedAt || latest.timestamp).toLocaleDateString() : '-'}</div>
+            <div class="stat-label">Last Scan</div>
+          </div>
+        </div>
+        
+        <!-- Score Cards with Radial Gauges -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           ${renderScoreCard('Build', scores.build, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>', getColor(scores.build), getBg(scores.build), getTrend(scores.build, prevScores?.build))}
           ${renderScoreCard('Render', scores.render, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', getColor(scores.render), getBg(scores.render), getTrend(scores.render, prevScores?.render))}
@@ -1320,19 +1770,22 @@
               Quick Stats
             </h3>
             <div class="grid grid-cols-2 gap-4 mb-4">
-               <div class="bg-surfaceHighlight/50 p-4 rounded-lg flex items-center justify-between">
-                 <div>
-                    <div class="text-2xl font-mono font-bold text-white">${avgScore}%</div>
-                    <div class="text-xs text-muted">Average Score</div>
-                 </div>
-                 <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-muted">avg</div>
+               <!-- Latest Score (Primary) -->
+               <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
+                  <div class="flex items-center justify-between mb-2">
+                     <div class="text-xs text-muted uppercase">Latest Score</div>
+                     ${prevScores ? `<div class="text-xs font-bold ${avgScore > (Object.values(prevScores).filter(s=>s!==null).reduce((a,b)=>a+b,0)/Object.values(prevScores).filter(s=>s!==null).length || 0) ? 'text-success' : 'text-error'}">
+                       ${avgScore > (Object.values(prevScores).filter(s=>s!==null).reduce((a,b)=>a+b,0)/Object.values(prevScores).filter(s=>s!==null).length || 0) ? '↑' : '↓'} vs last
+                     </div>` : ''}
+                  </div>
+                  <div class="text-3xl font-mono font-bold gradient-text">${latest?.summary?.score || scores.build || '-'}%</div>
+                  <div class="text-[10px] text-muted mt-1">Avg: ${avgScore}%</div>
                </div>
-               <div class="bg-surfaceHighlight/50 p-4 rounded-lg flex items-center justify-between">
-                 <div>
-                    <div class="text-2xl font-mono font-bold text-white">${bestCategory}</div>
-                    <div class="text-xs text-muted">Best Category</div>
-                 </div>
-                 <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">★</div>
+               <!-- Best Category (Primary) -->
+               <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
+                  <div class="text-xs text-muted uppercase mb-2">Best Category</div>
+                  <div class="text-2xl font-mono font-bold text-success">${bestCategory}</div>
+                  <div class="text-[10px] text-muted mt-1">Score: ${bestScore >= 0 ? bestScore : '-'}</div>
                </div>
             </div>
 
@@ -1410,21 +1863,69 @@
     }
 
     function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0) {
-      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '•');
+      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '');
       const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
+      const trendBg = trend > 0 ? 'bg-success/20' : (trend < 0 ? 'bg-error/20' : 'bg-white/5');
+      
+      // Radial gauge calculations
+      const radius = 36;
+      const circumference = 2 * Math.PI * radius;
+      const progress = score === null ? 0 : score;
+      const offset = circumference - (progress / 100) * circumference;
+      
+      // Color based on score
+      const gaugeColor = score === null ? '#64748b' : (score >= 90 ? '#10b981' : (score >= 50 ? '#f59e0b' : '#ef4444'));
       
       return `
-        <div class="glass-card p-5 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-colors">
-          <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity text-5xl pointer-events-none">${icon}</div>
-          <div class="flex justify-between items-start mb-2">
-             <div class="text-[10px] text-muted font-bold uppercase tracking-[0.2em]">${title}</div>
-             ${trend !== 0 ? `<div class="text-[10px] font-mono ${trendColor}">${trendIcon} ${Math.abs(trend)}</div>` : ''}
-          </div>
-          <div class="text-4xl font-bold font-mono ${colorClass} tracking-tight">${score === null ? '-' : score}</div>
-          <div class="w-full bg-white/5 h-1 mt-4 rounded-full overflow-hidden">
-            <div class="h-full ${bgClass} transition-all duration-1000" style="width: ${score === null ? 0 : score}%"></div>
+        <div class="glass-card p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02]" style="animation: fadeInUp 0.5s ease-out">
+          <div class="flex items-center gap-4">
+            <!-- Radial Gauge -->
+            <div class="relative flex-shrink-0">
+              <svg width="80" height="80" class="score-gauge">
+                <circle class="gauge-bg" cx="40" cy="40" r="${radius}" 
+                        fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
+                <circle class="gauge-fill" cx="40" cy="40" r="${radius}" 
+                        fill="none" stroke="${gaugeColor}" stroke-width="6"
+                        stroke-linecap="round"
+                        stroke-dasharray="${circumference}"
+                        stroke-dashoffset="${offset}"
+                        style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span class="text-xl font-bold ${colorClass}">${score === null ? '-' : score}</span>
+              </div>
+            </div>
+            
+            <!-- Info -->
+            <div class="flex-1 min-w-0">
+              <div class="text-[10px] text-muted font-bold uppercase tracking-[0.15em] mb-1">${title}</div>
+              
+              <!-- Trend (Primary) -->
+              ${trend !== 0 ? `
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="text-lg font-bold ${trendColor}">${trendIcon} ${Math.abs(trend)}</span>
+                  <span class="text-[10px] ${trendBg} ${trendColor} px-1.5 py-0.5 rounded">${trend > 0 ? 'improved' : 'declined'}</span>
+                </div>
+              ` : '<div class="text-sm text-muted">No change</div>'}
+              
+              <!-- Icon (subtle) -->
+              <div class="opacity-20 text-muted">${icon}</div>
+            </div>
           </div>
         </div>`;
+    }
+    
+    // Add fadeInUp animation dynamically
+    if (!document.getElementById('custom-animations')) {
+      const style = document.createElement('style');
+      style.id = 'custom-animations';
+      style.textContent = `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `;
+      document.head.appendChild(style);
     }
 
     function renderRecentScans(reports) {
@@ -1900,13 +2401,14 @@
           }, { perf: 0, a11y: 0, seo: 0 });
           
           const count = json.data.length;
+          const latest = json.data[0]?.data?.categories || {};
           
-          // Add metric cards above history
+          // Add metric cards above history - Latest as primary, Avg as secondary
           const metricsHtml = `
             <div class="grid grid-cols-3 gap-4 mb-8">
-              ${renderMetricCard('Avg Performance', Math.round((scores.perf / count) * 100))}
-              ${renderMetricCard('Avg Accessibility', Math.round((scores.a11y / count) * 100))}
-              ${renderMetricCard('Avg SEO', Math.round((scores.seo / count) * 100))}
+              ${renderMetricCardWithAvg('Performance', Math.round((latest.performance?.score || 0) * 100), Math.round((scores.perf / count) * 100))}
+              ${renderMetricCardWithAvg('Accessibility', Math.round((latest.accessibility?.score || 0) * 100), Math.round((scores.a11y / count) * 100))}
+              ${renderMetricCardWithAvg('SEO', Math.round((latest.seo?.score || 0) * 100), Math.round((scores.seo / count) * 100))}
             </div>
           `;
           
@@ -1938,10 +2440,60 @@
 
     function renderMetricCard(title, value) {
       const color = value >= 90 ? 'text-success' : (value >= 50 ? 'text-warning' : 'text-error');
+      const gaugeColor = value >= 90 ? '#10b981' : (value >= 50 ? '#f59e0b' : '#ef4444');
+      const radius = 32;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (value / 100) * circumference;
+      
       return `
-        <div class="glass-card p-4 text-center">
-          <div class="text-xs text-muted uppercase mb-1">${title}</div>
-          <div class="text-2xl font-bold font-mono ${color}">${value}</div>
+        <div class="stat-card" style="animation: fadeInUp 0.5s ease-out">
+          <div class="relative">
+            <svg width="72" height="72">
+              <circle cx="36" cy="36" r="${radius}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+              <circle cx="36" cy="36" r="${radius}" fill="none" stroke="${gaugeColor}" stroke-width="5"
+                      stroke-linecap="round"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}"
+                      style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-lg font-bold ${color}">${value}</span>
+            </div>
+          </div>
+          <div class="stat-label mt-2">${title}</div>
+        </div>
+      `;
+    }
+
+    // Metric Card with Latest (primary) and Average (secondary)
+    function renderMetricCardWithAvg(title, latestValue, avgValue) {
+      const color = latestValue >= 90 ? 'text-success' : (latestValue >= 50 ? 'text-warning' : 'text-error');
+      const gaugeColor = latestValue >= 90 ? '#10b981' : (latestValue >= 50 ? '#f59e0b' : '#ef4444');
+      const radius = 32;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (latestValue / 100) * circumference;
+      const trend = latestValue - avgValue;
+      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '');
+      const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
+      
+      return `
+        <div class="stat-card" style="animation: fadeInUp 0.5s ease-out">
+          <div class="relative">
+            <svg width="72" height="72">
+              <circle cx="36" cy="36" r="${radius}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+              <circle cx="36" cy="36" r="${radius}" fill="none" stroke="${gaugeColor}" stroke-width="5"
+                      stroke-linecap="round"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}"
+                      style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-lg font-bold ${color}">${latestValue}</span>
+            </div>
+          </div>
+          <div class="stat-label mt-2">${title}</div>
+          ${trend !== 0 ? `<div class="text-[10px] ${trendColor} font-bold">${trendIcon} ${Math.abs(trend)} vs avg</div>` : ''}
+          <div class="text-[10px] text-muted">Avg: ${avgValue}</div>
         </div>
       `;
     }
@@ -2338,7 +2890,28 @@
     function renderMiniScore(label, value) {
       const s = Math.round(value || 0);
       const color = s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
-      return `<div class="text-center"><div class="text-xs text-muted mb-1">${label}</div><div class="font-mono font-bold ${color}">${s}</div></div>`;
+      const gaugeColor = s >= 90 ? '#10b981' : (s >= 50 ? '#f59e0b' : '#ef4444');
+      const radius = 16;
+      const circumference = 2 * Math.PI * radius;
+      const offset = circumference - (s / 100) * circumference;
+      
+      return `
+        <div class="flex flex-col items-center">
+          <div class="relative">
+            <svg width="40" height="40">
+              <circle cx="20" cy="20" r="${radius}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+              <circle cx="20" cy="20" r="${radius}" fill="none" stroke="${gaugeColor}" stroke-width="3"
+                      stroke-linecap="round"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}"
+                      style="transform: rotate(-90deg); transform-origin: center;"/>
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-xs font-bold ${color}">${s}</span>
+            </div>
+          </div>
+          <div class="text-[10px] text-muted mt-1">${label}</div>
+        </div>`;
     }
 
     // --- Lighthouse View Refactored ---

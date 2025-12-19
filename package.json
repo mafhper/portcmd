@@ -7,10 +7,12 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n \"API,APP,WEB\" -c \"bgBlue.bold,bgMagenta.bold,bgGreen.bold\" \"npm run dev:server\" \"npm run dev:client\" \"npm run dev:website\"",
+    "dev": "node scripts/dev.cjs",
+    "dev:clean": "rimraf node_modules/.vite && node scripts/dev.cjs",
     "dev:client": "vite",
     "dev:server": "npm run dev --prefix server",
     "dev:website": "vite serve website --config vite.website.config.ts",
+    "dev:dashboard": "node packages/quality-core/dashboard/server.cjs",
     "build": "npm run build:website && tsc && vite build",
     "build:clean": "rimraf node_modules/.vite && tsc && vite build",
     "build:website": "vite build --config vite.website.config.ts",

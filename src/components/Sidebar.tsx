@@ -44,10 +44,12 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const glassStyle = {
     backgroundColor: isDark 
       ? `rgba(9, 9, 11, ${settings.glassOpacity})` 
-      : `rgba(255, 255, 255, ${settings.glassOpacity})`,
+      : `rgba(248, 250, 252, ${Math.max(Number(settings.glassOpacity), 0.85)})`, // Light: minimum 0.85 opacity for contrast
     backdropFilter: `blur(${settings.glassBlur}px)`,
     color: 'var(--sidebar-text)',
-    boxShadow: `4px 0px 20px rgba(var(--shadow-color), ${Number(settings.shadowIntensity) * 0.2})`
+    boxShadow: isDark 
+      ? `4px 0px 20px rgba(0, 0, 0, ${Number(settings.shadowIntensity) * 0.2})`
+      : `4px 0px 20px rgba(0, 0, 0, ${Number(settings.shadowIntensity) * 0.08})`
   };
 
   const menuItems = [

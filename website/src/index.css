@@ -6,4 +6,112 @@
   body {
     @apply bg-black text-white;
   }
+
+  /* Smooth Scroll & Reduced Motion */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ================================================================
+   MODERN CSS 2025 - Best Practices
+   ================================================================ */
+
+/* Enhanced Focus States (Accessibility) */
+:focus-visible {
+  outline: 2px solid #22d3ee;
+  outline-offset: 2px;
+}
+
+/* Fluid Typography */
+.fluid-title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.1;
+}
+
+.fluid-text {
+  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+}
+
+/* Aspect Ratios (prevent CLS) */
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+.aspect-hero {
+  aspect-ratio: 21 / 9;
+}
+
+/* Container Queries */
+.card-container {
+  container-type: inline-size;
+}
+
+@container (min-width: 500px) {
+  .card-responsive {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+  }
+}
+
+/* Content Visibility (Performance) */
+.content-lazy {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+/* Loading Skeleton */
+.skeleton {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }

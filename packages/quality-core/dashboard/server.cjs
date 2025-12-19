@@ -25,6 +25,17 @@ const CONFIG = {
     qualityDir: path.join(process.cwd(), 'performance-reports', 'quality'),
     manualDir: path.join(process.cwd(), 'performance-reports', 'manual'),
     logsDir: path.join(process.cwd(), 'docs/logs'),
+    settingsFile: path.join(process.cwd(), 'performance-reports', 'settings.json'),
+    retentionPeriods: {
+        'all': null,
+        '1y': 365 * 24 * 60 * 60 * 1000,
+        '6m': 180 * 24 * 60 * 60 * 1000,
+        '3m': 90 * 24 * 60 * 60 * 1000,
+        '1m': 30 * 24 * 60 * 60 * 1000,
+        '15d': 15 * 24 * 60 * 60 * 1000,
+        '1w': 7 * 24 * 60 * 60 * 1000,
+        '1d': 24 * 60 * 60 * 1000
+    },
     allowedCommands: {
         'quality': 'npm run quality',
         'quality:gate': 'npm run quality:gate',
@@ -528,6 +539,11 @@ async function handleRequest(req, res) {
     if (url.pathname === '/api/reports/pagespeed') return handleListReports(req, res, CONFIG.pagespeedDir); // New
     if (url.pathname === '/api/reports/insights') return handleListReports(req, res, CONFIG.insightsDir);   // New
 
+    // --- Settings & Cleanup ---
+    if (url.pathname === '/api/settings' && req.method === 'GET') return handleGetSettings(req, res);
+    if (url.pathname === '/api/settings' && req.method === 'POST') return handleUpdateSettings(req, res);
+    if (url.pathname === '/api/cleanup' && req.method === 'POST') return handleCleanup(req, res);
+
     if (url.pathname === '/api/run' && req.method === 'POST') return handleRunCommand(req, res);
     if ((url.pathname === '/api/verify-gemini' || url.pathname === '/api/verify/gemini') && req.method === 'POST') return handleVerifyGemini(req, res);
     if (url.pathname === '/api/ai-analyze' && req.method === 'POST') return handleAiAnalyze(req, res);
@@ -646,6 +662,111 @@ async function handleDelete(req, res) {
     });
 }
 
+// ============================================================================ 
+// SETTINGS & RETENTION POLICY
+// ============================================================================ 
+
+const DEFAULT_SETTINGS = {
+    retentionPolicy: 'all', // 'all', '1y', '6m', '3m', '1m', '15d', '1w', '1d'
+    autoCleanup: true
+};
+
+async function loadSettings() {
+    try {
+        const content = await fs.readFile(CONFIG.settingsFile, 'utf-8');
+        return { ...DEFAULT_SETTINGS, ...JSON.parse(content) };
+    } catch {
+        return DEFAULT_SETTINGS;
+    }
+}
+
+async function saveSettings(settings) {
+    await ensureDirectory(CONFIG.reportsDir);
+    await fs.writeFile(CONFIG.settingsFile, JSON.stringify(settings, null, 2));
+}
+
+async function handleGetSettings(req, res) {
+    try {
+        const settings = await loadSettings();
+        const periods = Object.keys(CONFIG.retentionPeriods).map(key => ({
+            value: key,
+            label: key === 'all' ? 'Keep All' :
+                key === '1y' ? '1 Year' :
+                    key === '6m' ? '6 Months' :
+                        key === '3m' ? '3 Months' :
+                            key === '1m' ? '1 Month' :
+                                key === '15d' ? '15 Days' :
+                                    key === '1w' ? '1 Week' : '1 Day'
+        }));
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ settings, periods }));
+    } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: e.message }));
+    }
+}
+
+async function handleUpdateSettings(req, res) {
+    let body = '';
+    req.on('data', chunk => body += chunk);
+    req.on('end', async () => {
+        try {
+            const updates = JSON.parse(body);
+            const current = await loadSettings();
+            const newSettings = { ...current, ...updates };
+            await saveSettings(newSettings);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: true, settings: newSettings }));
+        } catch (e) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: e.message }));
+        }
+    });
+}
+
+async function cleanupOldReports() {
+    const settings = await loadSettings();
+    const retentionMs = CONFIG.retentionPeriods[settings.retentionPolicy];
+
+    if (!retentionMs) {
+        console.log('[Cleanup] Retention policy is "all" - skipping cleanup.');
+        return { deleted: 0, policy: 'all' };
+    }
+
+    const cutoffTime = Date.now() - retentionMs;
+    const dirs = [CONFIG.qualityDir, CONFIG.lighthouseDir, CONFIG.pagespeedDir, CONFIG.insightsDir];
+    let deleted = 0;
+
+    for (const dir of dirs) {
+        try {
+            const files = await fs.readdir(dir);
+            for (const file of files) {
+                if (!file.endsWith('.json')) continue;
+                const filePath = path.join(dir, file);
+                const stat = await fs.stat(filePath);
+                if (stat.mtime.getTime() < cutoffTime) {
+                    await fs.unlink(filePath);
+                    deleted++;
+                }
+            }
+        } catch { /* dir may not exist */ }
+    }
+
+    console.log(`[Cleanup] Deleted ${deleted} old reports (policy: ${settings.retentionPolicy})`);
+    return { deleted, policy: settings.retentionPolicy };
+}
+
+async function handleCleanup(req, res) {
+    try {
+        const result = await cleanupOldReports();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, ...result }));
+    } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+    }
+}
+
 // Updated Spawn Logic
 // Unified Run Command Logic
 async function handleRunCommandByCwd(req, res, cmdTypeOverride = null) {
@@ -713,24 +834,37 @@ async function handleRunCommandByCwd(req, res, cmdTypeOverride = null) {
 // ============================================================================ 
 
 async function startServer() {
+    const INTEGRATED = process.env.PORTCMD_INTEGRATED === 'true';
+
     try {
         await ensureAllDirs();
+
+        // Auto-cleanup old reports based on retention policy
+        const settings = await loadSettings();
+        if (settings.autoCleanup) {
+            await cleanupOldReports();
+        }
 
         const port = await findAvailablePort(CONFIG.basePort);
         const server = http.createServer(handleRequest);
 
         server.listen(port, () => {
-            console.log(`\n🚀 Performance Dashboard running at: http://localhost:${port}\n`);
-            console.log('Available endpoints:');
-            console.log('  GET  /api/reports         - List all performance reports');
-            console.log('  POST /api/run             - Run quality or lighthouse audit');
-            console.log('  POST /api/verify-gemini   - Verify Gemini API key');
-            console.log('  POST /api/ai-analyze      - Analyze with Gemini AI');
-            console.log('  POST /api/verify-github   - Verify GitHub token');
-            console.log('  GET  /api/pagespeed       - Run PageSpeed Insights');
-            console.log('  GET  /api/git/status      - Get git status');
-            console.log('  POST /api/git/commit      - Create a git commit');
-            console.log('  POST /api/git/push        - Push to remote\n');
+            if (!INTEGRATED) {
+                console.log(`\n🚀 Performance Dashboard running at: http://localhost:${port}\n`);
+                console.log('Available endpoints:');
+                console.log('  GET  /api/reports         - List all performance reports');
+                console.log('  GET  /api/settings        - Get retention settings');
+                console.log('  POST /api/settings        - Update retention settings');
+                console.log('  POST /api/cleanup         - Manual cleanup old reports');
+                console.log('  POST /api/run             - Run quality or lighthouse audit');
+                console.log('  POST /api/verify-gemini   - Verify Gemini API key');
+                console.log('  POST /api/ai-analyze      - Analyze with Gemini AI');
+                console.log('  POST /api/verify-github   - Verify GitHub token');
+                console.log('  GET  /api/pagespeed       - Run PageSpeed Insights');
+                console.log('  GET  /api/git/status      - Get git status');
+                console.log('  POST /api/git/commit      - Create a git commit');
+                console.log('  POST /api/git/push        - Push to remote\n');
+            }
         });
     } catch (e) {
         console.error('Failed to start server:', e.message);

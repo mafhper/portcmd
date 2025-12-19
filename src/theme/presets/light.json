@@ -5,17 +5,17 @@
         "base": "#f8fafc",
         "surface": "#ffffff",
         "surface2": "#f1f5f9",
-        "surfaceHover": "#eaeef3",
-        "surfaceActive": "#e2e8f0"
+        "surfaceHover": "#e2e8f0",
+        "surfaceActive": "#cbd5e1"
     },
     "foreground": {
         "base": "#0f172a",
-        "muted": "#475569",
-        "subtle": "#64748b"
+        "muted": "#334155",
+        "subtle": "#475569"
     },
     "border": {
-        "base": "#d1d5db",
-        "strong": "#c7ccd4"
+        "base": "#cbd5e1",
+        "strong": "#94a3b8"
     },
     "brand": {
         "primary": "#4f46e5",
@@ -36,7 +36,7 @@
         "ring": "rgba(79,70,229,0.35)"
     },
     "sidebar": {
-        "bg": "rgba(255,255,255,0.92)",
-        "text": "#1f2937"
+        "bg": "#f1f5f9",
+        "text": "#0f172a"
     }
 }

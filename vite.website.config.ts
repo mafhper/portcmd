@@ -10,6 +10,8 @@ export default defineConfig({
   plugins: [react()],
   root: 'website',
   base: '/portcmd/', // Base URL for GitHub Pages root
+  clearScreen: false, // Don't compete with orchestrator
+  logLevel: process.env.PORTCMD_INTEGRATED ? 'warn' : 'info',
   build: {
     outDir: '../dist', // Builds to the root 'dist' folder
     emptyOutDir: true,
