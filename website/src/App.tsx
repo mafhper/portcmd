@@ -1,10 +1,17 @@
-import React from 'react';
-import { Terminal, Shield, Zap, Download, Layout, Github, ArrowLeft, Activity, Command } from 'lucide-react';
+import { Terminal, Shield, Zap, Download, Layout, Github, ArrowLeft, Activity, Command, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 const App = () => {
+  const { t, i18n } = useTranslation();
+  const [isLangOpen, setIsLangOpen] = useState(false);
   const appUrl = typeof window !== 'undefined' && window.location.port === '5174' 
     ? 'http://localhost:5173/portcmd/app/' 
     : '/portcmd/app/';
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
 
   return (
     <div className="min-h-screen font-sans selection:bg-brand-500/30">
@@ -22,12 +29,42 @@ const App = () => {
           </a>
 
           <div className="flex items-center space-x-4 md:space-x-6">
+            <div className="relative">
+              <button 
+                onClick={() => setIsLangOpen(!isLangOpen)}
+                className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                aria-label="Change Language"
+              >
+                <Globe size={20} />
+              </button>
+              
+              {isLangOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsLangOpen(false)} />
+                  <div className="absolute top-full right-0 mt-2 py-1 w-32 bg-zinc-900 border border-white/10 rounded-lg shadow-xl flex flex-col z-50 animate-fade-in-up">
+                    {[
+                      { code: 'en', label: 'English' },
+                      { code: 'pt-BR', label: 'Português' },
+                      { code: 'es', label: 'Español' }
+                    ].map((lang) => (
+                      <button 
+                        key={lang.code}
+                        onClick={() => { changeLanguage(lang.code); setIsLangOpen(false); }}
+                        className={`px-4 py-2 text-sm text-left hover:bg-white/5 transition-colors ${i18n.language === lang.code ? 'text-brand-500 font-medium' : 'text-zinc-400'}`}
+                      >
+                        {lang.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <a href="https://github.com/mafhper/portcmd" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
               <Github size={20} />
             </a>
             <a href={appUrl} className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
-              <span className="hidden sm:inline">Launch Web App</span>
-              <span className="sm:hidden">Launch</span>
+              <span className="hidden sm:inline">{t('launchApp')}</span>
+              <span className="sm:hidden">{t('launch')}</span>
             </a>
           </div>
         </div>
@@ -45,24 +82,26 @@ const App = () => {
           </div>
           
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500">
-            Control your ports.<br/>
-            <span className="text-white">Master your workflow.</span>
+            {t('heroTitle')}<br/>
+            <span className="text-white">{t('heroSubtitle')}</span>
           </h1>
           
           <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            The premium system-tray utility for developers. visualize active processes, 
-            kill hanging ports, and manage dev servers without touching the command line.
+            {t('heroDesc')}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-            <button disabled className="px-8 py-4 bg-zinc-800 text-zinc-500 rounded-xl font-semibold flex items-center space-x-2 cursor-not-allowed border border-zinc-700 w-full sm:w-auto justify-center">
-              <Download size={20} />
-              <span>Windows, Mac & Linux (Coming Soon)</span>
-            </button>
-            <a href={appUrl} className="px-8 py-4 bg-brand-600 hover:bg-brand-500 text-white shadow-lg shadow-brand-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
-              <Zap size={20} />
-              <span>Try Web Demo</span>
-            </a>
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <button disabled className="px-8 py-4 bg-zinc-800 text-zinc-500 rounded-xl font-semibold flex items-center space-x-2 cursor-not-allowed border border-zinc-700 w-full sm:w-auto justify-center">
+                <Download size={20} />
+                <span>{t('download')}</span>
+              </button>
+              <a href={appUrl} className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
+                <Zap size={20} />
+                <span>{t('tryDemo')}</span>
+              </a>
+            </div>
+            <span className="text-xs text-zinc-500 mt-3">{t('platformsComingSoon')}</span>
           </div>
         </div>
 
@@ -140,9 +179,9 @@ const App = () => {
       <section className="py-24 bg-zinc-950/50">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
-            { icon: Shield, title: "Safe & Secure", desc: "Prevents accidental termination of system processes with smart filters and confirmation modes." },
-            { icon: Layout, title: "Modern UI", desc: "Built with a premium dark mode aesthetic, designed to look great on high-DPI displays." },
-            { icon: Command, title: "Developer First", desc: "Integrates with your package.json scripts to restart dev servers instantly." }
+            { icon: Shield, title: t('featureSafe'), desc: t('featureSafeDesc') },
+            { icon: Layout, title: t('featureModern'), desc: t('featureModernDesc') },
+            { icon: Command, title: t('featureDev'), desc: t('featureDevDesc') }
           ].map((feature, i) => (
             <div key={i} className="glass p-8 rounded-2xl hover:bg-white/5 transition-colors group">
               <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-zinc-800">
@@ -156,7 +195,7 @@ const App = () => {
       </section>
 
       <footer className="border-t border-white/5 py-12 text-center text-zinc-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} PortCmd. Open Source Software.</p>
+        <p>&copy; {new Date().getFullYear()} {t('footerRights')}</p>
       </footer>
     </div>
   );

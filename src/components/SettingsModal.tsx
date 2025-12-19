@@ -1,22 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, ShieldAlert, Monitor, Type, Palette, Eye, Image as ImageIcon } from 'lucide-react';
-import { usePreferences, PALETTES } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { usePreferences } from '../contexts/PreferencesContext';
+import { PALETTES } from '../constants';
+import { useTranslation } from 'react-i18next';
 import { ColorBlindMode, BackgroundType } from '../types';
 
 const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const { settings, updateSettings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('general');
 
   if (!isOpen) return null;
 
   const tabs = [
-    { id: 'general', label: t.general, icon: Monitor },
-    { id: 'appearance', label: t.appearance, icon: Palette },
-    { id: 'accessibility', label: t.accessibility, icon: Eye },
-    { id: 'background', label: t.background, icon: ImageIcon },
+    { id: 'general', label: t('general'), icon: Monitor },
+    { id: 'appearance', label: t('appearance'), icon: Palette },
+    { id: 'accessibility', label: t('accessibility'), icon: Eye },
+    { id: 'background', label: t('background'), icon: ImageIcon },
   ];
 
   return (
@@ -24,29 +25,29 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
       <motion.div
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto"
+        className="absolute inset-0 bg-black/10 backdrop-blur-[2px] pointer-events-auto"
       />
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 20, opacity: 0 }}
-        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full border pointer-events-auto transition-all bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100"
+        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-full border pointer-events-auto transition-all bg-surface border-border text-fg"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-zinc-800">
-          <h2 className="text-lg font-semibold">{t.settings}</h2>
-          <button onClick={onClose} aria-label="Close settings" className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"><X className="w-5 h-5" /></button>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <h2 className="text-lg font-semibold">{t('settings')}</h2>
+          <button onClick={onClose} aria-label="Close settings" className="p-3 rounded-lg hover:bg-surfaceHover transition-colors -mr-2"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar Tabs */}
-          <div className="w-16 md:w-40 border-r border-zinc-200 dark:border-zinc-800 p-4 space-y-2 bg-zinc-50 dark:bg-black/20">
+          <div className="w-16 md:w-40 border-r border-border p-4 space-y-2 bg-surface2">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
-                  ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-white/5'}`}
+                className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all min-h-[44px]
+                  ${activeTab === tab.id ? 'bg-primary text-primaryFg shadow-lg shadow-primary/20' : 'text-muted hover:bg-surfaceHover'}`}
                 title={tab.label}
               >
                 <tab.icon className="w-4 h-4 shrink-0" />
@@ -62,13 +63,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'general' && (
               <div className="space-y-6">
                 <section>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.language}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('language')}</label>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     {['en', 'pt-BR', 'es'].map(lang => (
                       <button
                         key={lang}
-                        onClick={() => updateSettings({ language: lang as any })}
-                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-indigo-500 bg-indigo-500/20 text-indigo-500 font-bold' : 'border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-black/20 hover:bg-zinc-100 dark:hover:bg-black/40'}`}
+                        onClick={() => updateSettings({ language: lang as 'en' | 'pt-BR' | 'es' })}
+                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-primary bg-primary/20 text-primary font-bold' : 'border-border bg-surface hover:bg-surfaceHover'}`}
                       >
                         {lang === 'pt-BR' ? 'Português' : lang === 'es' ? 'Español' : 'English'}
                       </button>
@@ -77,7 +78,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.pollingInterval}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('pollingInterval')}</label>
                   <input 
                     type="range" min="1000" max="10000" step="1000"
                     value={settings.refreshRate}
@@ -91,12 +92,12 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                   </div>
                 </section>
 
-                <section className="flex items-center justify-between p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-black/10">
+                <section className="flex items-center justify-between p-4 rounded-xl border border-border bg-surface2">
                   <div className="flex items-center space-x-3">
-                    <ShieldAlert className="w-5 h-5 text-indigo-500" />
+                    <ShieldAlert className="w-5 h-5 text-primary" />
                     <div className="flex flex-col">
-                       <span className="text-sm font-medium">{t.safety}</span>
-                       <span className="text-[10px] opacity-50">{t.confirmKill}</span>
+                       <span className="text-sm font-medium">{t('safety')}</span>
+                       <span className="text-[10px] opacity-50">{t('confirmKill')}</span>
                     </div>
                   </div>
                   <input 
@@ -113,13 +114,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'appearance' && (
               <div className="space-y-6">
                 <section>
-                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.theme}</label>
-                   <div className="flex p-1 bg-zinc-100 dark:bg-black/20 rounded-xl border border-zinc-200 dark:border-white/5">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('theme')}</label>
+                   <div className="flex p-1 bg-surface2 rounded-xl border border-border">
                      {['light', 'auto', 'dark'].map((mode) => (
                        <button
                          key={mode}
-                         onClick={() => updateSettings({ themeMode: mode as any })}
-                         className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm dark:shadow-lg' : 'opacity-50 hover:opacity-100'}`}
+                         onClick={() => updateSettings({ themeMode: mode as 'light' | 'auto' | 'dark' })}
+                          className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-surface text-primary shadow-sm' : 'text-muted hover:text-fg'}`}
                        >
                          {mode}
                        </button>
@@ -128,13 +129,13 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.palette}</label>
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('palette')}</label>
                    <div className="grid grid-cols-5 gap-3">
                       {Object.entries(PALETTES).map(([key, val]) => (
                         <button
                           key={key}
                           onClick={() => updateSettings({ paletteId: key })}
-                          className={`h-10 rounded-xl border-2 transition-all hover:scale-110 flex items-center justify-center ${settings.paletteId === key ? 'border-indigo-500 scale-110 shadow-lg shadow-indigo-500/20' : 'border-transparent'}`}
+                          className={`h-10 rounded-xl border-2 transition-all hover:scale-110 flex items-center justify-center ${settings.paletteId === key ? 'border-primary scale-110 shadow-lg shadow-primary/20' : 'border-transparent'}`}
                           style={{ backgroundColor: val.primary }}
                           title={val.name}
                         >
@@ -145,11 +146,11 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.glassEffect} (Sidebar)</label>
-                   <div className="space-y-5 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('glassEffect')} (Sidebar)</label>
+                   <div className="space-y-5 bg-surface2 p-4 rounded-xl border border-border">
                      <div>
                        <div className="flex justify-between text-[10px] font-mono opacity-50 mb-2">
-                         <span>{t.opacity}</span>
+                         <span>{t('opacity')}</span>
                          <span>{Math.round(settings.glassOpacity * 100)}%</span>
                        </div>
                        <input 
@@ -161,7 +162,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                      </div>
                      <div>
                        <div className="flex justify-between text-[10px] font-mono opacity-50 mb-2">
-                         <span>{t.blur}</span>
+                         <span>{t('blur')}</span>
                          <span>{settings.glassBlur}px</span>
                        </div>
                        <input 
@@ -175,7 +176,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.shadows}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('shadows')}</label>
                   <input 
                     type="range" min="0" max="1" step="0.1"
                     value={settings.shadowIntensity}
@@ -190,7 +191,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'accessibility' && (
               <div className="space-y-6">
                 <section>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.fontScale}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('fontScale')}</label>
                   <div className="flex items-center space-x-4 bg-zinc-50 dark:bg-black/10 p-4 rounded-xl border border-zinc-200 dark:border-white/5">
                     <Type className="w-4 h-4 opacity-50" />
                     <input 
@@ -204,7 +205,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 </section>
 
                 <section>
-                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.colorBlindness}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('colorBlindness')}</label>
                   <select 
                     value={settings.colorBlindMode}
                     onChange={(e) => updateSettings({ colorBlindMode: e.target.value as ColorBlindMode })}
@@ -225,7 +226,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
             {activeTab === 'background' && (
               <div className="space-y-6">
                  <section>
-                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t.bgType}</label>
+                   <label className="block text-xs font-bold uppercase tracking-wider mb-3 opacity-50">{t('bgType')}</label>
                    <div className="grid grid-cols-3 gap-2 bg-zinc-100 dark:bg-black/20 p-1 rounded-xl border border-zinc-200 dark:border-white/5">
                      {['solid', 'gradient', 'image'].map((type) => (
                        <button

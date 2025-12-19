@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Play, Loader2, Code2, AlertCircle } from 'lucide-react';
 import { SystemService } from '../services/systemService';
 import { motion } from 'framer-motion';
-import { usePreferences } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { useTranslation } from 'react-i18next';
 
 interface ScriptRunnerProps {
   pid: number;
@@ -11,8 +10,7 @@ interface ScriptRunnerProps {
 }
 
 const ScriptRunner: React.FC<ScriptRunnerProps> = ({ pid, projectPath }) => {
-  const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const [scripts, setScripts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [runningScript, setRunningScript] = useState<string | null>(null);
@@ -56,27 +54,27 @@ const ScriptRunner: React.FC<ScriptRunnerProps> = ({ pid, projectPath }) => {
 
   if (loading) {
     return (
-      <div className="flex items-center space-x-2 text-zinc-500 text-xs py-2">
+      <div className="flex items-center space-x-2 text-muted text-xs py-2">
         <Loader2 className="w-3 h-3 animate-spin" />
-        <span>{t.readingPackage}</span>
+        <span>{t('readingPackage')}</span>
       </div>
     );
   }
 
   if (error || Object.keys(scripts).length === 0) {
     return (
-       <div className="flex items-center space-x-2 text-zinc-600 text-xs py-2 italic border border-zinc-800/50 rounded bg-zinc-900/20 px-2 max-w-fit">
+       <div className="flex items-center space-x-2 text-muted text-xs py-2 italic border border-border rounded bg-surface2 px-2 max-w-fit">
         <AlertCircle className="w-3 h-3" />
-        <span>{t.noScripts}</span>
+        <span>{t('noScripts')}</span>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center space-x-2 text-indigo-400 text-xs uppercase font-bold tracking-wider mb-2">
+      <div className="flex items-center space-x-2 text-primary text-xs uppercase font-bold tracking-wider mb-2">
         <Code2 className="w-3 h-3" />
-        <span>{t.availableScripts}</span>
+        <span>{t('availableScripts')}</span>
       </div>
       
       <div className="flex flex-wrap gap-2">
@@ -90,24 +88,24 @@ const ScriptRunner: React.FC<ScriptRunnerProps> = ({ pid, projectPath }) => {
             className={`
                 group flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-mono border transition-all
                 ${runningScript === name 
-                    ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' 
-                    : 'bg-zinc-800 border-zinc-700 text-zinc-300 hover:bg-zinc-700 hover:border-zinc-600'
+                    ? 'bg-primary/20 border-primary text-primary' 
+                    : 'bg-surface2 border-border text-muted hover:bg-surfaceHover hover:border-borderStrong hover:text-fg'
                 }
                 ${runningScript !== null && runningScript !== name ? 'opacity-50 cursor-not-allowed' : ''}
             `}
             title={command}
           >
             {runningScript === name ? (
-                <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                <Loader2 className="w-3 h-3 animate-spin text-primary" />
             ) : (
-                <Play className="w-3 h-3 text-emerald-500 group-hover:text-emerald-400" />
+                <Play className="w-3 h-3 text-success group-hover:text-success" />
             )}
             <span>{name}</span>
           </motion.button>
         ))}
       </div>
-      <div className="text-[10px] text-zinc-600 mt-1 font-mono pl-1">
-        {t.hoverCommand}
+      <div className="text-[10px] text-muted mt-1 font-mono pl-1">
+        {t('hoverCommand')}
       </div>
     </div>
   );

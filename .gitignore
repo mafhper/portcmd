@@ -19,6 +19,7 @@ logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
+performance-reports
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*

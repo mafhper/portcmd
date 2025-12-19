@@ -1,0 +1,42 @@
+{
+    "version": "1.0.0",
+    "name": "light",
+    "background": {
+        "base": "#f8fafc",
+        "surface": "#ffffff",
+        "surface2": "#f1f5f9",
+        "surfaceHover": "#eaeef3",
+        "surfaceActive": "#e2e8f0"
+    },
+    "foreground": {
+        "base": "#0f172a",
+        "muted": "#475569",
+        "subtle": "#64748b"
+    },
+    "border": {
+        "base": "#d1d5db",
+        "strong": "#c7ccd4"
+    },
+    "brand": {
+        "primary": "#4f46e5",
+        "primaryHover": "#4338ca",
+        "primaryForeground": "#ffffff"
+    },
+    "semantic": {
+        "success": "#16a34a",
+        "successBg": "#dcfce7",
+        "warning": "#ca8a04",
+        "warningBg": "#fef9c3",
+        "error": "#dc2626",
+        "errorBg": "#fee2e2",
+        "info": "#2563eb",
+        "infoBg": "#dbeafe"
+    },
+    "focus": {
+        "ring": "rgba(79,70,229,0.35)"
+    },
+    "sidebar": {
+        "bg": "rgba(255,255,255,0.92)",
+        "text": "#1f2937"
+    }
+}

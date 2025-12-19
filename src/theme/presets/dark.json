@@ -1,0 +1,42 @@
+{
+    "version": "1.0.0",
+    "name": "dark",
+    "background": {
+        "base": "#0b0f19",
+        "surface": "rgba(24,24,27,0.55)",
+        "surface2": "rgba(24,24,27,0.75)",
+        "surfaceHover": "rgba(255,255,255,0.05)",
+        "surfaceActive": "rgba(255,255,255,0.08)"
+    },
+    "foreground": {
+        "base": "#f8fafc",
+        "muted": "#94a3b8",
+        "subtle": "#64748b"
+    },
+    "border": {
+        "base": "rgba(255,255,255,0.08)",
+        "strong": "rgba(255,255,255,0.14)"
+    },
+    "brand": {
+        "primary": "#6366f1",
+        "primaryHover": "#818cf8",
+        "primaryForeground": "#ffffff"
+    },
+    "semantic": {
+        "success": "#22c55e",
+        "successBg": "rgba(34,197,94,0.15)",
+        "warning": "#facc15",
+        "warningBg": "rgba(250,204,21,0.15)",
+        "error": "#f87171",
+        "errorBg": "rgba(248,113,113,0.15)",
+        "info": "#60a5fa",
+        "infoBg": "rgba(96,165,250,0.15)"
+    },
+    "focus": {
+        "ring": "rgba(99,102,241,0.4)"
+    },
+    "sidebar": {
+        "bg": "rgba(15,23,42,0.55)",
+        "text": "#e4e4e7"
+    }
+}

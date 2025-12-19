@@ -7,7 +7,7 @@ import {
 import { SystemService } from './services/systemService';
 import { ProcessEntry, FilterState, SavedProject, ViewType } from './types';
 import { PreferencesProvider, usePreferences } from './contexts/PreferencesContext';
-import { translations } from './locales';
+import { useTranslation } from 'react-i18next';
 import StatsOverview from './components/StatsOverview';
 import PortTable from './components/PortTable';
 import SettingsModal from './components/SettingsModal';
@@ -18,7 +18,7 @@ import { AnimatePresence } from 'framer-motion';
 
 const MainApp = () => {
   const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   
   const [processes, setProcesses] = useState<ProcessEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,6 +46,10 @@ const MainApp = () => {
   }, [processes.length]);
 
   useEffect(() => {
+    document.title = `PortCmd - ${t(currentView === 'projects' ? 'workspaces' : 'dashboard')}`;
+  }, [currentView, t]);
+
+  useEffect(() => {
     loadProcesses();
     const interval = setInterval(() => {
       SystemService.getProcesses().then(data => {
@@ -63,7 +67,7 @@ const MainApp = () => {
 
   const handleKill = async (pid: number) => {
     if (settings.confirmKill) {
-      if (!window.confirm(`${t.confirmKill} ${pid}?`)) return;
+      if (!window.confirm(`${t('confirmKill')} ${pid}?`)) return;
     }
     const success = await SystemService.killProcess(pid);
     if (success) setProcesses(prev => prev.filter(p => p.pid !== pid));
@@ -118,7 +122,7 @@ const MainApp = () => {
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors`} style={{ color: 'var(--muted-foreground)' }} />
                 <input 
                   type="text" 
-                  placeholder={t.searchPlaceholder}
+                  placeholder={t('searchPlaceholder')}
                   aria-label="Search processes"
                   value={filter.search}
                   onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value }))}
@@ -132,7 +136,7 @@ const MainApp = () => {
           <div className="flex items-center space-x-3 ml-4">
              <button 
               onClick={() => loadProcesses()}
-              className={`p-2 hover:bg-white/10 rounded-lg transition-all`}
+              className={`p-3.5 hover:bg-white/10 rounded-lg transition-all min-w-[44px] min-h-[44px] flex items-center justify-center`}
               style={{ color: 'var(--muted-foreground)' }}
               title="Refresh"
               aria-label="Refresh processes"
@@ -140,7 +144,7 @@ const MainApp = () => {
                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
              </button>
           </div>
-        </header>
+      </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-8">
            <div className={`max-w-7xl mx-auto space-y-8`}>
@@ -151,7 +155,7 @@ const MainApp = () => {
                      <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold flex items-center gap-2">
                            <Filter className="w-5 h-5 text-indigo-500" />
-                           {t.activeProcesses}
+                           {t('activeProcesses')}
                            <span className="ml-2 px-2 py-0.5 rounded-full bg-white/10 text-xs font-mono">
                               {filteredProcesses.length}
                            </span>

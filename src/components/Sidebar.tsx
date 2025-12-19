@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Settings, 
   Terminal, 
+  Code,
   Database, 
   Server, 
   Cpu, 
@@ -13,12 +14,13 @@ import {
   Globe,
   ArrowLeft
 } from 'lucide-react';import { usePreferences } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { useTranslation } from 'react-i18next';
+// import { SystemService } from '../services/systemService'; // Removed as unused
 import { ProcessType, FilterState, ViewType } from '../types';
 
 interface SidebarProps {
   filter: FilterState;
-  setFilter: (f: any) => void;
+  setFilter: React.Dispatch<React.SetStateAction<FilterState>>;
   onOpenSettings: () => void;
   currentView: ViewType;
   setCurrentView: (v: ViewType) => void;
@@ -26,7 +28,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, currentView, setCurrentView }) => {
   const { settings, updateSettings, isDark } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   
   const [isMobile, setIsMobile] = useState(false);
 
@@ -49,14 +51,14 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   };
 
   const menuItems = [
-    { id: 'dashboard', label: 'Development', icon: Terminal, view: 'dashboard' },
-    { id: 'projects', label: 'Workspaces', icon: FolderKanban, view: 'projects' },
+    { id: 'dashboard', label: t('dashboard'), icon: Code, view: 'dashboard' },
+    { id: 'projects', label: t('workspaces'), icon: FolderKanban, view: 'projects' },
   ];
   const categories = [
-    { type: ProcessType.DEVELOPMENT, icon: Terminal, color: 'text-emerald-500' },
-    { type: ProcessType.DATABASE, icon: Database, color: 'text-blue-500' },
-    { type: ProcessType.SYSTEM, icon: Server, color: 'text-zinc-500' },
-    { type: ProcessType.OTHER, icon: Cpu, color: 'text-purple-500' },
+    { type: ProcessType.DEVELOPMENT, icon: Code, color: 'text-success' },
+    { type: ProcessType.DATABASE, icon: Database, color: 'text-info' },
+    { type: ProcessType.SYSTEM, icon: Server, color: 'text-muted' },
+    { type: ProcessType.OTHER, icon: Cpu, color: 'text-warning' },
   ];
 
   const textVariants = {
@@ -74,30 +76,32 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
     >
       {/* Header */}
       <div className="h-16 flex items-center relative border-b shrink-0 px-3" style={{ borderColor: 'var(--border-color)' }}>
-        <a href="/portcmd/" className={`flex items-center ${collapsed ? 'justify-center w-full' : ''} gap-3 text-indigo-600 dark:text-indigo-500 overflow-hidden group px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors`}>
-          <div className="relative w-8 h-8 bg-indigo-600/10 rounded-lg flex items-center justify-center overflow-hidden group-hover:bg-indigo-600 transition-all duration-300">
+        <a href="/portcmd/app/" className="flex items-center justify-center p-2 rounded-lg hover:bg-surfaceHover transition-colors group">
+          <div className="relative w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden group-hover:bg-primary transition-all duration-300">
             <Terminal size={18} className="transition-all duration-300 group-hover:translate-x-8 group-hover:opacity-0" />
             <ArrowLeft size={18} className="absolute text-white -translate-x-8 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
           </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span 
-                variants={textVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className="font-bold text-lg tracking-tight whitespace-nowrap"
-                style={{ color: 'var(--sidebar-text)' }}
-              >
-                PortCmd
-              </motion.span>
-            )}
-          </AnimatePresence>
         </a>
+        
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.a 
+              href="/portcmd/app/"
+              variants={textVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="ml-2 font-bold text-lg tracking-tight whitespace-nowrap hover:text-primary transition-colors duration-200"
+              style={{ color: 'var(--sidebar-text)' }}
+            >
+              PortCmd
+            </motion.a>
+          )}
+        </AnimatePresence>
         
         <button 
           onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
-          className="absolute -right-3 top-6 bg-indigo-600 rounded-full p-1 text-white shadow-lg hover:bg-indigo-500 transition-colors z-50"
+          className="absolute -right-3 top-6 bg-primary rounded-full p-1 text-primaryFg shadow-lg hover:bg-primaryHover transition-colors z-50"
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
@@ -111,11 +115,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
           {menuItems.map(item => (
             <button
               key={item.id}
-              onClick={() => setCurrentView(item.view as any)}
-              className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+              onClick={() => setCurrentView(item.view as ViewType)}
+              className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
                 ${currentView === item.view 
-                  ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 shadow-sm' 
-                  : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+                  ? 'bg-primary/10 text-primary shadow-sm' 
+                  : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
               style={{ color: currentView === item.view ? '' : 'var(--sidebar-text)' }}
               title={collapsed ? item.label : ''}
               aria-label={item.label}
@@ -145,17 +149,17 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               {!collapsed && (
                 <motion.div 
                   initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} exit={{ opacity: 0 }}
-                  className="px-3 text-[10px] font-bold uppercase tracking-widest opacity-50"
+                  className="px-3 text-[10px] font-bold uppercase tracking-widest opacity-50 mt-4 mb-2"
                 >
-                  {t.categories}
+                  {t('categories')}
                 </motion.div>
               )}
             </AnimatePresence>
             
             <div className="space-y-1">
               <button
-                 onClick={() => setFilter((prev: any) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
-                 className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100`}
+                 onClick={() => setFilter((prev) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
+                 className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[44px]`}
                  style={{ color: 'var(--sidebar-text)' }}
                  aria-label="Show all processes"
               >
@@ -173,9 +177,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               {categories.map(cat => (
                 <button
                   key={cat.type}
-                  onClick={() => setFilter((prev: any) => ({ ...prev, type: cat.type, onlyFavorites: false, onlyManaged: false }))}
-                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100 
-                    ${filter.type === cat.type ? 'bg-black/5 dark:bg-white/5 !opacity-100' : ''}`}
+                  onClick={() => setFilter((prev) => ({ ...prev, type: cat.type, onlyFavorites: false, onlyManaged: false }))}
+                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} ${collapsed ? 'px-3' : 'pl-6 pr-3'} py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[40px] 
+                    ${filter.type === cat.type ? 'bg-surfaceHover text-fg' : ''}`}
                   style={{ color: 'var(--sidebar-text)' }}
                   title={collapsed ? cat.type : ''}
                   aria-label={`Filter by ${cat.type}`}
@@ -191,7 +195,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                     </AnimatePresence>
                   </div>
                   {!collapsed && filter.type === cat.type && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-500 shrink-0 ml-2 shadow-sm"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 ml-2 shadow-sm"></div>
                   )}
                 </button>
               ))}
@@ -200,9 +204,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             {/* Shortcuts */}
             <div className="pt-2 space-y-1">
               <button 
-                onClick={() => setFilter((prev: any) => ({ ...prev, onlyManaged: true, onlyFavorites: false, type: 'All' }))}
-                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filter.onlyManaged ? 'bg-emerald-600/10 text-emerald-600 dark:text-emerald-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+                onClick={() => setFilter((prev) => ({ ...prev, onlyManaged: true, onlyFavorites: false, type: 'All' }))}
+                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+                  ${filter.onlyManaged ? 'bg-success/10 text-success shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
                 style={{ color: filter.onlyManaged ? '' : 'var(--sidebar-text)' }}
                 title={collapsed ? "My Projects" : ''}
                 aria-label="Show my projects only"
@@ -211,25 +215,25 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
-                      My Projects
+                      {t('managed')}
                     </motion.span>
                   )}
                 </AnimatePresence>
               </button>
 
               <button 
-                onClick={() => setFilter((prev: any) => ({ ...prev, onlyFavorites: true, onlyManaged: false, type: 'All' }))}
-                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-2 rounded-lg text-sm font-medium transition-colors
-                  ${filter.onlyFavorites ? 'bg-yellow-600/10 text-yellow-600 dark:text-yellow-500 shadow-sm' : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100'}`}
+                onClick={() => setFilter((prev) => ({ ...prev, onlyFavorites: true, onlyManaged: false, type: 'All' }))}
+                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+                  ${filter.onlyFavorites ? 'bg-warning/10 text-warning shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
                 style={{ color: filter.onlyFavorites ? '' : 'var(--sidebar-text)' }}
-                title={collapsed ? t.favorites : ''}
+                  title={collapsed ? t('favorites') : ''}
                 aria-label="Show favorites only"
               >
                 <Star className={`w-4 h-4 shrink-0 ${filter.onlyFavorites ? 'fill-current' : ''}`} />
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
-                      {t.favorites}
+                      {t('favorites')}
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -239,20 +243,24 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         )}
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t shrink-0" style={{ borderColor: 'var(--border-color)' }}>
+      <div className="p-4 border-t shrink-0 space-y-2" style={{ borderColor: 'var(--border-color)' }}>
+         {!collapsed && (
+            <div className="space-y-1 mb-2">
+               {/* Shortcuts removed as requested - they belong in Dashboard */}
+            </div>
+         )}
         <button 
           onClick={onOpenSettings}
-          className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-2 rounded-lg opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-all`}
+          className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-3 rounded-lg text-muted hover:text-fg hover:bg-surfaceHover transition-all min-h-[44px]`}
           style={{ color: 'var(--sidebar-text)' }}
-          title={t.settings}
+          title={t('settings')}
           aria-label="Open settings"
         >
           <Settings className="w-5 h-5 shrink-0" />
           <AnimatePresence>
             {!collapsed && (
               <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
-                {t.settings}
+                {t('settings')}
               </motion.span>
             )}
           </AnimatePresence>

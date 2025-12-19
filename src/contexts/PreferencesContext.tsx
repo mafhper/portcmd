@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AppSettings, ColorBlindMode } from '../types';
-import { detectLanguage } from '../locales';
+import { useTranslation } from 'react-i18next';
+import { AppSettings, ColorBlindMode, Language } from '../types';
 
 // Default Settings
 const DEFAULT_SETTINGS: AppSettings = {
-  language: detectLanguage(),
+  language: 'en', // Initial fallback, will be overwritten by i18next
   themeMode: 'auto',
   refreshRate: 5000,
   confirmKill: true,
@@ -22,14 +22,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   bgGradientAngle: 135,
 };
 
-// Palette Definitions
-export const PALETTES = {
-  zinc: { primary: '#6366f1', name: 'Indigo / Zinc' },
-  slate: { primary: '#3b82f6', name: 'Blue / Slate' },
-  neutral: { primary: '#10b981', name: 'Emerald / Neutral' },
-  stone: { primary: '#f97316', name: 'Orange / Stone' },
-  rose: { primary: '#f43f5e', name: 'Rose / Gray' },
-};
+
 
 interface PreferencesContextType {
   settings: AppSettings;
@@ -56,17 +49,39 @@ const getContrastColor = (hex: string) => {
 };
 
 export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { i18n } = useTranslation();
+  
   const [settings, setSettings] = useState<AppSettings>(() => {
     const saved = localStorage.getItem('portcommand_prefs');
-    return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    const parsed = saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
+    
+    // Safety check for self-correction if i18n changes early
+    if (typeof window !== 'undefined' && i18n.language && parsed.language !== i18n.language) {
+      parsed.language = i18n.language as Language;
+    }
+    return parsed;
   });
 
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    if (settings.themeMode === 'auto') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return settings.themeMode === 'dark';
+  });
 
-  // Persistence
+  // Sync i18n with settings on mount - REMOVED redundant sync causing cascading render
+  // The useState initializer above handles the initial consistency.
+
+  // Persistence & Language Sync
   useEffect(() => {
     localStorage.setItem('portcommand_prefs', JSON.stringify(settings));
-  }, [settings]);
+    
+    // Sync language change
+    if (settings.language !== i18n.language) {
+      i18n.changeLanguage(settings.language);
+    }
+  }, [settings, i18n]);
 
   // Theme Detection
   useEffect(() => {
@@ -83,6 +98,7 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return () => media.removeEventListener('change', checkTheme);
   }, [settings.themeMode]);
 
+
   // Apply CSS Variables for dynamic customization
   useEffect(() => {
     const root = document.documentElement;
@@ -93,6 +109,32 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     } else {
       root.classList.remove('dark');
     }
+
+    // Load and apply theme preset
+    const loadTheme = async () => {
+      try {
+        const preset = isDark 
+          ? await import('../theme/presets/dark.json')
+          : await import('../theme/presets/light.json');
+        
+        const tokens = preset.default || preset;
+        
+        // Apply all theme tokens as CSS variables
+        Object.entries(tokens).forEach(([group, values]) => {
+          if (typeof values === 'object' && values !== null && group !== 'version' && group !== 'name') {
+            Object.entries(values as Record<string, string>).forEach(([key, value]) => {
+              // Convert camelCase to kebab-case
+              const kebabKey = key.replace(/[A-Z]/g, m => `-${m.toLowerCase()}`);
+              root.style.setProperty(`--${group}-${kebabKey}`, value);
+            });
+          }
+        });
+      } catch (e) {
+        console.error('Failed to load theme preset:', e);
+      }
+    };
+    
+    loadTheme();
 
     // Font Scale
     root.style.fontSize = `${settings.fontScale * 100}%`;
@@ -125,10 +167,9 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
       currentBg = isDark ? '#000000' : '#ffffff';
     }
 
-    // Set dynamic text colors based on background
+    // Legacy CSS variables (for backward compatibility during migration)
     const foreground = getContrastColor(currentBg);
     root.style.setProperty('--foreground', foreground);
-    // WCAG 2.1 requires 4.5:1 contrast ratio - use higher opacity for light theme
     root.style.setProperty('--muted-foreground', foreground === '#ffffff' ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.75)');
     
     // Shadow
@@ -139,7 +180,6 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
     // Glass Effect variables
     root.style.setProperty('--glass-opacity', settings.glassOpacity.toString());
     root.style.setProperty('--glass-blur', `${settings.glassBlur}px`);
-    // Higher opacity backgrounds for better text contrast in light theme
     root.style.setProperty('--card-bg', isDark ? 'rgba(24, 24, 27, 0.4)' : 'rgba(255, 255, 255, 0.85)');
     root.style.setProperty('--border-color', isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.15)');
 

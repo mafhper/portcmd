@@ -1,12 +1,14 @@
 import React from 'react';
 import { Zap, Cpu, Activity, Server } from 'lucide-react';
 import { ProcessEntry } from '../types';
+import { useTranslation } from 'react-i18next';
 
 interface StatsOverviewProps {
   processes: ProcessEntry[];
 }
 
 const StatsOverview: React.FC<StatsOverviewProps> = ({ processes }) => {
+  const { t } = useTranslation();
   const totalProcesses = processes.length;
   const devProcesses = processes.filter(p => p.type === 'Development').length;
   const dbProcesses = processes.filter(p => p.type === 'Database').length;
@@ -15,31 +17,31 @@ const StatsOverview: React.FC<StatsOverviewProps> = ({ processes }) => {
 
   const stats = [
     { 
-      title: 'Local Services', 
+      title: t('activePorts'), 
       value: totalProcesses, 
-      sub: 'active ports', 
+      sub: t('devServers'), 
       icon: <Zap size={16} className="text-yellow-400" />,
       color: 'from-yellow-500/10 to-orange-500/10',
       borderColor: 'border-yellow-500/20'
     },
     { 
-      title: 'CPU Usage', 
+      title: t('avgCpuLoad'), 
       value: `${avgCpu}%`, 
-      sub: 'avg per proc', 
+      sub: t('perProcess'), 
       icon: <Cpu size={16} className="text-indigo-400" />,
       color: 'from-indigo-500/10 to-purple-500/10',
       borderColor: 'border-indigo-500/20'
     },
     { 
-      title: 'Memory', 
+      title: t('memoryUsage'), 
       value: `${totalMemory} MB`, 
-      sub: 'total used', 
+      sub: t('totalAllocation'), 
       icon: <Activity size={16} className="text-emerald-400" />,
       color: 'from-emerald-500/10 to-teal-500/10',
       borderColor: 'border-emerald-500/20'
     },
     { 
-      title: 'Breakdown', 
+      title: t('systemHealth'), 
       value: `${devProcesses}/${dbProcesses}`, 
       sub: 'Dev / DB', 
       icon: <Server size={16} className="text-purple-400" />,

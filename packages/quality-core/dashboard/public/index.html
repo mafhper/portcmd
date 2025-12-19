@@ -1,0 +1,3196 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quality Core Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            background: 'var(--bg-background)',
+            surface: 'var(--bg-surface)',
+            surfaceHighlight: 'var(--bg-highlight)',
+            border: 'var(--border-color)',
+            primary: 'var(--color-primary)',
+            primaryGlow: 'var(--color-primary-glow)',
+            success: '#10b981',
+            warning: '#f59e0b',
+            error: '#ef4444',
+            text: 'var(--text-main)',
+            muted: 'var(--text-muted)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg-background: #050505;
+      --bg-surface: #0f0f0f;
+      --bg-highlight: #1A1A1A;
+      --border-color: rgba(255, 255, 255, 0.12);
+      --text-main: #EAEAEA;
+      --text-muted: #a3a3a3;
+      --color-primary: #22d3ee;
+      --color-primary-glow: rgba(34, 211, 238, 0.2);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-background);
+      background-image: radial-gradient(circle at 50% -10%, #1a1a1a 0%, #050505 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Noise Overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+    }
+
+    .glass-card {
+      background: var(--bg-surface);
+      background-image: linear-gradient(180deg, rgba(20, 20, 20, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+      box-shadow: 0 0 0 1px var(--border-color);
+      border-radius: 12px;
+    }
+    .glass-card:hover {
+      box-shadow: 0 0 0 1px var(--border-color), inset 0 0 20px rgba(255,255,255,0.02);
+    }
+
+    .sidebar-link {
+      transition: all 0.2s;
+      border-left: 2px solid transparent;
+    }
+    .sidebar-link:hover, .sidebar-link.active {
+      background: rgba(34, 211, 238, 0.05);
+      color: var(--color-primary);
+      border-left-color: var(--color-primary);
+    }
+    .sidebar-link.active::after {
+      content: "";
+      position: absolute;
+      right: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 8px var(--color-primary);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* Table Column Widths - Content-Based */
+    table { table-layout: auto; width: 100%; }
+    table th, table td { 
+      white-space: nowrap; 
+      padding: 0.75rem 1rem;
+    }
+    table th:last-child, table td:last-child { width: 1%; white-space: nowrap; }
+    table .col-fixed { width: 1%; white-space: nowrap; }
+    table .col-expand { width: auto; }
+
+
+    /* Prose */
+    .prose h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main); }
+    .prose h2 { font-size: 1.25rem; font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #e4e4e7; }
+    .prose h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #d4d4d8; }
+    .prose p { margin-bottom: 1rem; color: var(--text-muted); line-height: 1.6; }
+    .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: var(--text-muted); }
+    .prose code { background: rgba(255,255,255,0.1); padding: 0.2em 0.4em; border-radius: 4px; font-family: monospace; font-size: 0.9em; }
+    .prose pre { background: #1a1a20; padding: 1rem; border-radius: 8px; overflow-x: auto; margin-bottom: 1rem; }
+    .prose pre code { background: transparent; padding: 0; }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    .prose th, .prose td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+    .prose th { color: var(--text-main); font-weight: 600; background: var(--bg-highlight); }
+    .prose a { color: var(--color-primary); text-decoration: none; }
+    .prose a:hover { text-decoration: underline; }
+
+    /* Collapsed Sidebar */
+    .sidebar-collapsed { width: 80px !important; }
+    .sidebar-collapsed .sidebar-text { display: none; }
+    .sidebar-collapsed .sidebar-header { justify-content: center; }
+    .sidebar-collapsed .sidebar-link { justify-content: center; padding-left: 0; padding-right: 0; }
+
+    /* Toast Animations */
+    @keyframes slide-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slide-out {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    .animate-slide-in { animation: slide-in 0.3s ease-out; }
+    .animate-slide-out { animation: slide-out 0.3s ease-in forwards; }
+  </style>
+</head>
+<body class="h-screen flex overflow-hidden selection:bg-primary selection:text-black">
+  
+  <!-- Overlay -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden md:hidden transition-opacity duration-300"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="w-64 bg-surface/80 backdrop-blur-xl border-r border-white/5 flex flex-col z-50 shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full">
+    <!-- Header -->
+    <div class="p-6 sidebar-header flex items-center justify-between">
+      <a href="/portcmd/" class="flex items-center gap-3 group" title="Back to PortCmd">
+        <div class="relative w-10 h-10 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-primary group-hover:to-purple-500 transition-all duration-300">
+          <svg class="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="sidebar-text">
+          <div class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">Quality Core</div>
+        </div>
+      </a>
+      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5" title="Toggle Sidebar" aria-label="Toggle sidebar">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+
+    <!-- Nav Items -->
+    <nav class="flex-1 px-4 space-y-2 mt-2 overflow-y-auto" id="nav-links">
+      <button onclick="switchTab('dashboard')" class="w-full sidebar-link active flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="dashboard">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg><span class="sidebar-text">Dashboard</span>
+      </button>
+      <button onclick="switchTab('profile')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="siteProfile">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><span class="sidebar-text">Site Profile</span>
+      </button>
+      <button onclick="switchTab('quality')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="qualityScans">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span class="sidebar-text">Quality Scans</span>
+      </button>
+      <button onclick="switchTab('monitor')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="siteMonitor">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg><span class="sidebar-text">Site Monitor</span>
+      </button>
+      <button onclick="switchTab('pagespeed')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="pageSpeed">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">PageSpeed</span>
+      </button>
+      <button onclick="switchTab('git')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="gitDeploy">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg><span class="sidebar-text">Git & Deploy</span>
+      </button>
+      <button onclick="switchTab('reports')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="lighthouse">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span class="sidebar-text">Lighthouse</span>
+      </button>
+      <button onclick="switchTab('logs')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="logs">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="sidebar-text">Logs</span>
+      </button>
+      <button onclick="switchTab('insights')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="aiInsights">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg><span class="sidebar-text">AI Insights</span>
+      </button>
+    </nav>
+
+    <!-- Footer Actions -->
+    <div class="p-4 border-t border-white/5 space-y-2">
+      <div class="glass-card p-4">
+        <h4 class="text-xs font-bold text-muted uppercase mb-3 sidebar-text" data-i18n="quickActions">Quick Actions</h4>
+        <div class="space-y-2">
+          <button onclick="runCommand('quality:gate')" class="w-full text-left px-3 py-2 text-xs font-medium bg-primary/10 text-primary rounded hover:bg-primary/20 transition flex items-center gap-2" data-i18n="runQuality">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">Full Quality Gate</span>
+          </button>
+          <button onclick="runCommand('perf:lighthouse')" class="w-full text-left px-3 py-2 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:bg-white/5 transition flex items-center gap-2" data-i18n="runPerf">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">Perf Audit</span>
+          </button>
+        </div>
+
+      </div>
+      
+      <!-- Settings Button -->
+      <button onclick="openSettings()" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-lg relative" data-i18n="settings">
+        <span>⚙️</span><span class="sidebar-text">Settings</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-auto relative bg-background">
+    <div class="max-w-7xl mx-auto p-8 relative z-10" id="content-area">
+      <!-- Content injected via JS -->
+    </div>
+  </main>
+
+  <!-- Viewer Modal (WindowConsole Style) -->
+  <div id="viewer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 md:p-12 pointer-events-none">
+    <div id="viewer-backdrop" class="absolute inset-0 pointer-events-auto" onclick="closeViewer()"></div>
+    
+    <div class="bg-[#0d1117] border border-white/10 rounded-2xl w-full max-w-5xl h-full max-h-[85vh] flex flex-col shadow-2xl relative overflow-hidden pointer-events-auto transition-all duration-300 transform scale-95 opacity-0" id="viewer-container">
+      
+      <!-- Window Header -->
+      <div class="p-4 border-b border-white/10 flex justify-between items-center bg-surfaceHighlight/50 backdrop-blur-md">
+        <div class="flex items-center gap-4">
+          <div class="flex space-x-2">
+            <div class="w-3 h-3 rounded-full bg-[#ff5f56] shadow-sm"></div>
+            <div class="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-sm"></div>
+            <div class="w-3 h-3 rounded-full bg-[#27c93f] shadow-sm"></div>
+          </div>
+          <div class="h-4 w-[1px] bg-white/10 mx-1"></div>
+          <span class="font-mono text-xs font-bold text-muted uppercase tracking-widest" id="viewer-title">Record Viewer</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <!-- Navigation Buttons -->
+          <div class="flex items-center gap-2 mr-2" style="display: none;">
+            <button id="viewer-prev-btn" onclick="viewerPrev()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-muted hover:text-white transition" aria-label="Previous report">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+            <span id="viewer-counter" class="text-xs text-muted font-mono px-2">1 / 3</span>
+            <button id="viewer-next-btn" onclick="viewerNext()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-muted hover:text-white transition" aria-label="Next report">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+          <div class="h-4 w-[1px] bg-white/10"></div>
+          <button onclick="copyViewerContent()" class="text-xs text-muted hover:text-primary transition px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1">
+            <span>📋</span> Copy
+          </button>
+          <button onclick="closeViewer()" class="text-muted hover:text-white transition p-1" aria-label="Close viewer">✕</button>
+        </div>
+      </div>
+
+      <!-- Viewer Content -->
+      <div class="flex-1 p-8 overflow-auto custom-scrollbar prose prose-invert max-w-none font-sans" id="viewer-content">
+        <!-- Content injected here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
+      <div class="p-6 border-b border-white/10 flex justify-between items-center">
+        <h2 class="text-xl font-bold text-white">⚙️ <span data-i18n="settings">Settings</span></h2>
+        <button onclick="closeSettings()" class="text-muted hover:text-white transition text-xl">✕</button>
+      </div>
+      
+      <!-- Settings Tabs -->
+      <div class="flex border-b border-white/10 px-6">
+        <button onclick="switchSettingsTab('profile')" class="settings-tab active px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="profile" data-i18n="profile">📋 Profile</button>
+        <button onclick="switchSettingsTab('api')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="api" data-i18n="apiKeys">🔑 API Keys</button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1">
+        <!-- Profile Tab -->
+        <div id="settings-profile-tab" class="space-y-6">
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="language">Language</label>
+            <select id="language-select" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none">
+              <option value="en">English (US)</option>
+              <option value="pt-BR">Português (BR)</option>
+              <option value="es">Español</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="projectName">Project Name</label>
+            <input type="text" id="project-name-input" placeholder="My Project" 
+              class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="publishedUrl">Published Site URL</label>
+            <input type="url" id="monitor-url-input" placeholder="https://yourname.github.io/project/" 
+              class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none"
+              onchange="autoDetectGitHub()">
+            <p class="text-xs text-muted mt-2">GitHub repo will be auto-detected from .github.io URLs</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="githubRepo">GitHub Repository</label>
+            <input type="text" id="github-repo-input" placeholder="owner/repo" 
+              class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none">
+          </div>
+        </div>
+        
+        <!-- API Tab -->
+        <div id="settings-api-tab" class="space-y-6 hidden">
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="githubToken">GitHub Token</label>
+            <div class="flex gap-2">
+              <input type="password" id="github-token-input" placeholder="ghp_xxxxxxxxxxxxx" 
+                class="flex-1 px-4 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none transition-all">
+              <button id="verify-github-btn" onclick="verifyGitHubToken()" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-muted rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+                <span id="github-status-icon">🔍</span> <span data-i18n="verify">Verify</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-muted mt-2">For Actions status and commits. Never sent to server.</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="pageSpeedKey">Google PageSpeed API Key</label>
+            <div class="flex gap-2">
+              <input type="password" id="pagespeed-key-input" placeholder="AIzaSy..." 
+                class="flex-1 px-4 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none transition-all">
+              <button id="verify-pagespeed-btn" onclick="verifyPageSpeedKey()" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-muted rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+                <span id="pagespeed-status-icon">🔍</span> <span data-i18n="verify">Verify</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-muted mt-2">For remote Lighthouse tests. <a href="https://developers.google.com/speed/docs/insights/v5/get-started" target="_blank" class="text-primary hover:underline">Get API Key</a></p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-muted mb-2" data-i18n="geminiKey">Gemini API Key</label>
+            <div class="flex gap-2">
+              <input type="password" id="gemini-key-input" placeholder="AIzaSy..." 
+                class="flex-1 px-4 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none transition-all">
+              <button id="verify-gemini-btn" onclick="verifyGeminiKey()" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-muted rounded-lg text-xs font-medium transition-all flex items-center gap-2">
+                <span id="gemini-status-icon">🔍</span> <span data-i18n="verify">Verify</span>
+              </button>
+            </div>
+            <p class="text-[10px] text-muted mt-2">For AI-powered insights and commit messages. <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-primary hover:underline">Get API Key</a></p>
+          </div>
+          
+          <button onclick="clearApiKeys()" class="text-xs text-error hover:underline" data-i18n="clearKeys">Clear All API Keys</button>
+        </div>
+      </div>
+      
+      <div class="p-6 border-t border-white/10">
+        <button onclick="saveSettings()" class="w-full py-3 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition" data-i18n="saveSettings">
+          Save Settings
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State & Config ---
+    let currentTab = 'dashboard';
+    let sidebarCollapsed = false;
+    let trendChart = null;
+    let monitorPeriod = '1h';
+    let pingHistory = JSON.parse(localStorage.getItem('pingHistory') || '[]');
+    const API_BASE = '/api';
+
+    // --- Toast Notification System ---
+    function showToast(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toast-container') || createToastContainer();
+      
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type} flex items-center gap-3 px-4 py-3 rounded-lg shadow-xl border backdrop-blur-md animate-slide-in`;
+      
+      const colors = {
+        success: 'bg-success/90 border-success/50 text-white',
+        error: 'bg-error/90 border-error/50 text-white',
+        warning: 'bg-warning/90 border-warning/50 text-black',
+        info: 'bg-surface/95 border-white/20 text-white'
+      };
+      const icons = {
+        success: '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>',
+        error: '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>',
+        warning: '<svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+        info: '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+      };
+      
+      toast.classList.add(...(colors[type] || colors.info).split(' '));
+      toast.innerHTML = `
+        <span class="text-lg">${icons[type] || icons.info}</span>
+        <span class="text-sm font-medium">${message}</span>
+        <button class="ml-auto text-white/60 hover:text-white transition" onclick="this.parentElement.remove()">✕</button>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.add('animate-slide-out');
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+    
+    function createToastContainer() {
+      const container = document.createElement('div');
+      container.id = 'toast-container';
+      container.className = 'fixed top-4 right-4 z-[200] flex flex-col gap-2 max-w-sm';
+      document.body.appendChild(container);
+      return container;
+    }
+
+
+    // --- Settings (localStorage) ---
+    function getSettings() {
+      try {
+        return JSON.parse(localStorage.getItem('quality_dashboard_settings') || '{}');
+      } catch { return {}; }
+    }
+    
+    function saveSettingsData(data) {
+      localStorage.setItem('quality_dashboard_settings', JSON.stringify(data));
+    }
+
+    // --- Init ---
+    document.addEventListener('DOMContentLoaded', () => {
+      loadSettings();
+      initI18n(); // Initialize i18n
+      loadDashboard();
+    });
+
+    // --- Internationalization (i18n) ---
+    const translations = {
+      en: {
+        dashboard: 'Dashboard',
+        siteProfile: 'Site Profile',
+        qualityScans: 'Quality Scans',
+        siteMonitor: 'Site Monitor',
+        pageSpeed: 'PageSpeed',
+        gitDeploy: 'Git & Deploy',
+        lighthouse: 'Lighthouse',
+        logs: 'Logs',
+        aiInsights: 'AI Insights',
+        quickActions: 'Quick Actions',
+        runQuality: 'Run Quality',
+        runPerf: 'Run Perf',
+        settings: 'Settings',
+        projectName: 'Project Name',
+        publishedUrl: 'Published Site URL',
+        githubRepo: 'GitHub Repository',
+        githubToken: 'GitHub Token',
+        pageSpeedKey: 'Google PageSpeed API Key',
+        geminiKey: 'Gemini API Key',
+        saveSettings: 'Save Settings',
+        clearKeys: 'Clear All API Keys',
+        verify: 'Verify',
+        profile: 'Profile',
+        apiKeys: 'API Keys',
+        language: 'Language',
+        totalScans: 'Total Scans',
+        avgBuild: 'Avg Build',
+        avgRender: 'Avg Render',
+        passRate: 'Pass Rate',
+        newScan: 'New Scan',
+        report: 'Report',
+        date: 'Date',
+        performance: 'Performance',
+        totalReports: 'Total Reports',
+        avgPerformance: 'Avg Performance',
+        avgAccessibility: 'Avg Accessibility',
+        avgSeo: 'Avg SEO',
+        totalLogs: 'Total Logs',
+        passed: 'Passed',
+        failed: 'Failed',
+        other: 'Other',
+        logFile: 'Log File',
+        noDataFound: 'No data found',
+        refresh: 'Refresh',
+        gitStatus: 'Git Status',
+        branch: 'Branch',
+        lastCommit: 'Last Commit',
+        filesChanged: 'file(s) changed',
+        generateCommitMessage: 'Generate Commit Message',
+        commitChanges: 'Commit Changes',
+        commitPush: 'Commit & Push',
+        runTest: 'Run Test',
+        newAnalysis: 'New Analysis',
+        analysisHistory: 'Analysis History'
+      },
+      'pt-BR': {
+        dashboard: 'Painel',
+        siteProfile: 'Perfil do Site',
+        qualityScans: 'Testes de Qualidade',
+        siteMonitor: 'Monitor de Site',
+        pageSpeed: 'PageSpeed',
+        gitDeploy: 'Git & Deploy',
+        lighthouse: 'Lighthouse',
+        logs: 'Logs',
+        aiInsights: 'Insights IA',
+        quickActions: 'Ações Rápidas',
+        runQuality: 'Executar Qualidade',
+        runPerf: 'Executar Perf',
+        settings: 'Configurações',
+        projectName: 'Nome do Projeto',
+        publishedUrl: 'URL do Site Publicado',
+        githubRepo: 'Repositório GitHub',
+        githubToken: 'Token GitHub',
+        pageSpeedKey: 'Chave API PageSpeed',
+        geminiKey: 'Chave API Gemini',
+        saveSettings: 'Salvar Configurações',
+        clearKeys: 'Limpar Chaves API',
+        verify: 'Verificar',
+        profile: 'Perfil',
+        apiKeys: 'Chaves API',
+        language: 'Idioma',
+        totalScans: 'Total de Scans',
+        avgBuild: 'Build Médio',
+        avgRender: 'Render Médio',
+        passRate: 'Taxa de Aprov.',
+        newScan: 'Novo Scan',
+        report: 'Relatório',
+        date: 'Data',
+        performance: 'Performance',
+        totalReports: 'Total de Relatórios',
+        avgPerformance: 'Performance Média',
+        avgAccessibility: 'Acessibilidade Média',
+        avgSeo: 'SEO Médio',
+        totalLogs: 'Total de Logs',
+        passed: 'Aprovados',
+        failed: 'Falhou',
+        other: 'Outros',
+        logFile: 'Arquivo de Log',
+        noDataFound: 'Nenhum dado encontrado',
+        refresh: 'Atualizar',
+        gitStatus: 'Status Git',
+        branch: 'Branch',
+        lastCommit: 'Último Commit',
+        filesChanged: 'arquivo(s) alterado(s)',
+        generateCommitMessage: 'Gerar Mensagem de Commit',
+        commitChanges: 'Alterações do Commit',
+        commitPush: 'Commit & Push',
+        runTest: 'Executar Teste',
+        newAnalysis: 'Nova Análise',
+        analysisHistory: 'Histórico de Análises'
+      },
+      es: {
+        dashboard: 'Panel',
+        siteProfile: 'Perfil del Sitio',
+        qualityScans: 'Escaneos de Calidad',
+        siteMonitor: 'Monitor de Sitio',
+        pageSpeed: 'PageSpeed',
+        gitDeploy: 'Git & Deploy',
+        lighthouse: 'Lighthouse',
+        logs: 'Logs',
+        aiInsights: 'Insights IA',
+        quickActions: 'Acciones Rápidas',
+        runQuality: 'Ejecutar Calidad',
+        runPerf: 'Ejecutar Perf',
+        settings: 'Ajustes',
+        projectName: 'Nombre del Proyecto',
+        publishedUrl: 'URL del Sitio',
+        githubRepo: 'Repositorio GitHub',
+        githubToken: 'Token GitHub',
+        pageSpeedKey: 'Clave API PageSpeed',
+        geminiKey: 'Clave API Gemini',
+        saveSettings: 'Guardar Ajustes',
+        clearKeys: 'Borrar Claves API',
+        verify: 'Verificar',
+        profile: 'Perfil',
+        apiKeys: 'Claves API',
+        language: 'Idioma',
+        totalScans: 'Escaneos Totales',
+        avgBuild: 'Prom. Build',
+        avgRender: 'Prom. Render',
+        passRate: 'Tasa Aprobación',
+        newScan: 'Nuevo Scan',
+        report: 'Informe',
+        date: 'Fecha',
+        performance: 'Rendimiento',
+        totalReports: 'Total de Informes',
+        avgPerformance: 'Rendimiento Prom.',
+        avgAccessibility: 'Accesibilidad Prom.',
+        avgSeo: 'SEO Prom.',
+        totalLogs: 'Total de Logs',
+        passed: 'Aprobados',
+        failed: 'Fallidos',
+        other: 'Otros',
+        logFile: 'Archivo de Log',
+        noDataFound: 'Sin datos',
+        refresh: 'Actualizar',
+        gitStatus: 'Estado Git',
+        branch: 'Rama',
+        lastCommit: 'Último Commit',
+        filesChanged: 'archivo(s) cambiado(s)',
+        generateCommitMessage: 'Generar Mensaje de Commit',
+        commitChanges: 'Cambios del Commit',
+        commitPush: 'Commit & Push',
+        runTest: 'Ejecutar Prueba',
+        newAnalysis: 'Nuevo Análisis',
+        analysisHistory: 'Historial de Análisis'
+      }
+    };
+
+    let currentLang = 'en';
+
+    function initI18n() {
+      const settings = getSettings();
+      // Auto-detect if not set
+      if (!settings.language) {
+        const navLang = navigator.language;
+        if (navLang.startsWith('pt')) settings.language = 'pt-BR';
+        else if (navLang.startsWith('es')) settings.language = 'es';
+        else settings.language = 'en';
+        saveSettingsData(settings);
+      }
+      setLanguage(settings.language);
+    }
+
+    function setLanguage(lang) {
+      if (!translations[lang]) lang = 'en';
+      currentLang = lang;
+      
+      // Update DOM elements with data-i18n attribute
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) {
+          if(el.tagName === 'INPUT' && el.placeholder) {
+             el.placeholder = translations[lang][key];
+          } else {
+             // Handle icons separately if needed, or wrap text in span
+             // For simplicity, we assume text-only or we use a specific span
+             if(el.children.length === 0) {
+                 el.textContent = translations[lang][key];
+             } else {
+                 // Try to find a text node or a span with class 'i18n-text'
+                 const textSpan = el.querySelector('.i18n-text') || el.querySelector('.sidebar-text');
+                 if(textSpan) textSpan.textContent = translations[lang][key];
+             }
+          }
+        }
+      });
+
+      // Update Select in Settings if exists
+      const langSelect = document.getElementById('language-select');
+      if(langSelect) langSelect.value = lang;
+    }
+
+    function t(key) {
+      return translations[currentLang]?.[key] || key;
+    }
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      const isMobile = window.innerWidth < 768;
+
+      if (isMobile) {
+        // Mobile: Toggle Drawer
+        sidebar.classList.toggle('-translate-x-full');
+        overlay.classList.toggle('hidden');
+      } else {
+        // Desktop: Toggle Collapse
+        sidebarCollapsed = !sidebarCollapsed;
+        if (sidebarCollapsed) {
+          sidebar.classList.add('sidebar-collapsed');
+        } else {
+          sidebar.classList.remove('sidebar-collapsed');
+        }
+      }
+    }
+
+    // --- Settings Tabs ---
+    function switchSettingsTab(tab) {
+      document.querySelectorAll('.settings-tab').forEach(btn => {
+        if (btn.dataset.tab === tab) {
+          btn.classList.add('active', 'border-primary', 'text-primary');
+        } else {
+          btn.classList.remove('active', 'border-primary', 'text-primary');
+        }
+      });
+      document.getElementById('settings-profile-tab').classList.toggle('hidden', tab !== 'profile');
+      document.getElementById('settings-api-tab').classList.toggle('hidden', tab !== 'api');
+    }
+
+    // Auto-detect GitHub repo from .github.io URLs
+    function autoDetectGitHub() {
+      const url = document.getElementById('monitor-url-input').value;
+      const match = url.match(/https?:\/\/([^.]+)\.github\.io\/([^/]+)/);
+      if (match) {
+        document.getElementById('github-repo-input').value = `${match[1]}/${match[2]}`;
+      }
+    }
+
+    // --- API Verification ---
+    async function verifyGitHubToken() {
+      const token = document.getElementById('github-token-input').value.trim();
+      if (!token) return;
+      
+      const btn = document.getElementById('verify-github-btn');
+      const input = document.getElementById('github-token-input');
+      const icon = document.getElementById('github-status-icon');
+      
+      btn.disabled = true;
+      icon.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>';
+      icon.className = 'animate-spin';
+      
+      try {
+        const res = await fetch(`${API_BASE}/verify/github`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+        const json = await res.json();
+        
+        if (json.success) {
+          input.classList.remove('border-white/10', 'border-error');
+          input.classList.add('border-success');
+          icon.innerHTML = '<svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+          icon.className = '';
+          
+          // Display scopes
+          const settings = getSettings();
+          settings.githubScopes = json.scopes;
+          saveSettingsData(settings);
+          
+          showToast(`Token Valid! Scopes: ${json.scopes.join(', ')}`, 'success');
+        } else {
+          throw new Error();
+        }
+      } catch {
+        input.classList.remove('border-white/10', 'border-success');
+        input.classList.add('border-error');
+        icon.innerHTML = '<svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        icon.className = '';
+      }
+      btn.disabled = false;
+    }
+
+    async function verifyPageSpeedKey() {
+      const key = document.getElementById('pagespeed-key-input').value.trim();
+      if (!key) return;
+      
+      const btn = document.getElementById('verify-pagespeed-btn');
+      const input = document.getElementById('pagespeed-key-input');
+      const icon = document.getElementById('pagespeed-status-icon');
+      
+      btn.disabled = true;
+      icon.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>';
+      icon.className = 'animate-spin';
+      
+      try {
+        // Test with a generic Google URL
+        const res = await fetch(`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=https://www.google.com&key=${key}`);
+        if (res.ok) {
+          input.classList.remove('border-white/10', 'border-error');
+          input.classList.add('border-success');
+          icon.innerHTML = '<svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+          icon.className = '';
+        } else {
+          throw new Error();
+        }
+      } catch {
+        input.classList.remove('border-white/10', 'border-success');
+        input.classList.add('border-error');
+        icon.innerHTML = '<svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        icon.className = '';
+      }
+      btn.disabled = false;
+    }
+
+    async function verifyGeminiKey() {
+      const key = document.getElementById('gemini-key-input').value.trim();
+      if (!key) return;
+      
+      const btn = document.getElementById('verify-gemini-btn');
+      const input = document.getElementById('gemini-key-input');
+      const icon = document.getElementById('gemini-status-icon');
+      
+      btn.disabled = true;
+      icon.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>';
+      icon.className = 'animate-spin';
+      
+      try {
+        const res = await fetch(`${API_BASE}/verify/gemini`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key })
+        });
+        
+        const json = await res.json();
+        
+        if (json.success) {
+          input.classList.remove('border-white/10', 'border-error');
+          input.classList.add('border-success');
+          icon.innerHTML = '<svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+          icon.className = '';
+        } else {
+          console.error('Gemini Verification Failed:', json.error);
+          throw new Error(json.error || 'Verification failed');
+        }
+      } catch (e) {
+        console.error('Gemini Error:', e);
+        input.classList.remove('border-white/10', 'border-success');
+        input.classList.add('border-error');
+        icon.innerHTML = '<svg class="w-4 h-4 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        icon.className = '';
+      }
+      btn.disabled = false;
+    }
+
+    // --- Viewer Modal Logic with Navigation ---
+    let viewerReportsList = [];
+    let viewerCurrentIndex = 0;
+    let viewerType = 'quality'; // 'quality' or 'lighthouse'
+
+    function showViewer(title, content, format = 'html') {
+      const modal = document.getElementById('viewer-modal');
+      const container = document.getElementById('viewer-container');
+      const titleEl = document.getElementById('viewer-title');
+      const contentEl = document.getElementById('viewer-content');
+
+      titleEl.innerText = title;
+      
+      if (format === 'json') {
+        contentEl.innerHTML = `<pre class="text-xs text-blue-300 font-mono leading-relaxed bg-black/20 p-6 rounded-xl border border-white/5">${JSON.stringify(content, null, 2)}</pre>`;
+      } else if (format === 'markdown') {
+        contentEl.innerHTML = `<div class="prose prose-invert max-w-none text-sm leading-relaxed">${marked.parse(content)}</div>`;
+      } else {
+        contentEl.innerHTML = `<div class="prose prose-invert max-w-none text-sm leading-relaxed">${content}</div>`;
+      }
+
+      // Update navigation visibility
+      updateViewerNavigation();
+
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        container.classList.remove('scale-95', 'opacity-0');
+        container.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function updateViewerNavigation() {
+      const prevBtn = document.getElementById('viewer-prev-btn');
+      const nextBtn = document.getElementById('viewer-next-btn');
+      const counterEl = document.getElementById('viewer-counter');
+      const navContainer = prevBtn?.parentElement;
+      
+      if (prevBtn && nextBtn && counterEl && navContainer) {
+        if (viewerReportsList.length > 1) {
+          navContainer.style.display = 'flex';
+          counterEl.innerText = `${viewerCurrentIndex + 1} / ${viewerReportsList.length}`;
+          
+          prevBtn.disabled = viewerCurrentIndex === 0;
+          nextBtn.disabled = viewerCurrentIndex === viewerReportsList.length - 1;
+          prevBtn.style.opacity = viewerCurrentIndex === 0 ? '0.3' : '1';
+          nextBtn.style.opacity = viewerCurrentIndex === viewerReportsList.length - 1 ? '0.3' : '1';
+        } else {
+          navContainer.style.display = 'none';
+        }
+      }
+    }
+
+    async function viewQualityReport(filename) {
+      try {
+        const res = await fetch(`${API_BASE}/reports/quality`);
+        const json = await res.json();
+        viewerReportsList = json.data || [];
+        viewerType = 'quality';
+        viewerCurrentIndex = viewerReportsList.findIndex(r => r.filename === filename);
+        if (viewerCurrentIndex === -1) viewerCurrentIndex = 0;
+        
+        await displayCurrentReport();
+      } catch (err) {
+        showViewer('Error', `<div class="text-error">Failed to load report: ${err.message}</div>`, 'html');
+      }
+    }
+
+    async function viewLighthouseReport(filename) {
+      try {
+        const res = await fetch(`${API_BASE}/reports/lighthouse`);
+        const json = await res.json();
+        viewerReportsList = json.data || [];
+        viewerType = 'lighthouse';
+        viewerCurrentIndex = viewerReportsList.findIndex(r => r.filename === filename);
+        if (viewerCurrentIndex === -1) viewerCurrentIndex = 0;
+        
+        await displayCurrentReport();
+      } catch (err) {
+        showViewer('Error', `<div class="text-error">Failed to load report: ${err.message}</div>`, 'html');
+      }
+    }
+
+    async function displayCurrentReport() {
+      try {
+        if (viewerReportsList.length === 0) {
+          showViewer('No Reports', '<div class="text-muted">No reports available to display.</div>', 'html');
+          return;
+        }
+        
+        const report = viewerReportsList[viewerCurrentIndex];
+        if (!report) {
+          showViewer('Error', '<div class="text-error">Report not found at index ' + viewerCurrentIndex + '</div>', 'html');
+          return;
+        }
+        
+        const title = report.filename || 'Unknown Report';
+        
+        if (title.endsWith('.json')) {
+          // Format JSON report with syntax highlighting
+          const data = report.data;
+          if (!data) {
+            showViewer(title, '<div class="text-muted">Report data is empty</div>', 'html');
+            return;
+          }
+          const formattedContent = formatQualityReport(data, title);
+          showViewer(title, formattedContent, 'html');
+        } else if (title.endsWith('.md')) {
+          // Markdown report
+          const content = report.content || report.data || 'No content available';
+          showViewer(title, typeof content === 'string' ? content : JSON.stringify(content), 'markdown');
+        } else {
+          showViewer(title, report.data, 'json');
+        }
+      } catch (err) {
+        console.error('Error displaying report:', err);
+        showViewer('Error', `<div class="text-error">Error displaying report: ${err.message}</div>`, 'html');
+      }
+    }
+
+    function formatQualityReport(data, filename) {
+      if (!data) return '<div class="text-muted">No data available</div>';
+      
+      const status = data.summary?.status || data.status;
+      const statusClass = status === 'pass' ? 'text-success' : (status === 'fail' ? 'text-error' : 'text-warning');
+      const statusIcon = status === 'pass' ? '✓' : (status === 'fail' ? '✗' : '⚠');
+      
+      let html = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-white/10">
+            <div>
+              <h2 class="text-2xl font-bold text-white">${filename.replace('.json', '')}</h2>
+              <p class="text-sm text-muted">${new Date(data.meta?.generatedAt || data.timestamp || Date.now()).toLocaleString()} • ${data.meta?.preset || 'Unknown Preset'}</p>
+            </div>
+            <div class="flex items-center gap-2 px-4 py-2 rounded-lg ${status === 'pass' ? 'bg-success/10' : (status === 'fail' ? 'bg-error/10' : 'bg-warning/10')}">
+              <span class="text-2xl ${statusClass}">${statusIcon}</span>
+              <span class="${statusClass} font-bold uppercase">${status || 'Unknown'}</span>
+            </div>
+          </div>
+      `;
+      
+      // Metrics Summary Cards (Adapted for new schema)
+      const metrics = data.metrics || {};
+      const build = metrics.build || {};
+      
+      // Try to get values from new structure or fallback
+      const bundleSize = build.bundle_total_kb || data.raw?.build?.jsTotal;
+      const lintErrors = metrics.lint?.errorCount || data.raw?.lint?.errorCount || 0;
+      
+      const stats = [
+         { label: 'Bundle Size', value: bundleSize ? `${bundleSize}KB` : 'N/A', icon: '📦', color: 'text-blue-400' },
+         { label: 'Lint Errors', value: lintErrors, icon: '🧹', color: 'text-purple-400' },
+         { label: 'Violations', value: data.violations?.length || 0, icon: '⚠️', color: 'text-yellow-400' },
+         { label: 'Score', value: data.summary?.score || 'N/A', icon: '💎', color: 'text-pink-400' }
+      ];
+
+      html += `
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          ${stats.map(s => `
+            <div class="bg-surfaceHighlight/50 p-4 rounded-xl border border-white/5 flex flex-col items-center">
+               <span class="text-2xl mb-2">${s.icon}</span>
+               <span class="text-xs text-muted uppercase font-bold">${s.label}</span>
+               <span class="text-xl font-mono font-bold ${s.color}">${s.value}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      // Violations
+      if (data.violations && data.violations.length > 0) {
+        html += `
+          <div class="mt-8">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <span class="text-error bg-error/10 p-1 rounded">⚠️</span> Detailed Violations (${data.violations.length})
+            </h3>
+            <div class="space-y-3">
+              ${data.violations.map(v => {
+                const isFail = v.severity === 'error' || v.severity === 'fail';
+                return `
+                <div class="p-4 ${isFail ? 'bg-error/5 border-error/20' : 'bg-warning/5 border-warning/20'} border rounded-xl transition hover:bg-surfaceHighlight">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center gap-3">
+                       <span class="font-mono text-xs px-2 py-1 rounded ${isFail ? 'bg-error/20 text-error' : 'bg-warning/20 text-warning'}">${v.area || v.audit}</span>
+                       <span class="font-medium text-sm text-white">${v.metric || v.message || v.id}</span>
+                    </div>
+                    <span class="text-xs uppercase font-bold ${isFail ? 'text-error' : 'text-warning'}">${v.severity}</span>
+                  </div>
+                  ${v.value !== undefined ? `
+                    <div class="mt-2 flex items-center gap-4 text-xs font-mono">
+                      <span class="text-white">Value: <span class="font-bold">${v.value}</span></span>
+                      ${v.threshold ? `<span class="text-muted">Limit: ${v.threshold}</span>` : ''}
+                    </div>
+                  ` : ''}
+                  ${v.selector ? `<div class="mt-2 text-xs font-mono text-muted bg-black/20 p-2 rounded truncate block w-full">${v.selector}</div>` : ''}
+                  ${v.text ? `<div class="mt-1 text-xs text-muted italic">"${v.text}"</div>` : ''}
+                </div>
+              `}).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+         html += `<div class="mt-8 p-8 text-center bg-success/5 border border-success/10 rounded-xl text-success">✨ No violations found! Great job.</div>`;
+      }
+      
+      // Raw data
+      html += `
+        <details class="mt-8">
+          <summary class="text-sm text-muted cursor-pointer hover:text-white transition select-none">Show Raw JSON Data</summary>
+          <pre class="mt-3 text-[10px] text-blue-300 font-mono leading-relaxed bg-[#0d1117] p-4 rounded-xl border border-white/5 overflow-auto max-h-96 shadow-inner">${JSON.stringify(data, null, 2)}</pre>
+        </details>
+      `;
+      
+      html += '</div>';
+      return html;
+    }
+
+    function viewerPrev() {
+      if (viewerCurrentIndex > 0) {
+        viewerCurrentIndex--;
+        displayCurrentReport();
+      }
+    }
+
+    function viewerNext() {
+      if (viewerCurrentIndex < viewerReportsList.length - 1) {
+        viewerCurrentIndex++;
+        displayCurrentReport();
+      }
+    }
+
+    function closeViewer() {
+      const modal = document.getElementById('viewer-modal');
+      const container = document.getElementById('viewer-container');
+      
+      container.classList.remove('scale-100', 'opacity-100');
+      container.classList.add('scale-95', 'opacity-0');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        viewerReportsList = [];
+        viewerCurrentIndex = 0;
+      }, 300);
+    }
+
+    function copyViewerContent() {
+      const content = document.getElementById('viewer-content').innerText;
+      navigator.clipboard.writeText(content).then(() => {
+        const btn = document.querySelector('[onclick="copyViewerContent()"]');
+        if (btn) {
+          const original = btn.innerHTML;
+          btn.innerHTML = '<span>✓</span> Copied';
+          setTimeout(() => { btn.innerHTML = original; }, 1500);
+        }
+      });
+    }
+
+    // --- Settings Modal ---
+    function openSettings() {
+      const settings = getSettings();
+      document.getElementById('project-name-input').value = settings.projectName || '';
+      document.getElementById('github-token-input').value = settings.githubToken || '';
+      document.getElementById('monitor-url-input').value = settings.monitorUrl || '';
+      document.getElementById('github-repo-input').value = settings.githubRepo || '';
+      document.getElementById('pagespeed-key-input').value = settings.pagespeedKey || '';
+      document.getElementById('gemini-key-input').value = settings.geminiKey || '';
+      switchSettingsTab('profile');
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+    
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+    
+    function saveSettings() {
+      const data = {
+        projectName: document.getElementById('project-name-input').value.trim(),
+        githubToken: document.getElementById('github-token-input').value.trim(),
+        monitorUrl: document.getElementById('monitor-url-input').value.trim(),
+        githubRepo: document.getElementById('github-repo-input').value.trim(),
+        pagespeedKey: document.getElementById('pagespeed-key-input').value.trim(),
+        geminiKey: document.getElementById('gemini-key-input').value.trim(),
+        language: document.getElementById('language-select').value
+      };
+      saveSettingsData(data);
+      setLanguage(data.language); // Apply immediately
+      closeSettings();
+      // Refresh current view
+      if (currentTab === 'monitor') loadMonitorView();
+      if (currentTab === 'profile') loadProfileView();
+    }
+    
+    function clearApiKeys() {
+      if (confirm('Clear all API keys?')) {
+        const settings = getSettings();
+        settings.githubToken = '';
+        settings.pagespeedKey = '';
+        settings.geminiKey = '';
+        saveSettingsData(settings);
+        document.getElementById('github-token-input').value = '';
+        document.getElementById('pagespeed-key-input').value = '';
+        document.getElementById('gemini-key-input').value = '';
+      }
+    }
+    
+    function loadSettings() {
+      // Pre-load settings on init (no UI action needed)
+    }
+
+    // --- Navigation ---
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      document.querySelectorAll('#nav-links button').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      if (tab === 'dashboard') loadDashboard();
+      if (tab === 'profile') loadProfileView();
+      if (tab === 'quality') loadQualityView();
+      if (tab === 'monitor') loadMonitorView();
+      if (tab === 'pagespeed') loadPageSpeedView();
+      if (tab === 'git') loadGitView();
+      if (tab === 'reports') loadReportsView();
+      if (tab === 'logs') loadLogsView();
+      if (tab === 'insights') loadInsightsView();
+    }
+
+    // --- Views ---
+
+    let globalReports = [];
+    let currentFilter = 'all';
+
+    async function loadDashboard() {
+      const container = document.getElementById('content-area');
+      container.innerHTML = '<div class="text-muted animate-pulse">Loading dashboard...</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/reports/quality`);
+        const json = await res.json();
+        globalReports = json.data || [];
+        renderDashboard();
+      } catch (err) {
+        container.innerHTML = `<div class="p-4 bg-error/10 text-error rounded">Failed to load dashboard: ${err.message}</div>`;
+      }
+    }
+
+    function filterDashboard() {
+      currentFilter = document.getElementById('target-filter').value;
+      renderDashboard();
+    }
+
+    function renderDashboard() {
+      const container = document.getElementById('content-area');
+      const filteredReports = currentFilter === 'all' 
+        ? globalReports 
+        : globalReports.filter(r => (r.data.target || 'app') === currentFilter);
+
+      const latest = filteredReports.length > 0 ? filteredReports[0].data : null;
+      const previous = filteredReports.length > 1 ? filteredReports[1].data : null;
+      
+      const getScore = (val) => (val === undefined || val === null) ? null : Math.round(val);
+      
+      // Adapt to New Schema (metrics vs scores)
+      // New schema puts detailed metrics in data.metrics, but might not have category scores yet.
+      // We will try to read from metrics.scores if available, or summary.score.
+      
+      const scores = { 
+          build: getScore(latest?.metrics?.scores?.build ?? latest?.scores?.build), 
+          render: getScore(latest?.metrics?.scores?.render ?? latest?.scores?.render), 
+          ux: getScore(latest?.metrics?.scores?.ux ?? latest?.scores?.ux), 
+          a11y: getScore(latest?.metrics?.scores?.a11y ?? latest?.scores?.a11y), 
+          seo: getScore(latest?.metrics?.scores?.seo ?? latest?.scores?.seo) 
+      };
+
+      const prevScores = previous ? {
+          build: getScore(previous.metrics?.scores?.build ?? previous.scores?.build),
+          render: getScore(previous.metrics?.scores?.render ?? previous.scores?.render),
+          ux: getScore(previous.metrics?.scores?.ux ?? previous.scores?.ux),
+          a11y: getScore(previous.metrics?.scores?.a11y ?? previous.scores?.a11y),
+          seo: getScore(previous.metrics?.scores?.seo ?? previous.scores?.seo)
+      } : null;
+
+      const getTrend = (curr, prev) => {
+        if (curr === null || prev === null) return 0;
+        return curr - prev;
+      };
+
+      // Calculate Best Category
+      let bestCategory = 'None';
+      let bestScore = -1;
+      
+      // If we have no detailed scores, use Summary Score
+      if (Object.values(scores).every(s => s === null)) {
+         if (latest?.summary?.score) {
+             bestScore = latest.summary.score;
+             bestCategory = 'OVERALL';
+             // Fill build score for visual if nothing else
+             scores.build = bestScore; 
+         }
+      } else {
+        Object.entries(scores).forEach(([cat, score]) => {
+            if (score !== null && score > bestScore) {
+                bestScore = score;
+                bestCategory = cat.toUpperCase();
+            }
+        });
+      }
+
+      // Calculate Average Score
+      const validScores = Object.values(scores).filter(s => s !== null);
+      const avgScore = validScores.length ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) : (latest?.summary?.score || 0);
+
+      const getColor = (s) => s === null ? 'text-muted' : (s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error'));
+      const getBg = (s) => s === null ? 'bg-white/5' : (s >= 90 ? 'bg-success' : (s >= 50 ? 'bg-warning' : 'bg-error'));
+
+      const settings = getSettings();
+      const projectName = settings.projectName || 'Quality Core';
+      const projectVersion = latest?.meta?.version || 'v1.0.0'; 
+
+      container.innerHTML = `
+        <header class="flex justify-between items-end mb-8 bg-surfaceHighlight/20 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-3xl font-bold text-white">${projectName}</h1>
+                <span class="px-2 py-0.5 rounded text-xs font-mono bg-white/10 text-muted">${projectVersion}</span>
+                <span class="px-2 py-0.5 rounded text-xs font-mono ${latest?.meta?.generatedAt || latest?.timestamp ? 'bg-success/10 text-success' : 'bg-white/5 text-muted'}">
+                    ${latest ? 'Active' : 'No Data'}
+                </span>
+            </div>
+            <p class="text-muted text-sm flex items-center gap-4">
+                <span>Quality Core Metrics</span>
+                <span class="w-1 h-1 rounded-full bg-muted"></span>
+                <span>Last Scan: ${latest ? new Date(latest.meta?.generatedAt || latest.timestamp).toLocaleString() : 'Never'}</span>
+                <span class="w-1 h-1 rounded-full bg-muted"></span>
+                <span>Env: ${latest?.meta?.preset || (currentFilter === 'all' ? 'Combined' : currentFilter.toUpperCase())}</span>
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <select id="target-filter" onchange="filterDashboard()" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all" ${currentFilter === 'all' ? 'selected' : ''}>All Targets</option>
+              <option value="app" ${currentFilter === 'app' ? 'selected' : ''}>Application</option>
+              <option value="promo" ${currentFilter === 'promo' ? 'selected' : ''}>Promo Site</option>
+            </select>
+            <button onclick="loadDashboard()" class="px-4 py-2 bg-white/5 text-muted rounded-lg hover:bg-white/10 transition text-sm flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Refresh
+            </button>
+          </div>
+        </header>
+        
+        <!-- Score Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+          ${renderScoreCard('Build', scores.build, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>', getColor(scores.build), getBg(scores.build), getTrend(scores.build, prevScores?.build))}
+          ${renderScoreCard('Render', scores.render, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', getColor(scores.render), getBg(scores.render), getTrend(scores.render, prevScores?.render))}
+          ${renderScoreCard('UX', scores.ux, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/></svg>', getColor(scores.ux), getBg(scores.ux), getTrend(scores.ux, prevScores?.ux))}
+          ${renderScoreCard('A11y', scores.a11y, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>', getColor(scores.a11y), getBg(scores.a11y), getTrend(scores.a11y, prevScores?.a11y))}
+          ${renderScoreCard('SEO', scores.seo, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>', getColor(scores.seo), getBg(scores.seo), getTrend(scores.seo, prevScores?.seo))}
+        </div>
+
+        <!-- Trend Chart -->
+        <div class="glass-card p-6 mb-8">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+            <div>
+              <h3 class="text-sm font-medium text-muted uppercase tracking-widest">Score Trend</h3>
+              <p class="text-xs text-muted mt-1" id="chart-site-name">${settings.projectName || settings.monitorUrl || 'Local Project'}</p>
+            </div>
+            <div class="flex gap-2 items-center">
+              <div id="period-filters" class="flex flex-wrap gap-1 bg-surfaceHighlight/50 p-1 rounded-lg">
+                <button onclick="setPeriodFilter('1h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="1h">1h</button>
+                <button onclick="setPeriodFilter('6h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="6h">6h</button>
+                <button onclick="setPeriodFilter('12h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="12h">12h</button>
+                <button onclick="setPeriodFilter('24h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all bg-primary text-black" data-period="24h">24h</button>
+                <button onclick="setPeriodFilter('7d')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="7d">7d</button>
+                <button onclick="setPeriodFilter('30d')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="30d">30d</button>
+                <button onclick="setPeriodFilter('6m')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="6m">6m</button>
+                <button onclick="setPeriodFilter('12m')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="12m">12m</button>
+                <button onclick="setPeriodFilter('all')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="all">All</button>
+              </div>
+              <button onclick="exportChartSVG()" class="px-3 py-1 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:text-white transition" title="Save as SVG">📊 SVG</button>
+            </div>
+          </div>
+          <div class="relative w-full" style="height: 280px; max-height: 40vh;">
+            <canvas id="trend-chart" class="absolute inset-0 w-full h-full"></canvas>
+          </div>
+        </div>
+
+        <!-- Recent Scans & Quick Stats -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass-card p-6">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 
+              Recent Scans
+            </h3>
+            <div class="space-y-2" id="recent-scans-list">
+              ${renderRecentScans(filteredReports)}
+            </div>
+          </div>
+          
+          <div class="glass-card p-6">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg> 
+              Quick Stats
+            </h3>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+               <div class="bg-surfaceHighlight/50 p-4 rounded-lg flex items-center justify-between">
+                 <div>
+                    <div class="text-2xl font-mono font-bold text-white">${avgScore}%</div>
+                    <div class="text-xs text-muted">Average Score</div>
+                 </div>
+                 <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-muted">avg</div>
+               </div>
+               <div class="bg-surfaceHighlight/50 p-4 rounded-lg flex items-center justify-between">
+                 <div>
+                    <div class="text-2xl font-mono font-bold text-white">${bestCategory}</div>
+                    <div class="text-xs text-muted">Best Category</div>
+                 </div>
+                 <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success">★</div>
+               </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
+                <div class="text-2xl font-mono font-bold text-white">${filteredReports.length}</div>
+                <div class="text-xs text-muted">Total Scans</div>
+              </div>
+              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
+                 <div class="text-2xl font-mono font-bold text-white">${filteredReports.length > 0 ? Math.round((filteredReports.filter(r=>r.data?.status==='pass').length/filteredReports.length)*100) : 0}%</div>
+                 <div class="text-xs text-muted">Pass Rate</div>
+              </div>
+              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
+                <div class="text-2xl font-mono font-bold ${latest?.summary?.status === 'pass' || latest?.status === 'pass' ? 'text-success' : 'text-error'}">
+                  ${latest?.summary?.status === 'pass' || latest?.status === 'pass' ? 
+                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : 
+                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'}
+                </div>
+                <div class="text-xs text-muted">Last Status</div>
+              </div>
+            </div>
+            ${latest?.violations?.length > 0 ? `
+              <div class="mt-4 pt-4 border-t border-white/5">
+                <div class="text-xs text-muted uppercase tracking-widest mb-2">Top Issues</div>
+                <div class="space-y-2">
+                  ${latest.violations.slice(0, 3).map(v => `
+                    <div class="flex items-center justify-between text-xs p-2 bg-error/5 rounded border border-error/10">
+                      <span class="text-error font-mono">${v.id}</span>
+                      <span class="text-muted block max-w-[180px] truncate" title="${v.value}">${v.value}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="glass-card p-6 mt-6">
+           <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Quick Actions
+           </h3>
+           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <button onclick="runCommand('quality:gate')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">💎</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Full Quality Gate</span>
+              </button>
+              <button onclick="runCommand('lighthouse')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🔦</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Perf Audit</span>
+              </button>
+              <button onclick="runCommand('audit:app')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">📱</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Audit App</span>
+              </button>
+              <button onclick="runCommand('audit:promo')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">📣</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Audit Promo</span>
+              </button>
+              <button onclick="runCommand('health')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🏥</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Health Check</span>
+              </button>
+              <button onclick="runCommand('ops:optimize')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
+                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🖼️</span>
+                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Optimize Images</span>
+              </button>
+           </div>
+        </div>
+      `;
+
+      // Render chart
+      renderTrendChart(filteredReports, currentPeriod); // Using currentPeriod state
+    }
+
+    function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0) {
+      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '•');
+      const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
+      
+      return `
+        <div class="glass-card p-5 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-colors">
+          <div class="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity text-5xl pointer-events-none">${icon}</div>
+          <div class="flex justify-between items-start mb-2">
+             <div class="text-[10px] text-muted font-bold uppercase tracking-[0.2em]">${title}</div>
+             ${trend !== 0 ? `<div class="text-[10px] font-mono ${trendColor}">${trendIcon} ${Math.abs(trend)}</div>` : ''}
+          </div>
+          <div class="text-4xl font-bold font-mono ${colorClass} tracking-tight">${score === null ? '-' : score}</div>
+          <div class="w-full bg-white/5 h-1 mt-4 rounded-full overflow-hidden">
+            <div class="h-full ${bgClass} transition-all duration-1000" style="width: ${score === null ? 0 : score}%"></div>
+          </div>
+        </div>`;
+    }
+
+    function renderRecentScans(reports) {
+      if (!reports || reports.length === 0) return '<div class="text-muted text-sm italic p-4">No scans yet</div>';
+      return `
+        <div class="overflow-hidden">
+            ${reports.slice(0, 5).map(r => {
+              const target = r.data?.target ? r.data.target.toUpperCase() : (r.data?.url?.includes('github.io') ? 'PROMO' : 'APP');
+              const targetClass = target === 'PROMO' ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+              
+              return `
+              <div class="flex items-center justify-between py-3 px-4 border-b border-white/[0.04] hover:bg-white/[0.02] transition cursor-pointer group last:border-0" onclick="viewQualityReport('${r.filename}')">
+                <div class="flex items-center gap-4">
+                  <div class="w-1.5 h-1.5 rounded-full ${r.data?.status === 'pass' ? 'bg-success shadow-[0_0_8px_rgba(34,197,94,0.4)]' : 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.4)]'}"></div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                       <span class="text-sm font-medium text-white/90 group-hover:text-white transition">${r.filename.replace('.json', '')}</span>
+                       <span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${targetClass}">${target}</span>
+                    </div>
+                    <div class="text-[10px] text-muted font-mono mt-0.5">${new Date(r.timestamp).toLocaleString()}</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3">
+                   <span class="font-mono text-xs ${r.data?.status === 'pass' ? 'text-success' : 'text-error'}">${r.data?.status === 'pass' ? 'PASS' : 'FAIL'}</span>
+                   <svg class="w-4 h-4 text-muted opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </div>
+              </div>
+            `}).join('')}
+        </div>`;
+    }
+
+    let currentPeriod = '24h';
+    function setPeriodFilter(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.period-btn').forEach(btn => {
+        if (btn.dataset.period === period) {
+          btn.classList.add('bg-primary', 'text-black');
+          btn.classList.remove('text-muted');
+        } else {
+          btn.classList.remove('bg-primary', 'text-black');
+          btn.classList.add('text-muted');
+        }
+      });
+      // Re-fetch and re-render chart
+      fetch(`${API_BASE}/reports/quality`).then(r => r.json()).then(json => {
+        renderTrendChart(json.data || [], period);
+      });
+    }
+
+    function renderTrendChart(reports, period) {
+      const canvas = document.getElementById('trend-chart');
+      if (!canvas) return;
+      const settings = getSettings();
+      
+      const now = Date.now();
+      const siteName = settings.projectName || settings.monitorUrl || 'Local Project';
+      
+      // Period configuration: intervals, intervalMs, labelFormat, and periodMs
+      const periodConfig = {
+        '1h':   { intervals: 12,  ms: 1*60*60*1000,       intervalDiv: 12,  label: d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` },
+        '6h':   { intervals: 12,  ms: 6*60*60*1000,       intervalDiv: 12,  label: d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` },
+        '12h':  { intervals: 24,  ms: 12*60*60*1000,      intervalDiv: 24,  label: d => `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` },
+        '24h':  { intervals: 24,  ms: 24*60*60*1000,      intervalDiv: 24,  label: d => `${d.getHours()}h` },
+        '7d':   { intervals: 28,  ms: 7*24*60*60*1000,    intervalDiv: 28,  label: d => `${d.getDate()}/${d.getMonth()+1}` },
+        '30d':  { intervals: 30,  ms: 30*24*60*60*1000,   intervalDiv: 30,  label: d => `${d.getDate()}/${d.getMonth()+1}` },
+        '6m':   { intervals: 26,  ms: 180*24*60*60*1000,  intervalDiv: 26,  label: d => `${d.getDate()}/${d.getMonth()+1}` },
+        '12m':  { intervals: 12,  ms: 365*24*60*60*1000,  intervalDiv: 12,  label: d => `${d.toLocaleString('default', {month:'short'})}` },
+        'all':  { intervals: 30,  ms: Infinity,          intervalDiv: 30,  label: d => `${d.getDate()}/${d.getMonth()+1}` }
+      };
+      
+      const config = periodConfig[period] || periodConfig['24h'];
+      const intervals = config.intervals;
+      const periodMs = config.ms;
+      const intervalMs = periodMs === Infinity ? 
+        (reports.length > 1 ? (now - new Date(reports[reports.length-1]?.timestamp).getTime()) / intervals : 24*60*60*1000) :
+        periodMs / intervals;
+      const labelFormat = config.label;
+      const cutoff = periodMs === Infinity ? 0 : now - periodMs;
+      
+      // Generate labels for timeline
+      const labels = [];
+      const buildData = [];
+      const renderData = [];
+      
+      for (let i = intervals - 1; i >= 0; i--) {
+        const time = now - (i * intervalMs);
+        const d = new Date(time);
+        labels.push(labelFormat(d));
+        
+        // Find closest data point within this interval
+        const intervalStart = time - intervalMs / 2;
+        const intervalEnd = time + intervalMs / 2;
+        
+        const matchingReports = reports.filter(r => {
+          const t = new Date(r.timestamp).getTime();
+          return t >= intervalStart && t < intervalEnd && t > cutoff;
+        });
+        
+        if (matchingReports.length > 0) {
+          // Average values for this interval
+          const avgBuild = matchingReports.reduce((sum, r) => sum + (r.data?.scores?.build || 0), 0) / matchingReports.length;
+          const avgRender = matchingReports.reduce((sum, r) => sum + (r.data?.scores?.render || 0), 0) / matchingReports.length;
+          buildData.push(Math.round(avgBuild));
+          renderData.push(Math.round(avgRender));
+        } else {
+          buildData.push(null); // null creates gaps in chart
+          renderData.push(null);
+        }
+      }
+      
+      if (trendChart) trendChart.destroy();
+      
+      trendChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Build', data: buildData, borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: true },
+            { label: 'Render', data: renderData, borderColor: '#f59e0b', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, spanGaps: true },
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 11 } } },
+            title: { display: true, text: `${siteName} - ${period.toUpperCase()}`, color: '#666', font: { size: 12 } }
+          },
+          scales: {
+            x: { 
+              grid: { color: 'rgba(255,255,255,0.03)' }, 
+              ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } } 
+            },
+            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
+          }
+        }
+      });
+    }
+
+    function exportChartSVG() {
+      const canvas = document.getElementById('trend-chart');
+      if (!canvas) return;
+      
+      // Convert canvas to SVG-like format
+      const dataUrl = canvas.toDataURL('image/png');
+      const settings = getSettings();
+      const siteName = (settings.projectName || 'chart').replace(/[^a-z0-9]/gi, '-');
+      
+      // Create an SVG wrapper with the canvas image
+      const width = canvas.width;
+      const height = canvas.height;
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}">
+  <image width="${width}" height="${height}" xlink:href="${dataUrl}"/>
+</svg>`;
+      
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `score-trend-${siteName}-${currentPeriod}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // --- Monitor View ---
+    let monitorChart = null;
+
+    async function loadMonitorView() {
+      const container = document.getElementById('content-area');
+      const settings = getSettings();
+      
+      if (!settings.monitorUrl) {
+        container.innerHTML = `
+          <div class="glass-card p-8 text-center">
+            <div class="text-4xl mb-4">🔧</div>
+            <h3 class="text-lg font-bold text-white mb-2">No Site Configured</h3>
+            <p class="text-muted mb-4">Add your GitHub Pages URL in Settings to start monitoring.</p>
+            <button onclick="openSettings()" class="px-6 py-3 bg-primary text-black font-bold rounded-lg">Open Settings</button>
+          </div>
+        `;
+        return;
+      }
+      
+      // Calculate stats from history
+      const recentPings = pingHistory.filter(p => p.url === settings.monitorUrl);
+      const latencies = recentPings.map(p => p.latency).filter(l => l > 0);
+      const avgLatency = latencies.length > 0 ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : 0;
+      const minLatency = latencies.length > 0 ? Math.min(...latencies) : 0;
+      const maxLatency = latencies.length > 0 ? Math.max(...latencies) : 0;
+      const uptime = recentPings.length > 0 ? Math.round((recentPings.filter(p => p.ok).length / recentPings.length) * 100) : 0;
+      
+      container.innerHTML = `
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/10">
+          <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold text-white">📡 Site Monitor</h1>
+            <span class="text-xs text-muted font-mono">${settings.monitorUrl}</span>
+          </div>
+          <button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition">
+            <span class="animate-pulse">●</span> Ping Now
+          </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+          <div class="glass-card p-4 text-center">
+            <div id="current-status" class="flex items-center justify-center gap-2 text-lg font-bold text-muted">
+              <div class="w-3 h-3 rounded-full bg-muted animate-pulse"></div>
+              Checking
+            </div>
+            <div class="text-xs text-muted">Status</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div id="current-latency" class="text-2xl font-bold font-mono text-white">--</div>
+            <div class="text-xs text-muted">Current (ms)</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono text-white">${avgLatency}</div>
+            <div class="text-xs text-muted">Avg (ms)</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono text-muted">${minLatency} / ${maxLatency}</div>
+            <div class="text-xs text-muted">Min / Max (ms)</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono ${uptime >= 95 ? 'text-success' : (uptime >= 80 ? 'text-warning' : 'text-error')}">${uptime}%</div>
+            <div class="text-xs text-muted">Uptime</div>
+          </div>
+        </div>
+
+        <!-- Latency Chart -->
+        <div class="glass-card p-6 mb-6">
+          <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">📈 Response Time History</h3>
+            <div class="flex gap-2 items-center">
+              <div class="flex gap-1 bg-surfaceHighlight/50 p-1 rounded-lg">
+                <button onclick="setMonitorPeriod('1h')" class="monitor-period-btn px-3 py-1 text-xs font-medium rounded transition-all ${monitorPeriod === '1h' ? 'bg-primary text-black' : 'text-muted hover:text-white'}" data-period="1h">1h</button>
+                <button onclick="setMonitorPeriod('12h')" class="monitor-period-btn px-3 py-1 text-xs font-medium rounded transition-all ${monitorPeriod === '12h' ? 'bg-primary text-black' : 'text-muted hover:text-white'}" data-period="12h">12h</button>
+                <button onclick="setMonitorPeriod('24h')" class="monitor-period-btn px-3 py-1 text-xs font-medium rounded transition-all ${monitorPeriod === '24h' ? 'bg-primary text-black' : 'text-muted hover:text-white'}" data-period="24h">24h</button>
+              </div>
+              <button onclick="exportMonitorChartSVG()" class="px-2 py-1 text-xs bg-surfaceHighlight text-muted rounded hover:text-white">💾 SVG</button>
+            </div>
+          </div>
+          <div class="h-48">
+            <canvas id="monitor-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- GitHub Status -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">🚀 GitHub Actions</h3>
+            <div id="actions-status">
+              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">Loading...</div>' : '<div class="text-muted text-sm">Configure GitHub token in Settings</div>'}
+            </div>
+          </div>
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">📝 Recent Commits</h3>
+            <div id="commits-list" class="space-y-2 max-h-40 overflow-y-auto">
+              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">Loading...</div>' : '<div class="text-muted text-sm">Configure GitHub token and repo</div>'}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Initial ping and load data
+      pingMonitoredSite();
+      renderMonitorChart();
+      if (settings.githubToken && settings.githubRepo) {
+        loadGitHubStatus();
+      }
+    }
+
+    function setMonitorPeriod(period) {
+      monitorPeriod = period;
+      document.querySelectorAll('.monitor-period-btn').forEach(btn => {
+        if (btn.dataset.period === period) {
+          btn.classList.add('bg-primary', 'text-black');
+          btn.classList.remove('text-muted');
+        } else {
+          btn.classList.remove('bg-primary', 'text-black');
+          btn.classList.add('text-muted');
+        }
+      });
+      renderMonitorChart();
+    }
+
+    function renderMonitorChart() {
+      const canvas = document.getElementById('monitor-chart');
+      if (!canvas) return;
+      
+      const settings = getSettings();
+      const now = Date.now();
+      const periodMs = { '1h': 60*60*1000, '12h': 12*60*60*1000, '24h': 24*60*60*1000 };
+      const cutoff = now - (periodMs[monitorPeriod] || periodMs['1h']);
+      
+      const filtered = pingHistory
+        .filter(p => p.url === settings.monitorUrl && p.timestamp > cutoff)
+        .sort((a, b) => a.timestamp - b.timestamp);
+      
+      const labels = filtered.map(p => {
+        const d = new Date(p.timestamp);
+        return `${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+      });
+      
+      const data = filtered.map(p => p.latency);
+      
+      if (monitorChart) monitorChart.destroy();
+      
+      monitorChart = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Response Time (ms)',
+            data,
+            borderColor: '#22d3ee',
+            backgroundColor: 'rgba(34, 211, 238, 0.1)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: `${settings.projectName || 'Site'} - ${monitorPeriod.toUpperCase()}`, color: '#666', font: { size: 11 } }
+          },
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666', font: { size: 9 }, maxRotation: 45 } },
+            y: { min: 0, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
+          }
+        }
+      });
+    }
+
+    function exportMonitorChartSVG() {
+      const canvas = document.getElementById('monitor-chart');
+      if (!canvas) return;
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      const settings = getSettings();
+      const siteName = (settings.projectName || 'monitor').replace(/[^a-z0-9]/gi, '-');
+      
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${canvas.width}" height="${canvas.height}">
+  <image width="${canvas.width}" height="${canvas.height}" xlink:href="${dataUrl}"/>
+</svg>`;
+      
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `monitor-${siteName}-${monitorPeriod}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function pingMonitoredSite() {
+      const settings = getSettings();
+      if (!settings.monitorUrl) return;
+      
+      const statusEl = document.getElementById('current-status');
+      const latencyEl = document.getElementById('current-latency');
+      
+      if (statusEl) {
+        statusEl.innerHTML = `<div class="w-3 h-3 rounded-full bg-warning animate-pulse"></div><span class="text-warning">Pinging</span>`;
+      }
+      
+      const start = Date.now();
+      try {
+        // Use image ping technique (works cross-origin)
+        await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve; // Even error means server responded
+          img.src = settings.monitorUrl + '/favicon.ico?' + Date.now();
+          setTimeout(() => reject(new Error('Timeout')), 10000);
+        });
+        
+        const latency = Date.now() - start;
+        const status = latency < 1000 ? 'online' : 'slow';
+        const color = status === 'online' ? 'success' : 'warning';
+        
+        // Save to history
+        pingHistory.push({
+          url: settings.monitorUrl,
+          timestamp: Date.now(),
+          latency,
+          ok: true
+        });
+        // Keep last 500 pings
+        if (pingHistory.length > 500) pingHistory = pingHistory.slice(-500);
+        localStorage.setItem('pingHistory', JSON.stringify(pingHistory));
+        
+        if (statusEl) {
+          statusEl.innerHTML = `<div class="w-3 h-3 rounded-full bg-${color}"></div><span class="text-${color}">${status === 'online' ? 'Online' : 'Slow'}</span>`;
+        }
+        if (latencyEl) {
+          latencyEl.textContent = latency;
+          latencyEl.className = `text-2xl font-bold font-mono text-${color}`;
+        }
+        
+        // Update chart
+        renderMonitorChart();
+        
+      } catch (e) {
+        // Save failed ping
+        pingHistory.push({
+          url: settings.monitorUrl,
+          timestamp: Date.now(),
+          latency: 0,
+          ok: false
+        });
+        if (pingHistory.length > 500) pingHistory = pingHistory.slice(-500);
+        localStorage.setItem('pingHistory', JSON.stringify(pingHistory));
+        
+        if (statusEl) {
+          statusEl.innerHTML = `<div class="w-3 h-3 rounded-full bg-error"></div><span class="text-error">Offline</span>`;
+        }
+        if (latencyEl) {
+          latencyEl.textContent = '--';
+          latencyEl.className = 'text-2xl font-bold font-mono text-error';
+        }
+      }
+    }
+
+    // --- PageSpeed View ---
+    async function loadPageSpeedView() {
+      const container = document.getElementById('content-area');
+      const settings = getSettings();
+      
+      container.innerHTML = `
+        <header class="flex justify-between items-end mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2">🚀 PageSpeed Insights</h1>
+            <p class="text-muted text-sm">Remote Lighthouse test via Google API</p>
+          </div>
+          <button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
+            <span>🚀</span> Run Test
+          </button>
+        </header>
+
+        <!-- Current Results -->
+        <div id="psi-results"></div>
+
+        <!-- History -->
+        <h3 class="text-lg font-bold text-white mb-4 mt-8 flex items-center gap-2">📜 Scan History</h3>
+        <div class="grid grid-cols-1 gap-4" id="psi-history-grid">
+           <div class="text-muted animate-pulse">Loading history...</div>
+        </div>
+      `;
+
+      // Load History
+      try {
+        const res = await fetch(`${API_BASE}/reports/lighthouse`);
+        const json = await res.json();
+        const grid = document.getElementById('psi-history-grid');
+        
+        if(!json.data || json.data.length === 0) {
+          grid.innerHTML = '<div class="p-8 text-center text-muted border border-dashed border-white/10 rounded-xl">No history found.</div>';
+        } else {
+          // Calculate average scores
+          const scores = json.data.reduce((acc, r) => {
+            const tempCats = r.data?.categories || {};
+            acc.perf += tempCats.performance?.score || 0;
+            acc.a11y += tempCats.accessibility?.score || 0;
+            acc.seo += tempCats.seo?.score || 0;
+            return acc;
+          }, { perf: 0, a11y: 0, seo: 0 });
+          
+          const count = json.data.length;
+          
+          // Add metric cards above history
+          const metricsHtml = `
+            <div class="grid grid-cols-3 gap-4 mb-8">
+              ${renderMetricCard('Avg Performance', Math.round((scores.perf / count) * 100))}
+              ${renderMetricCard('Avg Accessibility', Math.round((scores.a11y / count) * 100))}
+              ${renderMetricCard('Avg SEO', Math.round((scores.seo / count) * 100))}
+            </div>
+          `;
+          
+          // Render list
+          grid.innerHTML = json.data.map(r => {
+             const cats = r.data?.categories || {};
+             return `
+              <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-primary/30 transition cursor-pointer" onclick="viewLighthouseReport('${r.filename}')">
+                <div class="flex items-center gap-4">
+                  <div class="p-2 bg-surfaceHighlight rounded text-xl">📱</div>
+                  <div>
+                    <div class="font-mono text-sm text-white">${r.filename}</div>
+                    <div class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</div>
+                  </div>
+                </div>
+                <div class="flex gap-4">
+                  ${renderMiniScore('Perf', (cats.performance?.score || 0) * 100)}
+                  ${renderMiniScore('A11y', (cats.accessibility?.score || 0) * 100)}
+                </div>
+              </div>`;
+          }).join('');
+          
+          grid.insertAdjacentHTML('beforebegin', metricsHtml);
+        }
+      } catch (e) {
+        document.getElementById('psi-history-grid').innerHTML = '<div class="text-error">Failed to load history</div>';
+      }
+    }
+
+    function renderMetricCard(title, value) {
+      const color = value >= 90 ? 'text-success' : (value >= 50 ? 'text-warning' : 'text-error');
+      return `
+        <div class="glass-card p-4 text-center">
+          <div class="text-xs text-muted uppercase mb-1">${title}</div>
+          <div class="text-2xl font-bold font-mono ${color}">${value}</div>
+        </div>
+      `;
+    }
+
+    async function runPageSpeed() {
+      const settings = getSettings();
+      if (!settings.monitorUrl) {
+        showToast('Please configure a Monitor URL in Site Monitor first', 'warning');
+        switchTab('monitor');
+        return;
+      }
+
+      const btn = document.getElementById('run-psi-btn');
+      const resultsEl = document.getElementById('psi-results');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin">⏳</span> Running...';
+      resultsEl.innerHTML = '<div class="glass-card p-8 text-center animate-pulse text-muted">Running remote Lighthouse audit... this may take 15-30s</div>';
+
+      try {
+        const res = await fetch(`${API_BASE}/pagespeed?url=${encodeURIComponent(settings.monitorUrl)}&key=${settings.pagespeedKey || ''}`);
+        const data = await res.json();
+        
+        if (data.error) throw new Error(data.error.message || data.error);
+        
+        const lhr = data.lighthouseResult;
+        const cats = lhr.categories;
+        const getColor = (s) => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
+        const getBg = (s) => s >= 90 ? 'bg-success' : (s >= 50 ? 'bg-warning' : 'bg-error');
+        
+        resultsEl.innerHTML = `
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            ${['performance', 'accessibility', 'best-practices', 'seo'].map(cat => {
+              const score = Math.round((cats[cat]?.score || 0) * 100);
+              return `
+                <div class="glass-card p-4 text-center">
+                  <div class="text-3xl font-bold font-mono ${getColor(score)}">${score}</div>
+                  <div class="text-xs text-muted uppercase mt-1">${cat.replace('-', ' ')}</div>
+                  <div class="w-full bg-white/5 h-1 mt-3 rounded-full overflow-hidden">
+                    <div class="h-full ${getBg(score)}" style="width: ${score}%"></div>
+                  </div>
+                </div>`;
+            }).join('')}
+          </div>
+          
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Core Web Vitals</h3>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-center">
+                <div class="text-xl font-mono font-bold text-white">${lhr.audits['largest-contentful-paint']?.displayValue || '-'}</div>
+                <div class="text-xs text-muted">LCP</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-mono font-bold text-white">${lhr.audits['cumulative-layout-shift']?.displayValue || '-'}</div>
+                <div class="text-xs text-muted">CLS</div>
+              </div>
+              <div class="text-center">
+                <div class="text-xl font-mono font-bold text-white">${lhr.audits['total-blocking-time']?.displayValue || '-'}</div>
+                <div class="text-xs text-muted">TBT</div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        showToast('PageSpeed analysis complete!', 'success');
+        
+      } catch (e) {
+        resultsEl.innerHTML = `<div class="glass-card p-6 text-error">Test failed: ${e.message}</div>`;
+        showToast('Test failed: ' + e.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀</span> Run Test';
+      }
+    }
+
+    async function loadGitHubStatus() {
+      const settings = getSettings();
+      if (!settings.githubToken || !settings.githubRepo) return;
+      
+      const [owner, repo] = settings.githubRepo.split('/');
+      if (!owner || !repo) return;
+      
+      try {
+        // Fetch latest workflow runs
+        const runsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/runs?per_page=5`, {
+          headers: { Authorization: `token ${settings.githubToken}` }
+        });
+        const runsData = await runsRes.json();
+        
+        const actionsEl = document.getElementById('actions-status');
+        if (runsData.workflow_runs && runsData.workflow_runs.length > 0) {
+          const latest = runsData.workflow_runs[0];
+          const color = latest.conclusion === 'success' ? 'success' : (latest.conclusion === 'failure' ? 'error' : 'warning');
+          actionsEl.innerHTML = `
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-${color}"></div>
+              <div>
+                <div class="text-sm font-medium text-white">${latest.name}</div>
+                <div class="text-xs text-muted">${latest.conclusion || 'Running'}</div>
+              </div>
+            </div>`;
+        }
+
+        // Fetch commits
+        const commitsRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=5`, {
+          headers: { Authorization: `token ${settings.githubToken}` }
+        });
+        const commitsData = await commitsRes.json();
+        
+        const commitsEl = document.getElementById('commits-list');
+        if (Array.isArray(commitsData) && commitsData.length > 0) {
+          commitsEl.innerHTML = commitsData.map(c => `
+            <a href="${c.html_url}" target="_blank" rel="noopener" class="flex items-center gap-3 p-2 rounded hover:bg-surfaceHighlight/50 transition">
+              <span class="font-mono text-xs text-primary">${c.sha.slice(0, 7)}</span>
+              <span class="text-sm text-white truncate flex-1">${c.commit.message.split('\n')[0]}</span>
+              <span class="text-xs text-muted">${new Date(c.commit.author.date).toLocaleDateString()}</span>
+            </a>
+          `).join('');
+        }
+        
+      } catch (e) {
+        console.error('GitHub API error:', e);
+      }
+    }
+
+    // --- Universal Data Table Component ---
+    class DataTable {
+      constructor(options) {
+        this.id = options.id;
+        this.data = options.data || [];
+        this.columns = options.columns || [];
+        this.actions = options.actions || [];
+        this.currentPage = 1;
+        this.pageSize = options.pageSize || 5;
+        this.sortKey = null;
+        this.sortDesc = true;
+        this.containerId = options.containerId;
+        this.render();
+      }
+
+      sort(key) {
+        if (this.sortKey === key) this.sortDesc = !this.sortDesc;
+        else { this.sortKey = key; this.sortDesc = true; }
+        this.render();
+      }
+
+      setPage(p) {
+        this.currentPage = p;
+        this.render();
+      }
+
+      getSortedData() {
+        if (!this.sortKey) return this.data;
+        return [...this.data].sort((a, b) => {
+          let va = this.getValue(a, this.sortKey);
+          let vb = this.getValue(b, this.sortKey);
+          if (typeof va === 'string') va = va.toLowerCase();
+          if (typeof vb === 'string') vb = vb.toLowerCase();
+          if (va < vb) return this.sortDesc ? 1 : -1;
+          if (va > vb) return this.sortDesc ? -1 : 1;
+          return 0;
+        });
+      }
+
+      getValue(row, path) {
+        return path.split('.').reduce((o, i) => o?.[i], row);
+      }
+
+      render() {
+        const sorted = this.getSortedData();
+        const totalPages = Math.ceil(sorted.length / this.pageSize);
+        if(this.currentPage > totalPages) this.currentPage = 1;
+        
+        const start = (this.currentPage - 1) * this.pageSize;
+        const pageData = sorted.slice(start, start + this.pageSize);
+
+        const tableId = `table-${this.id}`;
+        
+        // Expose instance strictly for onclick handlers (fragile but functional for this static setup)
+        window[`dt_${this.id}`] = this;
+
+        let html = `
+          <div class="glass-card overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead class="sticky top-0 z-10 bg-[#0f0f0f]/80 backdrop-blur-md">
+                  <tr class="text-[10px] text-muted font-bold uppercase tracking-[0.2em] border-b border-white/[0.08]">
+                    ${this.columns.map(col => `
+                      <th class="py-4 px-6 font-medium cursor-pointer hover:text-white transition whitespace-nowrap" onclick="window['dt_${this.id}'].sort('${col.key}')">
+                        <div class="flex items-center gap-2">
+                          ${col.label}
+                          ${this.sortKey === col.key ? (this.sortDesc ? '<span class="text-primary text-[10px]">▼</span>' : '<span class="text-primary text-[10px]">▲</span>') : ''}
+                        </div>
+                      </th>
+                    `).join('')}
+                    ${this.actions.length ? '<th class="py-4 px-6 text-right">Actions</th>' : ''}
+                  </tr>
+                </thead>
+                <tbody class="text-sm">
+                  ${pageData.length === 0 ? `<tr><td colspan="${this.columns.length + (this.actions.length?1:0)}" class="p-12 text-center text-muted italic">No data found</td></tr>` : ''}
+                  ${pageData.map(row => `
+                    <tr class="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-200 group last:border-0">
+                      ${this.columns.map(col => `
+                        <td class="py-4 px-6 text-white/90 align-middle">
+                          ${col.render ? col.render(row) : this.getValue(row, col.key)}
+                        </td>
+                      `).join('')}
+                      ${this.actions.length ? `
+                        <td class="py-4 px-6 text-right align-middle whitespace-nowrap">
+                          <div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
+                            ${this.actions.map(act => `
+                              <button onclick="${act.onClick}(${act.getArgs ? act.getArgs(row) : `'${row.filename}'`})" class="${act.class || 'p-2 hover:bg-white/10 rounded-lg text-muted hover:text-white transition'}" title="${act.title}">
+                                ${act.icon}
+                              </button>
+                            `).join('')}
+                          </div>
+                        </td>
+                      ` : ''}
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            
+            ${totalPages > 1 ? `
+              <div class="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
+                <div class="text-xs text-muted">Showing ${start+1}-${Math.min(start+this.pageSize, sorted.length)} of ${sorted.length}</div>
+                <div class="flex gap-2">
+                  <button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage-1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">←</button>
+                  ${Array.from({length: totalPages}, (_, i) => i + 1).slice(Math.max(0, this.currentPage-3), this.currentPage+2).map(p => `
+                    <button onclick="window['dt_${this.id}'].setPage(${p})" class="px-2 py-1 rounded text-xs ${p === this.currentPage ? 'bg-primary text-black font-bold' : 'bg-white/5 hover:bg-white/10'}">${p}</button>
+                  `).join('')}
+                  <button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage+1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">→</button>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        document.getElementById(this.containerId).innerHTML = html;
+      }
+    }
+
+    // --- Confirm Modal Logic ---
+    let confirmCallback = null;
+
+    function showConfirmModal(title, message, onConfirm) {
+      const modal = document.getElementById('confirm-modal');
+      const container = document.getElementById('confirm-container');
+      document.getElementById('confirm-title').innerText = title;
+      document.getElementById('confirm-message').innerText = message;
+      confirmCallback = onConfirm;
+      
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+         modal.classList.remove('opacity-0');
+         container.classList.remove('scale-95');
+         container.classList.add('scale-100');
+      }, 10);
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById('confirm-modal');
+      const container = document.getElementById('confirm-container');
+      modal.classList.add('opacity-0');
+      container.classList.remove('scale-100');
+      container.classList.add('scale-95');
+      setTimeout(() => modal.classList.add('hidden'), 300);
+      confirmCallback = null;
+    }
+
+    function handleConfirmAction() {
+        if(confirmCallback) confirmCallback();
+        closeConfirmModal();
+    }
+
+    // --- Delete Action ---
+    async function deleteReport(type, filename) {
+        showConfirmModal(
+            'Delete Report?', 
+            `Are you sure you want to delete "${filename}"? This action cannot be undone.`, 
+            async () => {
+                try {
+                    const res = await fetch(`${API_BASE}/delete`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ type, filename })
+                    });
+                    
+                    // Handle non-JSON responses (like 404/500 text) gracefully
+                    if (!res.ok) {
+                        const text = await res.text();
+                        try {
+                             const json = JSON.parse(text);
+                             throw new Error(json.error || 'Server error');
+                        } catch(e) {
+                             throw new Error(`Server returned ${res.status}: ${text.substring(0, 50)}`);
+                        }
+                    }
+
+                    const json = await res.json();
+                    if(json.success) {
+                        showToast('File deleted', 'success');
+                        // Refresh views based on type
+                        if(type === 'quality') loadQualityView();
+                        if(type === 'lighthouse') loadReportsView();
+                        if(type === 'pagespeed') loadPageSpeedView();
+                        if(type === 'insights') loadInsightsView();
+                    } else {
+                        showToast('Failed to delete: ' + json.error, 'error');
+                    }
+                } catch(e) { showToast('Error: ' + e.message, 'error'); }
+            }
+        );
+    }
+
+    // --- Quality View Refactored ---
+    async function loadQualityView() {
+      const container = document.getElementById('content-area');
+      container.innerHTML = `
+        <h1 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+          <span>🛡️</span> Quality Scans 
+          <button onclick="runCommand('quality')" class="text-xs bg-primary/10 text-primary px-3 py-1 rounded hover:bg-primary/20 transition">New Scan</button>
+        </h1>
+        <div id="quality-summary-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 hidden">
+           <!-- Injected via JS -->
+        </div>
+        <div id="quality-table-container"></div>
+      `;
+      
+      try {
+        const res = await fetch(`${API_BASE}/reports/quality`);
+        const json = await res.json();
+        const reports = json.data || [];
+
+        // Render Summary Cards (Top Row)
+        if (reports.length > 0) {
+            const latest = reports[0]; // Assumes sorted new -> old
+            const raw = latest.data?.raw || {};
+            const cards = document.getElementById('quality-summary-cards');
+            cards.classList.remove('hidden');
+            
+            const stats = [
+               { label: 'Bundle Size', value: raw.build?.jsTotal ? `${raw.build.jsTotal}KB` : '-', icon: '📦', color: 'text-blue-400' },
+               { label: 'Lint Errors', value: raw.lint?.errorCount ?? '-', icon: '🧹', color: 'text-purple-400' },
+               { label: 'Contrast', value: raw.contrast?.violationCount ?? '-', icon: '👁️', color: 'text-yellow-400' },
+               { label: 'i18n Issues', value: raw.i18n?.issueCount ?? '-', icon: '🌐', color: 'text-pink-400' }
+            ];
+
+            cards.innerHTML = stats.map(s => `
+                <div class="glass-card p-4 flex flex-col items-center justify-center text-center">
+                    <span class="text-2xl mb-2">${s.icon}</span>
+                    <span class="text-xs text-muted uppercase font-bold">${s.label}</span>
+                    <span class="text-xl font-mono font-bold ${s.color}">${s.value}</span>
+                </div>
+            `).join('');
+        }
+        
+        new DataTable({
+            id: 'quality',
+            containerId: 'quality-table-container',
+            data: reports,
+            pageSize: 10,
+            columns: [
+                { key: 'data.status', label: 'Status', render: r => {
+                    if (r.data?.status === 'pass') return '<span class="text-success font-bold">✅ PASS</span>';
+                    if (r.data?.status === 'fail') return '<span class="text-error font-bold">❌ FAIL</span>';
+                    return '<span class="text-warning font-bold">⚠ WARN</span>';
+                }},
+                { key: 'filename', label: 'Report Name', render: r => `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="viewQualityReport('${r.filename}')">${r.filename.replace('.json','')}</span>` },
+                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
+                { key: 'data.scores', label: 'Scores', render: r => {
+                    const s = r.data?.scores || {};
+                    const formatScore = (val) => isNaN(Number(val)) ? '-' : Math.round(Number(val));
+                    return `
+                      <div class="flex gap-2 text-[10px] font-mono">
+                        <span class="${s.build>0?'text-blue-400':'text-muted'}" title="Build">B:${formatScore(s.build)}</span>
+                        <span class="${s.render>0?'text-orange-400':'text-muted'}" title="Render">R:${formatScore(s.render)}</span>
+                        <span class="${s.ux>0?'text-green-400':'text-muted'}" title="UX">U:${formatScore(s.ux)}</span>
+                     </div>`;
+                }},
+                { key: 'data.violations', label: 'Issues', render: r => {
+                    const count = r.data?.violations?.length || 0;
+                    return count > 0 ? `<span class="text-error font-bold text-xs">${count}</span>` : `<span class="text-success text-xs">-</span>`;
+                }}
+            ],
+            actions: [
+                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'View', onClick: 'viewQualityReport' },
+                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'quality', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
+            ]
+        });
+      } catch(e) { document.getElementById('quality-table-container').innerHTML = `<div class="p-8 text-center text-error border border-error/20 rounded-xl bg-error/5">Error loading scans: ${e.message}</div>`; }
+    }
+
+    function renderMiniScore(label, value) {
+      const s = Math.round(value || 0);
+      const color = s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
+      return `<div class="text-center"><div class="text-xs text-muted mb-1">${label}</div><div class="font-mono font-bold ${color}">${s}</div></div>`;
+    }
+
+    // --- Lighthouse View Refactored ---
+    async function loadReportsView() {
+      const container = document.getElementById('content-area');
+      // Create HTML layout with filter dropdown
+      container.innerHTML = `
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
+              <span>🔦</span> Lighthouse Reports 
+              <button onclick="runCommand('lighthouse')" class="text-xs bg-primary/10 text-primary px-3 py-1 rounded hover:bg-primary/20 transition">New Scan</button>
+            </h1>
+            <select id="lighthouse-target-filter" onchange="window.filterLighthouseReports()" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary">
+              <option value="all">All Targets</option>
+              <option value="app">Application</option>
+              <option value="promo">Promo Site</option>
+            </select>
+        </div>
+        <div id="lighthouse-summary-cards" class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6"></div>
+        <div id="lighthouse-table-container"></div>
+      `;
+      
+      const res = await fetch(`${API_BASE}/reports/lighthouse`);
+      const json = await res.json();
+      const allReports = (json.data || []).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      // Store globally for filtering
+      window.allLighthouseReports = allReports;
+
+      // Filter logic exposed to window
+      window.filterLighthouseReports = () => {
+          const filter = document.getElementById('lighthouse-target-filter').value;
+          const filtered = filter === 'all' 
+             ? window.allLighthouseReports 
+             : window.allLighthouseReports.filter(r => {
+                 // Check metadata first (new reports), then filename fallback
+                 const target = r.data?.metadata?.target || (r.filename.includes('_promo_') ? 'promo' : 'app');
+                 return target === filter;
+             });
+          renderLighthouseContent(filtered);
+      };
+
+      // Initial Render
+      window.filterLighthouseReports();
+    }
+
+    function renderLighthouseContent(reports) {
+      // Summary cards
+      const cards = document.getElementById('lighthouse-summary-cards');
+      if (reports.length > 0) {
+        const avgScore = (cat) => Math.round(reports.reduce((a, r) => a + ((r.data?.categories?.[cat]?.score || 0) * 100), 0) / reports.length);
+        
+        const avgPerf = avgScore('performance');
+        const avgA11y = avgScore('accessibility');
+        const avgBest = avgScore('best-practices');
+        const avgSeo = avgScore('seo');
+        
+        const getColor = s => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
+        
+        cards.innerHTML = `
+          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono text-white">${reports.length}</div><div class="text-xs text-muted">Total Reports</div></div>
+          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgPerf)}">${avgPerf}</div><div class="text-xs text-muted">Performance</div></div>
+          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgA11y)}">${avgA11y}</div><div class="text-xs text-muted">Accessibility</div></div>
+          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgBest)}">${avgBest}</div><div class="text-xs text-muted">Best Practices</div></div>
+          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgSeo)}">${avgSeo}</div><div class="text-xs text-muted">SEO</div></div>
+        `;
+      } else {
+        cards.innerHTML = '';
+      }
+      
+      new DataTable({
+          id: 'lighthouse',
+          containerId: 'lighthouse-table-container',
+          data: reports,
+          columns: [
+                { key: 'filename', label: 'Report', render: r => {
+                    const target = r.data?.metadata?.target || (r.filename.includes('_promo_') ? 'promo' : 'app');
+                    const badge = target === 'app' ? '<span class="bg-blue-500/20 text-blue-400 text-[10px] px-1 rounded ml-2">APP</span>' : '<span class="bg-purple-500/20 text-purple-400 text-[10px] px-1 rounded ml-2">PROMO</span>';
+                    return `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="viewLighthouseReport('${r.filename}')">${r.filename.replace('.json','').substring(0, 25)}...</span>${badge}`;
+                }},
+                { key: 'data.metadata.formFactor', label: 'Device', render: r => {
+                    const factor = r.data?.metadata?.formFactor || (r.filename.includes('mobile') ? 'mobile' : 'desktop');
+                    return factor === 'mobile' ? '📱 Mobile' : '💻 Desktop';
+                }},
+                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
+                { key: 'data.categories', label: 'Scores', render: r => {
+                    const score = (cat) => Math.round((r.data?.categories?.[cat]?.score || 0) * 100);
+                    const color = s => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
+                    
+                    return `
+                     <div class="flex gap-3 text-xs font-mono">
+                        <span class="${color(score('performance'))}" title="Perf">P:${score('performance')}</span>
+                        <span class="${color(score('accessibility'))}" title="A11y">A:${score('accessibility')}</span>
+                        <span class="${color(score('seo'))}" title="SEO">S:${score('seo')}</span>
+                     </div>
+                    `;
+                }}
+             ],
+             actions: [
+                 { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'View', onClick: 'viewLighthouseReport' },
+                 { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'lighthouse', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
+             ]
+      });
+    }
+
+    async function viewReport(filename) {
+      try {
+        const res = await fetch(`${API_BASE}/report/lighthouse/${filename}`);
+        const json = await res.json();
+        const report = json.data;
+        
+        // Basic summary view for the modal
+        const cats = report.categories || {};
+        let html = `
+          <div class="mb-8 flex justify-between items-center bg-white/5 p-6 rounded-2xl border border-white/5">
+            <div>
+              <h1 class="text-2xl font-bold mb-1">Lighthouse Analysis</h1>
+              <p class="text-xs text-muted font-mono">${report.finalUrl}</p>
+            </div>
+            <div class="flex gap-4">
+              ${['performance', 'accessibility', 'best-practices', 'seo'].map(c => `
+                <div class="text-center">
+                  <div class="text-lg font-bold">${Math.round((cats[c]?.score || 0) * 100)}%</div>
+                  <div class="text-[8px] uppercase opacity-50">${c}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <h3>Failed Audits</h3>
+          <ul class="space-y-2">
+            ${Object.values(report.audits || {}).filter(a => a.score !== null && a.score < 0.5).map(a => `
+              <li class="p-3 bg-error/5 border-l-2 border-error rounded text-xs list-none">
+                <strong>${a.title}:</strong> ${a.description}
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        
+        showViewer(`Performance: ${filename}`, html, 'html');
+      } catch (e) { showToast('Error loading lighthouse report', 'error'); }
+    }
+
+    // --- Logs View Refactored ---
+    async function loadLogsView() {
+      const container = document.getElementById('content-area');
+      container.innerHTML = `
+        <h1 class="text-3xl font-bold text-white mb-6">📝 Audit Logs</h1>
+        <div id="logs-summary-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
+        <div id="logs-table-container"></div>
+      `;
+      
+      try {
+        const res = await fetch(`${API_BASE}/logs`);
+        const json = await res.json();
+        const logs = json.data || [];
+        
+        // Summary cards
+        const cards = document.getElementById('logs-summary-cards');
+        if (logs.length > 0) {
+          const passCount = logs.filter(l => l.html?.includes('pass') || l.html?.includes('PASS')).length;
+          const failCount = logs.filter(l => l.html?.includes('fail') || l.html?.includes('FAIL')).length;
+          cards.innerHTML = `
+            <div class="glass-card p-4 text-center">
+              <div class="text-2xl font-bold font-mono text-white">${logs.length}</div>
+              <div class="text-xs text-muted">Total Logs</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+              <div class="text-2xl font-bold font-mono text-success">${passCount}</div>
+              <div class="text-xs text-muted">Passed</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+              <div class="text-2xl font-bold font-mono text-error">${failCount}</div>
+              <div class="text-xs text-muted">Failed</div>
+            </div>
+            <div class="glass-card p-4 text-center">
+              <div class="text-2xl font-bold font-mono text-warning">${logs.length - passCount - failCount}</div>
+              <div class="text-xs text-muted">Other</div>
+            </div>
+          `;
+        }
+        
+        // Store logs globally for onclick access
+        window._logsData = logs;
+        
+        new DataTable({
+            id: 'logs',
+            containerId: 'logs-table-container',
+            data: logs,
+            columns: [
+                { key: 'filename', label: 'Log File', render: (r, idx) => `<span class="font-mono text-sm text-primary font-bold cursor-pointer hover:underline" onclick="viewLogEntry(${logs.indexOf(r)})">${r.filename}</span>` },
+                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` }
+            ],
+            actions: []
+        });
+      } catch (e) { document.getElementById('logs-table-container').innerHTML = `<div class="text-error">Error loading logs: ${e.message}</div>`; }
+    }
+
+    function viewLogEntry(index) {
+      const log = window._logsData?.[index];
+      if (log) {
+        showViewer(`Log: ${log.filename}`, log.html || 'No content', 'html');
+      }
+    }
+
+    // --- Profile View ---
+    async function loadProfileView() {
+      const container = document.getElementById('content-area');
+      const settings = getSettings();
+      
+      if (!settings.monitorUrl) {
+        container.innerHTML = `
+          <div class="glass-card p-8 text-center">
+            <div class="text-4xl mb-4">📋</div>
+            <h3 class="text-lg font-bold text-white mb-2">No Site Configured</h3>
+            <p class="text-muted mb-4">Configure your site in Settings to view profile.</p>
+            <button onclick="openSettings()" class="px-6 py-3 bg-primary text-black font-bold rounded-lg">Open Settings</button>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = `
+        <!-- Compact Header -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/10">
+          <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold text-white">${settings.projectName || 'Site Profile'}</h1>
+            <span class="text-xs text-muted font-mono">${settings.monitorUrl}</span>
+            ${settings.githubRepo ? `<a href="https://github.com/${settings.githubRepo}" target="_blank" class="text-xs text-primary hover:underline">📂 ${settings.githubRepo}</a>` : ''}
+          </div>
+          <button onclick="openSettings()" class="px-3 py-1 bg-white/5 text-muted rounded text-xs hover:bg-white/10">⚙️ Edit</button>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono text-white" id="stat-total-scans">-</div>
+            <div class="text-xs text-muted" data-i18n="totalScans">Total Scans</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono" id="stat-avg-build">-</div>
+            <div class="text-xs text-muted" data-i18n="avgBuild">Avg Build</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono" id="stat-avg-render">-</div>
+            <div class="text-xs text-muted" data-i18n="avgRender">Avg Render</div>
+          </div>
+          <div class="glass-card p-4 text-center">
+            <div class="text-2xl font-bold font-mono" id="stat-pass-rate">-</div>
+            <div class="text-xs text-muted" data-i18n="passRate">Pass Rate</div>
+          </div>
+        </div>
+
+        <!-- Historical Chart -->
+        <div class="glass-card p-6 mb-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">📈 Score History</h3>
+            <button onclick="exportProfileChartSVG()" class="px-2 py-1 text-xs bg-surfaceHighlight text-muted rounded hover:text-white">💾 SVG</button>
+          </div>
+          <div class="h-48">
+            <canvas id="profile-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- README -->
+        <div class="glass-card p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">README.md</h3>
+            <span class="text-xs text-muted">📄</span>
+          </div>
+          <div id="readme-content" class="prose max-w-none text-sm overflow-auto max-h-[40vh]">Loading...</div>
+        </div>
+      `;
+      
+      // Load historical data
+      loadProfileStats();
+      
+      // Fetch README
+      if (settings.githubRepo && settings.githubToken) {
+        try {
+          const [owner, repo] = settings.githubRepo.split('/');
+          const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/readme`, {
+            headers: { Authorization: `token ${settings.githubToken}`, Accept: 'application/vnd.github.v3.raw' }
+          });
+          if (res.ok) {
+            const readme = await res.text();
+            document.getElementById('readme-content').innerHTML = marked.parse(readme);
+          } else {
+            document.getElementById('readme-content').innerHTML = '<div class="text-muted italic">README not found</div>';
+          }
+        } catch (e) {
+          document.getElementById('readme-content').innerHTML = '<div class="text-error">Failed to load README</div>';
+        }
+      } else {
+        document.getElementById('readme-content').innerHTML = '<div class="text-muted italic">Configure GitHub token to view README</div>';
+      }
+    }
+
+    let profileChart = null;
+    async function loadProfileStats() {
+      try {
+        const res = await fetch(`${API_BASE}/reports/quality`);
+        const json = await res.json();
+        const reports = json.data || [];
+        
+        if (reports.length === 0) {
+          document.getElementById('stat-total-scans').textContent = '0';
+          return;
+        }
+        
+        // Calculate stats
+        const buildScores = reports.map(r => r.data?.scores?.build || 0).filter(s => s > 0);
+        const renderScores = reports.map(r => r.data?.scores?.render || 0).filter(s => s > 0);
+        const passCount = reports.filter(r => r.data?.status === 'pass').length;
+        
+        const avgBuild = buildScores.length > 0 ? Math.round(buildScores.reduce((a, b) => a + b, 0) / buildScores.length) : 0;
+        const avgRender = renderScores.length > 0 ? Math.round(renderScores.reduce((a, b) => a + b, 0) / renderScores.length) : 0;
+        const passRate = Math.round((passCount / reports.length) * 100);
+        
+        const getColor = (s) => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
+        
+        document.getElementById('stat-total-scans').textContent = reports.length;
+        document.getElementById('stat-avg-build').textContent = avgBuild;
+        document.getElementById('stat-avg-build').className = `text-2xl font-bold font-mono ${getColor(avgBuild)}`;
+        document.getElementById('stat-avg-render').textContent = avgRender;
+        document.getElementById('stat-avg-render').className = `text-2xl font-bold font-mono ${getColor(avgRender)}`;
+        document.getElementById('stat-pass-rate').textContent = `${passRate}%`;
+        document.getElementById('stat-pass-rate').className = `text-2xl font-bold font-mono ${getColor(passRate)}`;
+        
+        // Render chart
+        const canvas = document.getElementById('profile-chart');
+        if (!canvas) return;
+        
+        const recentReports = reports.slice(0, 20).reverse();
+        const labels = recentReports.map(r => {
+          const d = new Date(r.timestamp);
+          return `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+        });
+        
+        if (profileChart) profileChart.destroy();
+        
+        profileChart = new Chart(canvas, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Build', data: recentReports.map(r => r.data?.scores?.build || 0), borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3 },
+              { label: 'Render', data: recentReports.map(r => r.data?.scores?.render || 0), borderColor: '#f59e0b', tension: 0.3 },
+              { label: 'UX', data: recentReports.map(r => r.data?.scores?.ux || 0), borderColor: '#a855f7', tension: 0.3 },
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 10 }, boxWidth: 12 } },
+              title: { display: true, text: `Last ${recentReports.length} scans`, color: '#666', font: { size: 11 } }
+            },
+            scales: {
+              x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666', font: { size: 9 }, maxRotation: 45 } },
+              y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
+            }
+          }
+        });
+      } catch (e) {
+        console.error('Failed to load profile stats:', e);
+      }
+    }
+
+    function exportProfileChartSVG() {
+      const canvas = document.getElementById('profile-chart');
+      if (!canvas) return;
+      
+      const dataUrl = canvas.toDataURL('image/png');
+      const settings = getSettings();
+      const siteName = (settings.projectName || 'profile').replace(/[^a-z0-9]/gi, '-');
+      
+      const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${canvas.width}" height="${canvas.height}">
+  <image width="${canvas.width}" height="${canvas.height}" xlink:href="${dataUrl}"/>
+</svg>`;
+      
+      const blob = new Blob([svg], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `profile-chart-${siteName}.svg`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+// Duplicate function removed
+
+    // --- Git View ---
+    async function loadGitView() {
+      const container = document.getElementById('content-area');
+      container.innerHTML = `
+        <header class="flex justify-between items-center mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
+              Git & Deploy
+            </h1>
+            <p class="text-muted text-sm">Commit and push changes</p>
+          </div>
+          <button onclick="loadGitView()" class="px-4 py-2 bg-white/5 text-muted rounded-lg hover:bg-white/10 transition text-sm">Refresh</button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Status Column -->
+          <div class="space-y-6">
+             <div class="glass-card p-6" id="git-status-card">
+               <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Git Status</h3>
+               <div id="git-status" class="text-muted">Loading...</div>
+             </div>
+          </div>
+          
+          <!-- Actions Column -->
+          <div class="space-y-6">
+             <div class="glass-card p-6">
+               <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                 <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                 Generate Commit Message
+               </h3>
+               <p class="text-xs text-muted mb-4">Use AI to generate a semantic message from staged changes.</p>
+               <button onclick="generateCommitMessage()" class="w-full py-3 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/50 rounded-lg transition font-bold flex items-center justify-center gap-2 group">
+                 <svg class="w-4 h-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                 Generate with AI
+               </button>
+             </div>
+             
+             <div class="glass-card p-6">
+                <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Commit Changes</h3>
+                <textarea id="commit-message" placeholder="feat: describe your changes" rows="3" 
+                  class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white placeholder-muted focus:border-primary focus:outline-none resize-none mb-4"></textarea>
+                <div class="flex gap-2">
+                  <button onclick="doCommitPush()" class="flex-1 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition">Commit & Push</button>
+                  <button onclick="copyCommitMessage()" class="px-3 py-2 bg-white/5 hover:bg-white/10 text-muted rounded-lg transition" title="Copy">📋</button>
+                </div>
+             </div>
+          </div>
+        </div>
+      `;
+      
+      try {
+        const res = await fetch(`${API_BASE}/git/status`);
+        const json = await res.json();
+        const statusEl = document.getElementById('git-status');
+        
+        if (json.success) {
+          const { branch, lastCommit, files, hasChanges } = json.data;
+          statusEl.innerHTML = `
+            <div class="space-y-3">
+              <div class="flex justify-between"><span class="text-muted">Branch</span><span class="text-primary font-mono">${branch}</span></div>
+              <div class="flex justify-between"><span class="text-muted">Last Commit</span><span class="text-white font-mono text-sm">${lastCommit}</span></div>
+              <div class="border-t border-white/10 pt-3 mt-3">
+                ${hasChanges ? `
+                  <p class="text-warning text-sm mb-2">📝 ${files.length} file(s) changed</p>
+                  <div class="max-h-60 overflow-y-auto space-y-1 text-xs font-mono">
+                    ${files.map(f => `<div class="flex gap-2"><span class="text-yellow-400">${f.status}</span><span class="text-muted">${f.file}</span></div>`).join('')}</div>
+                ` : '<p class="text-success">✓ Working tree clean</p>'}
+              </div>
+            </div>
+          `;
+        } else { statusEl.innerHTML = `<div class="text-error">${json.error}</div>`; }
+      } catch (e) { document.getElementById('git-status').innerHTML = `<div class="text-error">Failed to get git status</div>`; }
+    }
+
+    // --- AI Insights (Refactored) ---
+    async function loadInsightsView() {
+      const container = document.getElementById('content-area');
+      const settings = getSettings();
+      
+      container.innerHTML = `
+         <header class="flex justify-between items-center mb-8">
+           <div>
+             <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+               <span class="text-purple-400">✨</span> AI Insights
+             </h1>
+             <p class="text-muted text-sm">Deep analysis powered by Gemini 1.5 Flash</p>
+           </div>
+           <button onclick="runAiAnalysis()" class="px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
+             <span>✨</span> New Analysis
+           </button>
+         </header>
+
+         ${!settings.geminiKey ? `
+           <div class="glass-card p-4 mb-6 border-l-4 border-warning bg-warning/5 text-warning flex items-center gap-3">
+             <span class="text-xl">⚠</span>
+             <div>
+               <div class="font-bold">Gemini API Key Missing</div>
+               <div class="text-xs opacity-70">Configure your API key in Settings to use this feature.</div>
+             </div>
+             <button onclick="openSettings()" class="ml-auto underline text-xs">Configure</button>
+           </div>
+         ` : ''}
+
+         <div id="ai-results" class="mb-8 hidden"></div>
+         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">📜 Analysis History</h3>
+         <div id="insights-table-container"></div>
+      `;
+      
+      try {
+        const res = await fetch(`${API_BASE}/reports/insights`);
+        const json = await res.json();
+        
+        new DataTable({
+            id: 'insights',
+            containerId: 'insights-table-container',
+            data: json.data || [],
+            pageSize: 5,
+            columns: [
+                { key: 'filename', label: 'ID', render: r => `<span class="font-mono text-xs text-purple-400 cursor-pointer hover:underline" onclick="viewInsight('${r.filename}')">${r.filename.replace('insight-','').replace('.json','')}</span>` },
+                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
+                { key: 'data.prompt', label: 'Context', render: r => `<span class="text-xs text-white/50 truncate max-w-[200px] block">${r.data?.prompt || 'System Analysis'}</span>` }
+            ],
+            actions: [
+                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'View', onClick: 'viewInsight' },
+                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'insights', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
+            ]
+        });
+      } catch (e) { document.getElementById('insights-table-container').innerHTML = 'Failed to load history.'; }
+    }
+
+    async function viewInsight(filename) {
+        try {
+            const res = await fetch(`${API_BASE}/reports/insights`);
+            const json = await res.json();
+            const report = json.data.find(r => r.filename === filename);
+            if(report) {
+                const content = report.data?.data || 'No content';
+                showViewer(`Insight: ${filename}`, marked.parse(content), 'html');
+            } else { showToast('Report not found', 'error'); }
+        } catch(e) { showToast('Error loading insight', 'error'); }
+    }
+
+    async function runAiAnalysis() {
+        const settings = getSettings();
+        if(!settings.geminiKey) return openSettings();
+        const resultsEl = document.getElementById('ai-results');
+        resultsEl.classList.remove('hidden');
+        resultsEl.innerHTML = '<div class="glass-card p-8 text-center animate-pulse"><div class="text-4xl mb-4">✨</div>Running deep analysis...</div>';
+        try {
+            const qualityRes = await fetch(`${API_BASE}/reports/quality`);
+            const qualityJson = await qualityRes.json();
+            const lastQuality = qualityJson.data?.[0]?.data || {};
+            const lhRes = await fetch(`${API_BASE}/reports/lighthouse`);
+            const lhJson = await lhRes.json();
+            const lastLh = lhJson.data?.[0]?.data?.categories || {};
+            const prompt = `Analyze project status: QualityGate ${lastQuality.status}, Perf ${Math.round((lastLh.performance?.score||0)*100)}. Suggest improvements.`;
+            const res = await fetch(`${API_BASE}/ai-analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ key: settings.geminiKey, prompt })
+            });
+            const json = await res.json();
+            if (json.candidates && json.candidates.length > 0) {
+                const text = json.candidates[0]?.content?.parts?.[0]?.text || '';
+                if (text) {
+                    resultsEl.innerHTML = `<div class="glass-card p-8 relative overflow-hidden group"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div><div class="prose prose-invert max-w-none">${marked.parse(text)}</div></div>`;
+                    loadInsightsView();
+                } else {
+                    throw new Error('Empty response from AI');
+                }
+            } else if (json.error) {
+                throw new Error(json.error.message || JSON.stringify(json.error));
+            } else { 
+                throw new Error('Invalid AI response format'); 
+            }
+        } catch(e) { resultsEl.innerHTML = `<div class="glass-card p-6 text-error">Analysis failed: ${e.message}</div>`; }
+    }
+
+    // --- Utilities ---
+    async function generateCommitMessage() {
+      const settings = getSettings();
+      if (!settings.geminiKey) { showToast('Gemini API key required', 'warning'); return; }
+      const textarea = document.getElementById('commit-message');
+      const originalText = textarea.value;
+      textarea.value = 'Generating...';
+      textarea.disabled = true;
+      try {
+        const statusRes = await fetch(`${API_BASE}/git/status`);
+        const statusJson = await statusRes.json();
+        const files = statusJson.data?.files || [];
+        if (files.length === 0) { showToast('No changes', 'warning'); textarea.value = originalText; textarea.disabled = false; return; }
+        const changedFiles = files.map(f => `${f.status}: ${f.file}`).join('\n');
+        const prompt = `Generate conventional commit for:\n${changedFiles}`;
+        const res = await fetch(`${API_BASE}/ai-analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key: settings.geminiKey, prompt })
+        });
+        const json = await res.json();
+        if (json.contents) {
+            const text = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
+            textarea.value = text.replace(/`/g, '').trim();
+        } else { throw new Error('Invalid AI response'); }
+      } catch (e) { showToast('Failed: ' + e.message, 'error'); textarea.value = 'feat: '; }
+      textarea.disabled = false;
+    }
+
+    async function doCommitPush() {
+      const message = document.getElementById('commit-message').value.trim();
+      if (!message) { showToast('Message required', 'warning'); return; }
+      if (!confirm(`Commit and push?`)) return;
+      try {
+        const commitRes = await fetch(`${API_BASE}/git/commit`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message }) });
+        const commitJson = await commitRes.json();
+        if (!commitJson.success) { showToast('Commit failed: ' + commitJson.error, 'error'); return; }
+        const pushRes = await fetch(`${API_BASE}/git/push`, { method: 'POST' });
+        const pushJson = await pushRes.json();
+        if (pushJson.success) { showToast('Success!', 'success'); document.getElementById('commit-message').value = ''; loadGitView(); }
+        else { showToast('Push failed', 'error'); }
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+    
+    function copyCommitMessage() {
+        const msg = document.getElementById('commit-message');
+        msg.select();
+        document.execCommand('copy');
+        showToast('Copied to clipboard', 'success');
+    }
+
+    // --- Terminal Stream Logic ---
+    async function readStream(response, onData, onDone, onError) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n\n');
+            buffer = lines.pop(); 
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const payload = JSON.parse(line.slice(6));
+                        if (payload.type === 'stdout') onData(payload.data);
+                        else if (payload.type === 'stderr') onData(payload.data, true);
+                        else if (payload.type === 'result') onDone(payload.data); 
+                        else if (payload.type === 'done') onDone(payload.code);
+                        else if (payload.type === 'error') onError(payload.error);
+                    } catch (e) { console.error('Stream error:', e); }
+                }
+            }
+        }
+    }
+
+    function showCommandModal(title) {
+        const modal = document.getElementById('viewer-modal');
+        const content = document.getElementById('viewer-content');
+        const titleEl = document.getElementById('viewer-title');
+        content.innerHTML = '';
+        titleEl.innerText = title;
+        modal.classList.remove('hidden');
+        document.getElementById('viewer-container').classList.add('scale-100', 'opacity-100');
+        return content;
+    }
+
+    async function runCommand(commandKey) {
+        const content = showCommandModal(`Executing: ${commandKey}...`);
+        try {
+            const res = await fetch(`${API_BASE}/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command: commandKey })
+            });
+            await readStream(res, 
+                (text, isErr) => {
+                    const line = document.createElement('div');
+                    line.textContent = text;
+                    line.className = `font-mono text-xs mb-1 ${isErr ? 'text-red-400' : 'text-zinc-300'}`;
+                    content.appendChild(line);
+                    content.scrollTop = content.scrollHeight;
+                },
+                (code) => {
+                    const line = document.createElement('div');
+                    line.textContent = `\nProcess exited with code ${code}`;
+                    line.className = `font-bold mt-4 font-mono ${code === 0 ? 'text-success' : 'text-error'}`;
+                    content.appendChild(line);
+                    if (code === 0 && commandKey === 'quality') loadQualityView();
+                    if (code === 0 && commandKey === 'lighthouse') loadReportsView();
+                },
+                (err) => content.innerHTML += `<div class="text-error font-bold mt-2">Error: ${err}</div>`
+            );
+        } catch (e) { content.innerHTML += `<div class="text-error font-bold mt-2">Connection failed: ${e.message}</div>`; }
+    }
+
+// Duplicate function removed
+
+    async function generateCommitMessage() {
+      const settings = getSettings();
+      const btn = document.getElementById('generate-commit-btn') || document.querySelector('button[onclick="generateCommitMessage()"]');
+      const resultDiv = document.getElementById('commit-result');
+      
+      if (!settings.geminiKey) {
+          showToast('Gemini API Key required in Settings', 'error');
+          return;
+      }
+      
+      if(btn) {
+          btn.innerHTML = '<span class="animate-spin">⏳</span> Generating...';
+          btn.disabled = true;
+      }
+      btn.disabled = true;
+      
+      try {
+        // Get git status
+        const gitRes = await fetch(`${API_BASE}/git/status`);
+        const gitJson = await gitRes.json();
+        
+        if (!gitJson.success || !gitJson.data.hasChanges) {
+          throw new Error('No staged changes found.');
+        }
+        
+        const files = gitJson.data.files.map(f => `${f.status} ${f.file}`).join('\n');
+        
+        const prompt = `Generate a semantic commit message (conventional commits format) for these changes:
+
+${files}
+
+Rules:
+- Use format: type(scope): description
+- Types: feat, fix, refactor, style, docs, test, chore
+- Keep description under 72 characters
+- Be specific and descriptive
+- Return ONLY the commit message, nothing else`;
+
+        const aiRes = await fetch(`${API_BASE}/ai-analyze`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: settings.geminiKey, prompt })
+        });
+        
+        const aiJson = await aiRes.json();
+        const content = aiJson.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'chore: update files';
+        
+        resultDiv.classList.remove('hidden');
+        resultDiv.querySelector('pre').textContent = content;
+        
+      } catch (err) {
+        resultDiv.classList.remove('hidden');
+        resultDiv.querySelector('pre').textContent = `Error: ${err.message}`;
+      } finally {
+        btn.innerHTML = '<span>✍️</span> Generate Commit';
+        btn.disabled = false;
+      }
+    }
+
+    function copyCommitMessage() {
+      const msg = document.querySelector('#commit-result pre').textContent;
+      navigator.clipboard.writeText(msg);
+      showToast('Commit message copied!', 'success');
+    }
+
+    function saveAnalysisToHistory(title, content) {
+      const history = JSON.parse(localStorage.getItem('qc_analysis_history') || '[]');
+      history.unshift({ title, content, timestamp: Date.now() });
+      localStorage.setItem('qc_analysis_history', JSON.stringify(history.slice(0, 10)));
+    }
+
+    function loadAnalysisHistory() {
+      const historyDiv = document.getElementById('analysis-history');
+      if (!historyDiv) return;
+      
+      const history = JSON.parse(localStorage.getItem('qc_analysis_history') || '[]');
+      
+      if (history.length === 0) {
+        historyDiv.innerHTML = '<div class="text-muted text-sm italic">No previous analyses saved.</div>';
+        return;
+      }
+      
+      historyDiv.innerHTML = history.map((item, i) => `
+        <div class="p-3 bg-surfaceHighlight/50 rounded-lg hover:bg-surfaceHighlight transition cursor-pointer" onclick="showViewer('${item.title}', \`${item.content.replace(/`/g, '\\`').replace(/\n/g, '\\n')}\`, 'markdown')">
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-medium text-white">${item.title}</span>
+            <span class="text-xs text-muted">${new Date(item.timestamp).toLocaleString()}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+
+    // Add toggle button to header for mobile (if not present)
+    const content = document.getElementById('content-area');
+    // Ensure header has hamburger if we are on mobile? 
+    // Actually, we placed the button in sidebar header. But sidebar is hidden on mobile!
+    // We need a trigger button in the MAIN CONTENT area.
+    
+    // Inject a floating toggle button if looking at mobile?
+    // Or add it to standard header template.
+    // For now, let's assume user needs a way to open it.
+    
+    // Add a floating button for mobile only
+    const floatBtn = document.createElement('button');
+    floatBtn.className = 'md:hidden fixed top-4 right-4 z-50 p-2 bg-surface border border-white/10 rounded-lg text-white shadow-lg';
+    floatBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>';
+    floatBtn.onclick = toggleSidebar;
+    if(!document.querySelector('.mobile-toggle')) {
+        floatBtn.classList.add('mobile-toggle');
+        document.body.appendChild(floatBtn);
+    }
+  </script>
+  <!-- Viewer Modal -->
+  <div id="viewer-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <div class="glass-card w-full max-w-5xl max-h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
+      <div class="flex items-center justify-between p-4 border-b border-white/10 shrink-0 bg-white/5">
+        <div class="flex items-center gap-4 overflow-hidden">
+          <div class="flex gap-1.5 opacity-70 hover:opacity-100 transition">
+              <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
+              <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
+          </div>
+          <div class="font-mono text-sm text-gray-300 truncate max-w-md" id="viewer-title">Viewer</div>
+        </div>
+        <div class="flex items-center gap-4">
+           <!-- Navigation -->
+           <div class="flex items-center gap-2 bg-black/20 rounded-lg p-1 border border-white/5" style="display: none;">
+              <button id="viewer-prev-btn" onclick="if(viewerCurrentIndex > 0) { viewerCurrentIndex--; displayCurrentReport(); }" class="p-1.5 hover:bg-white/10 rounded transition disabled:opacity-30">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              <span id="viewer-counter" class="text-xs font-mono text-muted min-w-[50px] text-center"></span>
+              <button id="viewer-next-btn" onclick="if(viewerCurrentIndex < viewerReportsList.length-1) { viewerCurrentIndex++; displayCurrentReport(); }" class="p-1.5 hover:bg-white/10 rounded transition disabled:opacity-30">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+           </div>
+           
+           <div class="h-6 w-px bg-white/10"></div>
+           
+           <button onclick="document.getElementById('viewer-modal').classList.add('hidden')" class="p-1.5 hover:bg-white/10 rounded transition text-muted hover:text-white">
+             <kbd class="hidden sm:inline font-mono text-[10px] bg-white/10 px-1.5 py-0.5 rounded mr-2">ESC</kbd>
+             <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+           </button>
+        </div>
+      </div>
+      <div id="viewer-content" class="p-0 overflow-y-auto flex-1 font-mono text-sm custom-scrollbar bg-[#0D0D0D]"></div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <div class="glass-card p-6 w-full max-w-sm mx-4 transform scale-95 transition-all duration-300" id="confirm-container">
+      <div class="flex items-center gap-3 mb-4 text-warning">
+         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> 
+         <h3 class="text-xl font-bold text-white" id="confirm-title">Confirm Action</h3>
+      </div>
+      <p class="text-muted mb-6 text-sm leading-relaxed" id="confirm-message">Are you sure?</p>
+      <div class="flex justify-end gap-3">
+        <button onclick="closeConfirmModal()" class="px-4 py-2 rounded-lg hover:bg-white/5 text-muted transition text-sm">Cancel</button>
+        <button onclick="handleConfirmAction()" class="px-4 py-2 bg-error text-white font-bold rounded-lg hover:bg-error/90 transition shadow-lg shadow-error/20 text-sm">Delete</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

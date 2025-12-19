@@ -1,10 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCw, Star, Globe, Terminal, Database, Server, Cpu, MoreHorizontal, Copy, ShieldAlert, FolderOpen, ArrowUp, ArrowDown, ArrowUpDown, ChevronRight, ChevronDown, Layers, Box } from 'lucide-react';
+import { RotateCw, Star, Globe, Code, Database, Server, Cpu, MoreHorizontal, Copy, ShieldAlert, FolderOpen, ArrowUp, ArrowDown, ArrowUpDown, ChevronRight, ChevronDown, Layers, Box } from 'lucide-react';
 import { ProcessEntry, ProcessType, ProcessStatus } from '../types';
 import ScriptRunner from './ScriptRunner';
-import { usePreferences } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { useTranslation } from 'react-i18next';
 
 interface PortTableProps {
   processes: ProcessEntry[];
@@ -17,7 +16,7 @@ interface PortTableProps {
 
 const getTypeIcon = (type: ProcessType) => {
   switch (type) {
-    case ProcessType.DEVELOPMENT: return <Terminal className="w-4 h-4 text-emerald-400" />;
+    case ProcessType.DEVELOPMENT: return <Code className="w-4 h-4 text-emerald-400" />;
     case ProcessType.DATABASE: return <Database className="w-4 h-4 text-blue-400" />;
     case ProcessType.SYSTEM: return <Server className="w-4 h-4 text-zinc-400" />;
     case ProcessType.OTHER: return <Cpu className="w-4 h-4 text-purple-400" />;
@@ -36,8 +35,7 @@ const getTypeStyles = (type: ProcessType) => {
 type SortKey = keyof ProcessEntry | 'status';
 
 const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, onKill, onRestart, onToggleFavorite, isLoading }) => {
-  const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const [expandedPid, setExpandedPid] = useState<number | null>(null);
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>(null);
@@ -108,13 +106,13 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
   const SortIcon = ({ column }: { column: SortKey }) => {
     if (sortConfig?.key !== column) return <ArrowUpDown className="w-3 h-3 opacity-30 group-hover:opacity-50" />;
     return sortConfig.direction === 'asc' 
-      ? <ArrowUp className="w-3 h-3 text-indigo-400" /> 
-      : <ArrowDown className="w-3 h-3 text-indigo-400" />;
+      ? <ArrowUp className="w-3 h-3 text-primary" /> 
+      : <ArrowDown className="w-3 h-3 text-primary" />;
   };
 
   const renderHeader = (label: string, key: SortKey, className = "") => (
     <th 
-      className={`px-6 py-3 cursor-pointer select-none group hover:bg-white/5 transition-colors ${className}`}
+      className={`px-4 py-3 cursor-pointer select-none group hover:bg-surfaceHover transition-colors text-muted ${className}`}
       onClick={() => handleSort(key)}
     >
       <div className={`flex items-center gap-2 ${className.includes('text-right') ? 'justify-end' : ''}`}>
@@ -140,11 +138,11 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
           onClick={() => toggleExpand(proc.pid)}
 
-          className={`group cursor-pointer transition-colors hover:bg-black/10 dark:hover:bg-white/5 ${
+          className={`group cursor-pointer transition-colors hover:bg-surfaceHover ${
 
-            expandedPid === proc.pid ? 'bg-black/5 dark:bg-white/5' : ''
+            expandedPid === proc.pid ? 'bg-surfaceHover' : ''
 
-          } ${isChild ? 'bg-black/5 dark:bg-white/5' : ''}`}
+          } ${isChild ? 'bg-surfaceHover' : ''}`}
 
           style={{ color: 'var(--foreground)' }}
 
@@ -190,7 +188,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
           <td className="px-6 py-4 whitespace-nowrap align-middle">
 
-            <span className="font-mono text-xs px-2 py-1 bg-black/5 dark:bg-white/5 rounded border opacity-60" style={{ borderColor: 'var(--border-color)' }}>
+            <span className="font-mono text-xs px-2 py-1 bg-surface2 rounded border border-border text-muted">
 
               {proc.pid}
 
@@ -204,7 +202,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border max-w-full ${getTypeStyles(proc.type)}`}>
 
-              <span className="truncate">{(t as any)[proc.type] || proc.type}</span>
+              <span className="truncate">{t(proc.type)}</span>
 
             </span>
 
@@ -224,7 +222,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
               </span>
 
-              <span className="opacity-70 truncate">{(t as any)[proc.status] || proc.status}</span>
+              <span className="opacity-70 truncate">{t(proc.status)}</span>
 
             </div>
 
@@ -240,7 +238,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                 onClick={(e) => { e.stopPropagation(); onToggleFavorite(proc.pid); }}
 
-                className={`p-2 rounded-lg transition-colors ${proc.isFavorite ? 'text-yellow-400 bg-yellow-400/10' : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100'}`}
+                className={`p-2 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${proc.isFavorite ? 'text-yellow-400 bg-yellow-400/10' : 'hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100'}`}
 
                 title="Favorite"
                 aria-label={proc.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -255,7 +253,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                 onClick={(e) => { e.stopPropagation(); toggleExpand(proc.pid); }}
 
-                className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100"
+                className="p-2 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Show more options"
 
               >
@@ -298,7 +296,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                       <div>
 
-                        <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.addressNetwork}</label>
+                        <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t('addressNetwork')}</label>
 
                         <div className="mt-1 flex items-center space-x-2 text-sm opacity-80">
 
@@ -316,7 +314,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                         <div className="min-w-0">
 
-                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.projectSource}</label>
+                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t('projectSource')}</label>
 
                           <div className="mt-1 flex items-center space-x-2 text-sm font-mono opacity-70" title={proc.projectPath}>
 
@@ -344,11 +342,11 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                         <div className="min-w-0">
 
-                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t.commandLine}</label>
+                          <label className="text-xs uppercase tracking-wider font-semibold opacity-50">{t('commandLine')}</label>
 
-                          <div className="mt-1 flex items-center justify-between p-3 bg-black/5 dark:bg-white/5 border rounded-md font-mono text-xs opacity-60 group" style={{ borderColor: 'var(--border-color)' }}>
+                          <div className="mt-1 flex items-center justify-between p-3 bg-surface2 border border-border rounded-md font-mono text-xs text-muted group">
 
-                            <span className="truncate">{proc.commandLine || t.na}</span>
+                            <span className="truncate">{proc.commandLine || t('na')}</span>
 
                             <button className="opacity-0 group-hover:opacity-100 transition-opacity ml-2" aria-label="Copy command line">
 
@@ -372,7 +370,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                         <div>
 
-                          <div className="text-xs uppercase opacity-50">{t.memory}</div>
+                          <div className="text-xs uppercase opacity-50">{t('memory')}</div>
 
                           <div className="text-sm font-mono opacity-80">{proc.memoryUsage} MB</div>
 
@@ -380,7 +378,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                         <div>
 
-                          <div className="text-xs uppercase opacity-50">{t.cpu}</div>
+                          <div className="text-xs uppercase opacity-50">{t('cpu')}</div>
 
                           <div className="text-sm font-mono opacity-80">{proc.cpuUsage}%</div>
 
@@ -398,15 +396,14 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                             onClick={() => onRestart(proc.pid, proc.managedById)}
 
-                            className="flex items-center space-x-2 px-4 py-2 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-sm font-medium rounded-lg transition-colors border"
+                            className="flex items-center space-x-2 px-4 py-2 bg-surface2 hover:bg-surfaceHover text-sm font-medium rounded-lg transition-colors border border-border"
 
-                            style={{ borderColor: 'var(--border-color)' }}
 
                           >
 
                             <RotateCw className="w-4 h-4" />
 
-                            <span>{t.restart}</span>
+                            <span>{t('restart')}</span>
 
                           </button>
 
@@ -422,7 +419,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
                           <ShieldAlert className="w-4 h-4" />
 
-                          <span>{t.killProcess}</span>
+                          <span>{t('killProcess')}</span>
 
                         </button>
 
@@ -450,7 +447,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
     return (
       <div className="flex flex-col items-center justify-center h-64 text-zinc-500 space-y-4">
         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="font-mono text-sm animate-pulse">{t.scanning}</p>
+        <p className="font-mono text-sm animate-pulse">{t('scanning')}</p>
       </div>
     );
   }
@@ -459,7 +456,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
     return (
       <div className="flex flex-col items-center justify-center h-64 text-zinc-500 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
         <Server className="w-12 h-12 mb-3 opacity-20" />
-        <p>{totalProcessesCount > 0 ? "No processes match your filter. Try switching to 'All'." : t.noActiveProcesses}</p>
+        <p>{totalProcessesCount > 0 ? "No processes match your filter. Try switching to 'All'." : t('noActiveProcesses')}</p>
       </div>
     );
   }
@@ -473,18 +470,18 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
       }}
     >
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[1000px] border-collapse text-left">
-          <thead className="border-b text-xs font-semibold uppercase tracking-wider sticky top-0 z-10" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', color: 'var(--muted-foreground)' }}>
+        <table className="w-full min-w-[900px] border-collapse text-left table-fixed">
+          <thead className="border-b border-border bg-surface2 text-xs font-semibold uppercase tracking-wider sticky top-0 z-10 text-muted">
             <tr>
-              {renderHeader(t.port, 'port', 'w-24 whitespace-nowrap')}
-              {renderHeader(t.process, 'name', 'w-auto min-w-[200px]')}
-              {renderHeader(t.pid, 'pid', 'w-24 whitespace-nowrap')}
-              {renderHeader(t.type, 'type', 'w-40 whitespace-nowrap')}
-              {renderHeader(t.status, 'status', 'w-32 whitespace-nowrap')}
-              <th className="px-6 py-3 w-24 text-right whitespace-nowrap">{t.actions}</th>
+              {renderHeader(t('port'), 'port', 'w-[8%]')}
+              {renderHeader(t('process'), 'name', 'w-[32%]')}
+              {renderHeader(t('pid'), 'pid', 'w-[10%]')}
+              {renderHeader(t('type'), 'type', 'w-[15%]')}
+              {renderHeader(t('status'), 'status', 'w-[15%]')}
+              <th className="px-4 py-3 w-[20%] text-right text-muted">{t('actions')}</th>
             </tr>
           </thead>
-          <tbody className="divide-y text-sm" style={{ borderColor: 'var(--border-color)' }}>
+          <tbody className="divide-y divide-border text-sm">
             {Object.entries(groupedProcesses).map(([groupId, groupItems]) => {
               if (groupId === 'standalone') {
                 return groupItems.map(p => renderRow(p));
@@ -514,7 +511,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
                              {isManaged ? <Layers className="w-4 h-4 text-indigo-400" /> : <Box className="w-4 h-4 text-emerald-400" />}
                              <span>{displayName}</span>
                            </div>
-                           <span className="px-2 py-0.5 rounded-full bg-white/10 text-xs opacity-60">
+                           <span className="px-2 py-0.5 rounded-full bg-surfaceHover text-xs text-muted">
                              {groupItems.length} processes
                            </span>
                         </div>

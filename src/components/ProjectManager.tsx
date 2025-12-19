@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FolderPlus, Play, Square, FileText, Trash, Loader2 } from 'lucide-react';
 import { SavedProject } from '../types';
 import { SystemService } from '../services/systemService';
-import { usePreferences } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { useTranslation } from 'react-i18next';
 import AddProjectModal from './AddProjectModal';
 
 interface ProjectManagerProps {
@@ -12,8 +11,7 @@ interface ProjectManagerProps {
 }
 
 const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
-  const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const [projects, setProjects] = useState<SavedProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -25,7 +23,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Load immediately and then interval
     loadProjects();
     const interval = setInterval(loadProjects, 2000);
     return () => clearInterval(interval);
@@ -66,13 +64,13 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
       </AnimatePresence>
 
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">{t.manageProjects}</h2>
+        <h2 className="text-2xl font-bold">{t('manageProjects')}</h2>
         <button 
           onClick={() => setIsAddModalOpen(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors shadow-lg shadow-indigo-500/20"
         >
           <FolderPlus className="w-5 h-5" />
-          <span>{t.addProject}</span>
+          <span>{t('addProject')}</span>
         </button>
       </div>
 
@@ -84,7 +82,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
           style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
         >
            <FolderPlus className="w-12 h-12 mx-auto mb-3 opacity-30" />
-           <p className="opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t.noProjects}</p>
+           <p className="opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t('noProjects')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -92,8 +90,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
             <motion.div 
               key={project.id}
               layout
-              className="border rounded-xl p-5 hover:bg-black/5 dark:hover:bg-white/5 transition-colors shadow-sm"
-              style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}
+              className="border border-border rounded-xl p-5 hover:bg-surfaceHover transition-colors shadow-sm bg-surface"
             >
                <div className="flex justify-between items-start mb-4">
                  <div>
@@ -103,14 +100,14 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                  <div className="flex space-x-1">
                    <button 
                      onClick={() => onViewLogs(project)}
-                     className="p-2 opacity-50 hover:opacity-100 hover:text-indigo-500 transition-colors"
+                      className="p-2 text-muted hover:text-primary transition-colors"
                      title="View Console"
                     >
                      <FileText className="w-4 h-4" />
                    </button>
                    <button 
                      onClick={() => handleDelete(project.id)}
-                     className="p-2 opacity-50 hover:opacity-100 hover:text-red-500 transition-colors"
+                      className="p-2 text-muted hover:text-error transition-colors"
                    >
                      <Trash className="w-4 h-4" />
                    </button>
@@ -118,7 +115,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                </div>
 
                <div className="space-y-2">
-                 <div className="text-[10px] font-bold uppercase tracking-widest opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t.scripts}</div>
+                 <div className="text-[10px] font-bold uppercase tracking-widest opacity-50" style={{ color: 'var(--muted-foreground)' }}>{t('scripts')}</div>
                  <div className="flex flex-wrap gap-2">
                    {Object.keys(project.scripts).map(script => (
                      <button
@@ -126,10 +123,10 @@ const ProjectManager: React.FC<ProjectManagerProps> = ({ onViewLogs }) => {
                        onClick={() => project.isRunning && project.activeScript === script ? stopProject(project) : runScript(project, script)}
                        disabled={project.isRunning && project.activeScript !== script}
                        className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-mono border transition-all
-                         ${project.isRunning && project.activeScript === script
-                            ? 'bg-red-500/20 border-red-500 text-red-500 animate-pulse'
-                            : 'bg-black/5 dark:bg-white/5 border-zinc-700/30 hover:border-zinc-500 opacity-70 hover:opacity-100'
-                         }
+                          ${project.isRunning && project.activeScript === script
+                             ? 'bg-error/20 border-error text-error animate-pulse'
+                             : 'bg-surface2 border-border hover:border-borderStrong text-muted hover:text-fg'
+                          }
                          ${project.isRunning && project.activeScript !== script ? 'opacity-30 cursor-not-allowed' : ''}
                        `}
                        style={{ color: project.isRunning && project.activeScript === script ? '' : 'var(--foreground)' }}

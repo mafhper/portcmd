@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, FolderOpen, Type, CheckCircle, AlertCircle, Loader2, Globe, Github } from 'lucide-react';
-import { usePreferences } from '../contexts/PreferencesContext';
-import { translations } from '../locales';
+import { useTranslation } from 'react-i18next';
 import { SystemService } from '../services/systemService';
 
 interface AddProjectModalProps {
@@ -12,8 +11,7 @@ interface AddProjectModalProps {
 }
 
 const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onConfirm }) => {
-  const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [path, setPath] = useState('');
   const [url, setUrl] = useState('');
@@ -64,7 +62,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
         style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', color: 'var(--foreground)' }}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--border-color)', backgroundColor: 'rgba(0,0,0,0.05)' }}>
-          <h3 className="text-lg font-semibold">{t.addProject}</h3>
+          <h3 className="text-lg font-semibold">{t('addProject')}</h3>
           <button onClick={onClose} aria-label="Close modal" className="opacity-50 hover:opacity-100 transition-colors">
             <X className="w-5 h-5" />
           </button>
@@ -75,7 +73,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-2">
               <FolderOpen className="w-3 h-3" />
-              {t.projectPath}
+              {t('projectPath')}
             </label>
             <div className="flex space-x-2">
               <input
@@ -86,10 +84,10 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
                   setValidationResult(null);
                 }}
                 onBlur={handleValidate}
-                placeholder={t.pathPlaceholder}
-                className={`flex-1 bg-black/5 dark:bg-white/5 border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition-all
-                  ${validationResult?.valid ? 'border-emerald-500/50 focus:ring-emerald-500/20' : 
-                    validationResult?.valid === false ? 'border-red-500/50 focus:ring-red-500/20' : 'border-zinc-700/30 focus:ring-indigo-500/50'}`}
+                placeholder={t('pathPlaceholder')}
+                className={`flex-1 bg-surface border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition-all
+                  ${validationResult?.valid ? 'border-success focus:ring-success/20' : 
+                    validationResult?.valid === false ? 'border-error focus:ring-error/20' : 'border-border focus:ring-primary/50'}`}
                 style={{ color: 'inherit' }}
               />
               <button
@@ -97,7 +95,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
                 onClick={handleValidate}
                 disabled={validating || !path}
                 aria-label="Validate path"
-                className="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-colors"
+                className="px-3 py-2 bg-primary hover:bg-primaryHover text-primaryFg rounded-lg transition-colors"
               >
                 {validating ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
               </button>
@@ -115,14 +113,14 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
           <div className="space-y-2">
             <label className="text-[10px] font-bold uppercase tracking-widest opacity-50 flex items-center gap-2">
               <Type className="w-3 h-3" />
-              {t.projectName}
+              {t('projectName')}
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t.namePlaceholder}
-              className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all"
+              placeholder={t('namePlaceholder')}
+              className="w-full bg-surface border border-border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all"
               style={{ color: 'inherit' }}
             />
           </div>
@@ -139,7 +137,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                 style={{ color: 'inherit' }}
               />
             </div>
@@ -153,7 +151,7 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
                 value={githubRepo}
                 onChange={(e) => setGithubRepo(e.target.value)}
                 placeholder="owner/repo"
-                className="w-full bg-black/5 dark:bg-white/5 border border-zinc-700/30 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none transition-all"
+                className="w-full bg-surface border border-border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 outline-none transition-all"
                 style={{ color: 'inherit' }}
               />
             </div>
@@ -163,16 +161,16 @@ const AddProjectModal: React.FC<AddProjectModalProps> = ({ isOpen, onClose, onCo
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-lg text-sm opacity-60 hover:opacity-100 hover:bg-white/5 transition-colors"
+              className="px-4 py-2 rounded-lg text-sm text-muted hover:text-fg hover:bg-surfaceHover transition-colors"
             >
-              {t.cancel}
+              {t('cancel')}
             </button>
             <button
               type="submit"
               disabled={!name || !path || !validationResult?.valid}
               className="px-6 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 transition-all"
             >
-              {t.add}
+              {t('add')}
             </button>
           </div>
         </form>

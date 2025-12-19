@@ -14,6 +14,7 @@ export default defineConfig({
     outDir: '../dist', // Builds to the root 'dist' folder
     emptyOutDir: true,
   },
+  publicDir: '../public', // Serve assets from root public folder
   server: {
     port: 5174,
     strictPort: true,

@@ -1,0 +1,37 @@
+{
+    "name": "@port/quality-core",
+    "version": "1.0.0",
+    "description": "Quality audits, validators and dashboards for Port Command",
+    "type": "commonjs",
+    "main": "cli/quality.cjs",
+    "bin": {
+        "port-quality": "cli/quality.cjs"
+    },
+    "exports": {
+        ".": "./cli/quality.cjs",
+        "./cli": "./cli/quality.cjs",
+        "./validators": "./packages/validators/index.cjs",
+        "./audits": "./packages/audits/index.cjs",
+        "./core": "./packages/core/index.cjs",
+        "./reporters": "./packages/reporters/index.cjs"
+    },
+    "scripts": {
+        "quality": "node cli/quality.cjs",
+        "quality:quick": "node cli/quality.cjs --quick",
+        "quality:gate": "node cli/run.cjs",
+        "quality:startup": "node src/validators/startup.cjs",
+        "perf:lighthouse": "node cli/run-lighthouse.cjs",
+        "dashboard": "node dashboard/server.cjs",
+        "lint": "eslint .",
+        "format": "prettier --write ."
+    },
+    "dependencies": {
+        "@babel/parser": "^7.28.5",
+        "@babel/traverse": "^7.28.5",
+        "chalk": "^5.3.0",
+        "glob": "^10.3.10",
+        "playwright": "^1.57.0",
+        "puppeteer": "^24.33.0",
+        "yargs": "^17.7.2"
+    }
+}

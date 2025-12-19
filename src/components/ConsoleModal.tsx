@@ -3,8 +3,7 @@ import { motion } from 'framer-motion';
 import { X, Download, Terminal } from 'lucide-react';
 import { SavedProject, LogEntry } from '../types';
 import { SystemService } from '../services/systemService';
-import { translations } from '../locales';
-import { usePreferences } from '../contexts/PreferencesContext';
+import { useTranslation } from 'react-i18next';
 
 interface ConsoleModalProps {
   project: SavedProject | null;
@@ -12,8 +11,7 @@ interface ConsoleModalProps {
 }
 
 const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
-  const { settings } = usePreferences();
-  const t = translations[settings.language];
+  const { t } = useTranslation();
   const endRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
@@ -85,11 +83,19 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
              <span className="font-mono font-bold">{currentProject.name}</span>
            </div>
            <div className="flex items-center space-x-2">
-             <button onClick={downloadLogs} className="flex items-center space-x-2 px-3 py-1.5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white rounded transition-colors shadow-lg shadow-indigo-500/20">
+             <button onClick={downloadLogs} className="flex items-center space-x-2 px-3 py-1.5 text-xs bg-primary hover:bg-primaryHover text-primaryFg rounded transition-colors shadow-lg shadow-primary/20">
                <Download className="w-3 h-3" />
-               <span>{t.saveLogs}</span>
+               <span>{t('saveLogs')}</span>
              </button>
-              <button onClick={onClose} aria-label="Close console" className="p-1 opacity-50 hover:opacity-100 transition-colors"><X className="w-5 h-5" /></button>
+              <button onClick={() => {
+                  if(currentProject) SystemService.clearProjectLogs(currentProject.id).then(() => {
+                      if(currentProject) setCurrentProject({...currentProject, logs: []});
+                  });
+              }} className="flex items-center space-x-2 px-3 py-1.5 text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded transition-colors border border-red-500/20">
+                <X className="w-3 h-3" />
+                <span>Clear</span>
+              </button>
+              <button onClick={onClose} aria-label="Close console" className="p-1 text-muted hover:text-fg transition-colors"><X className="w-5 h-5" /></button>
            </div>
          </div>
 

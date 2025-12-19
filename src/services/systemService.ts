@@ -23,7 +23,8 @@ export const SystemService = {
     }
   },
 
-  restartProcess: async (_pid: number, managedById?: string): Promise<boolean> => {
+  restartProcess: async (pid: number, managedById?: string): Promise<boolean> => {
+    console.log(`[System] Restarting process ${pid}`);
     if (managedById) {
       try {
         const res = await fetch(`/api/projects/${managedById}/restart`, { method: 'POST' });
@@ -37,7 +38,8 @@ export const SystemService = {
     return false;
   },
 
-  getProjectScripts: async (_pid: number): Promise<Record<string, string>> => {
+  getProjectScripts: async (pid: number): Promise<Record<string, string>> => {
+    console.log(`[System] Getting scripts for pid ${pid}`);
     // This logic was relying on MOCK_DATA having projectPath.
     // The real API tries to populate projectPath but it's hard.
     // We can try to fetch from /api/projects if we map pid to project?
@@ -45,7 +47,8 @@ export const SystemService = {
     return {};
   },
 
-  runProjectScript: async (_pid: number, _scriptName: string): Promise<boolean> => {
+  runProjectScript: async (pid: number, scriptName: string): Promise<boolean> => {
+    console.log(`[System] Running script ${scriptName} on pid ${pid}`);
     // This was for running scripts on *detected* processes.
     return false;
   },
@@ -95,8 +98,8 @@ export const SystemService = {
     try {
       const res = await fetch(`/api/ping?url=${encodeURIComponent(url)}`);
       return await res.json();
-    } catch { 
-      return { url, status: 'offline', latency: 0, lastCheck: Date.now() }; 
+    } catch {
+      return { url, status: 'offline', latency: 0, lastCheck: Date.now() };
     }
   },
 
@@ -110,6 +113,10 @@ export const SystemService = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ script })
     });
+  },
+
+  clearProjectLogs: async (projectId: string): Promise<void> => {
+    await fetch(`/api/projects/${projectId}/logs`, { method: 'DELETE' });
   },
 
   stopSavedProject: async (projectId: string): Promise<void> => {
@@ -130,26 +137,38 @@ export const SystemService = {
   },
 
   getQualityReports: async (): Promise<{ filename: string; timestamp: string }[]> => {
-    const res = await fetch('/api/quality/reports');
-    const json = await res.json();
-    return json.data || [];
+    try {
+      const res = await fetch('/api/quality/reports');
+      if (!res.ok) throw new Error('Failed to fetch reports');
+      const json = await res.json();
+      return json.data || [];
+    } catch { return []; }
   },
 
-  getQualityReport: async (filename: string): Promise<any> => {
-    const res = await fetch(`/api/quality/reports/${filename}`);
-    const json = await res.json();
-    return json.data;
+  getQualityReport: async (filename: string): Promise<unknown> => {
+    try {
+      const res = await fetch(`/api/quality/reports/${filename}`);
+      if (!res.ok) throw new Error('Failed to fetch report');
+      const json = await res.json();
+      return json.data;
+    } catch { return null; }
   },
 
   getSystemLogs: async (): Promise<{ filename: string; timestamp: string }[]> => {
-    const res = await fetch('/api/system/logs');
-    const json = await res.json();
-    return json.data || [];
+    try {
+      const res = await fetch('/api/system/logs');
+      if (!res.ok) throw new Error('Failed to fetch logs');
+      const json = await res.json();
+      return json.data || [];
+    } catch { return []; }
   },
 
-  getSystemLog: async (filename: string): Promise<any> => {
-    const res = await fetch(`/api/system/logs/${filename}`);
-    const json = await res.json();
-    return json.data;
+  getSystemLog: async (filename: string): Promise<unknown> => {
+    try {
+      const res = await fetch(`/api/system/logs/${filename}`);
+      if (!res.ok) throw new Error('Failed to fetch log');
+      const json = await res.json();
+      return json.data;
+    } catch { return null; }
   }
 };
