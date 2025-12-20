@@ -1868,11 +1868,46 @@
       renderDashboard();
     }
 
+    let clockInterval;
+    let refreshInterval;
+
+    function startLiveClock() {
+        if (clockInterval) clearInterval(clockInterval);
+        const update = () => {
+            const el = document.getElementById('live-clock');
+            if (el) {
+                const now = new Date();
+                el.innerText = `System Time: ${now.toLocaleTimeString()} | ${now.toLocaleDateString()}`;
+            }
+        };
+        update();
+        clockInterval = setInterval(update, 1000);
+    }
+
+    function startAutoRefresh() {
+        if (refreshInterval) clearInterval(refreshInterval);
+        // Refresh every 5 minutes if dashboard is active
+        refreshInterval = setInterval(() => {
+            if (currentTab === 'dashboard') {
+                loadDashboard();
+                showToast('Dashboard auto-refreshed', 'info');
+            }
+        }, 5 * 60 * 1000);
+    }
+
     function renderDashboard() {
       const container = document.getElementById('content-area');
 
       // Use global filterByTarget function for consistency
       const filteredReports = filterByTarget(globalReports);
+
+      // System Health Stats
+      const recentPings = pingHistory.filter(p => !settings.monitorUrl || p.url === settings.monitorUrl).slice(-20);
+      const isUp = recentPings.length > 0 ? recentPings[recentPings.length-1].ok : false;
+      const uptime = recentPings.length > 0 ? Math.round((recentPings.filter(p => p.ok).length / recentPings.length) * 100) : 0;
+      const latencies = recentPings.map(p => p.latency).filter(l => l > 0);
+      const avgLatency = latencies.length > 0 ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : 0;
+      const lastCheck = recentPings.length > 0 ? new Date(recentPings[recentPings.length-1].timestamp).toLocaleTimeString() : 'N/A';
 
       const latest = filteredReports.length > 0 ? filteredReports[0].data : null;
       const previous = filteredReports.length > 1 ? filteredReports[1].data : null;
@@ -2014,9 +2049,33 @@
                       <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
                     </select>
                     <div class="text-xs text-muted font-mono bg-white/5 px-2 py-1 rounded">
-                        Lighthouse v${latest?.lighthouseVersion || '13.0.1'} // ${new Date(latest?.fetchTime || Date.now()).toLocaleString()}
+                        <span class="text-white/50">Lighthouse v${latest?.lighthouseVersion || '13.0.1'}</span> <span class="mx-2 text-white/20">|</span> <span id="live-clock" class="text-blue-300 font-bold">Loading...</span>
                     </div>
                   </div>
+               </div>
+
+               <!-- SYSTEM HEALTH BAR -->
+               <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 p-4 bg-white/5 border border-white/5 rounded-xl backdrop-blur-sm relative overflow-hidden">
+                    <div class="absolute inset-0 bg-blue-500/5 blur-3xl"></div>
+                    <div class="flex flex-col relative z-10">
+                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">System Status</span>
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full ${isUp ? 'bg-success shadow-[0_0_8px_#10b981] animate-pulse' : 'bg-error shadow-[0_0_8px_#ef4444]'}"></span>
+                            <span class="font-bold text-sm ${isUp ? 'text-success' : 'text-error'}">${isUp ? 'Online' : 'Offline'}</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col relative z-10">
+                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Avg Latency</span>
+                        <span class="font-mono text-sm text-white">${avgLatency}ms</span>
+                    </div>
+                     <div class="flex flex-col relative z-10">
+                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Uptime (20 checks)</span>
+                        <span class="font-mono text-sm text-white">${uptime}%</span>
+                    </div>
+                    <div class="flex flex-col relative z-10">
+                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Last Check</span>
+                        <span class="font-mono text-xs text-white/70 mt-0.5">${lastCheck}</span>
+                    </div>
                </div>
 
                <!-- TOP SCORE ROW -->
@@ -2323,6 +2382,8 @@
           ctx.fillText('No data available for this period', width / 2, height / 2);
           ctx.restore();
        }
+       startLiveClock();
+       startAutoRefresh();
     }
 
     function exportChartSVG() {
