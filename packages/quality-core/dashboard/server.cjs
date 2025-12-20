@@ -8,7 +8,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs').promises;
 const path = require('path');
-const { spawn, execSync } = require('child_process');
+const { execSync } = require('child_process');
 const { marked } = require('marked');
 const util = require('util');
 
@@ -204,31 +204,65 @@ async function handleAiAnalyze(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
         try {
-            const { key, prompt } = JSON.parse(body);
+            const { key, prompt, reportType = 'technical', language = 'en' } = JSON.parse(body);
             if (!key || !prompt) throw new Error('Key and prompt required');
 
             // Rate limit check
             if (!rateLimit(req, res, key)) return;
 
-            // Appending structural instructions for Gemini
-            const structuralInstructions = `
+            // Language instruction
+            const languageNames = {
+                'en': 'English',
+                'pt-BR': 'Brazilian Portuguese',
+                'es': 'Spanish'
+            };
+            const langName = languageNames[language] || 'English';
+
+            // Report type templates
+            const templates = {
+                technical: `
 IMPORTANT: Format your response using clean Markdown headers.
 Do NOT use emojis.
+Respond entirely in ${langName}.
 Structure your analysis as follows:
 
 ## Executive Summary
-[Brief overview]
+[Brief technical overview with key metrics]
 
 ## Key Metrics Analysis
-[Detailed analysis of scores]
+[Detailed analysis of each score: what it means technically, acceptable thresholds, current status]
 
 ## Critical Issues
-[List of major violations]
+[List violations with severity levels, affected components, and impact on performance/quality]
 
-## Recommendations
-[Actionable steps to improve]
-`;
+## Technical Recommendations
+[Actionable steps with specific commands, configurations, or code changes]
+`,
+                educational: `
+IMPORTANT: Format your response using clean Markdown headers.
+Do NOT use emojis.
+Respond entirely in ${langName}.
+Write in a friendly, educational tone for beginners.
+Structure your analysis as follows:
 
+## What's Happening?
+[Simple explanation of the current project state, using analogies and real-world examples]
+
+## Understanding Your Scores
+[Explain each metric in simple terms: what it measures, why it matters for users, and what good/bad values look like]
+
+## Problems Found
+[List issues with clear explanations: what each problem means, why it happens, and how it affects real users]
+
+## How to Fix It
+[Step-by-step guidance with explanations, starting with the easiest wins. Include learning resources where helpful]
+
+## Next Steps
+[Prioritized action items with estimated difficulty and impact]
+`
+            };
+
+            const structuralInstructions = templates[reportType] || templates.technical;
             const fullPrompt = `${prompt}\n\n${structuralInstructions}`;
 
             // Check cache first
@@ -250,7 +284,9 @@ Structure your analysis as follows:
             await setCached(fullPrompt, result);
             await saveToHistory({
                 ...result,
-                promptPreview: prompt.substring(0, 100) + '...'
+                promptPreview: prompt.substring(0, 100) + '...',
+                reportType,
+                language
             });
 
             // Also save as insight file (legacy compatibility)
@@ -261,7 +297,9 @@ Structure your analysis as follows:
                     timestamp: new Date(),
                     prompt: prompt.substring(0, 100) + '...',
                     data: result.content,
-                    model: result.model
+                    model: result.model,
+                    reportType,
+                    language
                 }, null, 2));
             } catch (e) { console.error('Failed to save insight file:', e); }
 

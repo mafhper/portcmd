@@ -3682,16 +3682,24 @@
     }
 
     // --- AI Insights (Refactored) ---
+    let aiReportType = 'technical'; // Default report type
+
     async function loadInsightsView() {
       const container = document.getElementById('content-area');
       const settings = getSettings();
       
       const headerHtml = renderHeader(
           '✨ AI Insights',
-          'Deep analysis powered by Gemini 1.5 Flash',
-          `<button onclick="runAiAnalysis()" class="px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
-              <span>✨</span> New Analysis
-           </button>`
+          t('aiInsightsSubtitle'),
+          `<div class="flex items-center gap-3">
+              <select id="ai-report-type" onchange="aiReportType = this.value" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-white text-sm focus:border-primary focus:outline-none">
+                <option value="technical" ${aiReportType === 'technical' ? 'selected' : ''}>📊 ${currentLang === 'pt-BR' ? 'Técnico' : currentLang === 'es' ? 'Técnico' : 'Technical'}</option>
+                <option value="educational" ${aiReportType === 'educational' ? 'selected' : ''}>📚 ${currentLang === 'pt-BR' ? 'Educacional' : currentLang === 'es' ? 'Educativo' : 'Educational'}</option>
+              </select>
+              <button onclick="runAiAnalysis()" class="px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
+                  <span>✨</span> ${t('newAnalysis')}
+               </button>
+           </div>`
       );
       
       container.innerHTML = `
@@ -3709,7 +3717,7 @@
          ` : ''}
 
          <div id="ai-results" class="mb-8 hidden"></div>
-         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">📜 Analysis History</h3>
+         <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">📜 ${t('analysisHistory')}</h3>
          <div id="insights-table-container"></div>
       `;
       
@@ -3752,7 +3760,8 @@
         if(!settings.geminiKey) return openSettings();
         const resultsEl = document.getElementById('ai-results');
         resultsEl.classList.remove('hidden');
-        resultsEl.innerHTML = '<div class="glass-card p-8 text-center animate-pulse"><div class="text-4xl mb-4">✨</div>Running deep analysis...</div>';
+        const loadingText = currentLang === 'pt-BR' ? 'Executando análise profunda...' : currentLang === 'es' ? 'Ejecutando análisis profundo...' : 'Running deep analysis...';
+        resultsEl.innerHTML = `<div class="glass-card p-8 text-center animate-pulse"><div class="text-4xl mb-4">✨</div>${loadingText}</div>`;
         try {
             const qualityRes = await fetch(`${API_BASE}/reports/quality`);
             const qualityJson = await qualityRes.json();
@@ -3764,7 +3773,12 @@
             const res = await fetch(`${API_BASE}/ai-analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ key: settings.geminiKey, prompt })
+                body: JSON.stringify({ 
+                    key: settings.geminiKey, 
+                    prompt,
+                    reportType: aiReportType,
+                    language: currentLang
+                })
             });
             const json = await res.json();
             
@@ -3798,7 +3812,12 @@
         const res = await fetch(`${API_BASE}/ai-analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ key: settings.geminiKey, prompt })
+            body: JSON.stringify({ 
+                key: settings.geminiKey, 
+                prompt,
+                reportType: 'technical',
+                language: currentLang
+            })
         });
         const json = await res.json();
         
