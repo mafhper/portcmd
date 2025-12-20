@@ -1083,6 +1083,51 @@
     };
 
     let currentLang = 'en';
+    let currentTarget = 'all'; // 'all', 'app', 'promo'
+    let currentPeriod = '24h';
+    let aiReportType = 'technical';
+
+    // Target filter helper - filters reports by target (app/promo)
+    function filterByTarget(reports, target = currentTarget) {
+        if (target === 'all') return reports;
+        return reports.filter(r => {
+            const reportTarget = r.data?.meta?.target || r.meta?.target || 
+                                 (r.data?.url?.includes('github.io') ? 'promo' : 'app') ||
+                                 (r.filename?.toLowerCase().includes('promo') ? 'promo' : 'app');
+            return reportTarget === target;
+        });
+    }
+
+    // Update target selector and reload views
+    function setTarget(target) {
+        currentTarget = target;
+        localStorage.setItem('qc_target', target);
+        // Reload current view with new filter
+        const activeLink = document.querySelector('.sidebar-link.active, .sidebar-link--active');
+        if (activeLink) activeLink.click();
+    }
+
+    // Period filter helper - updates UI and reloads chart
+    function setPeriodFilter(period) {
+        currentPeriod = period;
+        // If updatePeriodUI exists (defined later), call it for UI update
+        if (typeof updatePeriodUI === 'function') {
+            updatePeriodUI(period);
+        } else {
+            // Fallback: trigger chart reload via view reload
+            const activeLink = document.querySelector('.sidebar-link.active, .sidebar-link--active');
+            if (activeLink) activeLink.click();
+        }
+    }
+
+    // Load saved target preference
+    function initTargetFilter() {
+        const saved = localStorage.getItem('qc_target');
+        if (saved && ['all', 'app', 'promo'].includes(saved)) {
+            currentTarget = saved;
+        }
+    }
+
 
     function initI18n() {
       const settings = getSettings();
@@ -1802,25 +1847,16 @@
     }
 
     function filterDashboard() {
-      currentFilter = document.getElementById('target-filter').value;
+      const selectEl = document.getElementById('dashboard-target-filter');
+      if (selectEl) currentTarget = selectEl.value;
       renderDashboard();
     }
 
     function renderDashboard() {
       const container = document.getElementById('content-area');
 
-      // Helper to infer target if missing
-      const inferTarget = (r) => {
-        if (r.data?.target) return r.data.target;
-        const url = r.data?.url || r.data?.finalUrl || '';
-        // Check for promo indicators (port 5174 or github pages)
-        if (url.includes(':5174') || url.includes('github.io')) return 'promo';
-        return 'app';
-      };
-
-      const filteredReports = currentFilter === 'all' 
-        ? globalReports 
-        : globalReports.filter(r => inferTarget(r) === currentFilter);
+      // Use global filterByTarget function for consistency
+      const filteredReports = filterByTarget(globalReports);
 
       const latest = filteredReports.length > 0 ? filteredReports[0].data : null;
       const previous = filteredReports.length > 1 ? filteredReports[1].data : null;
@@ -1944,8 +1980,15 @@
                     <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                     <h2 class="text-sm font-bold text-blue-300 tracking-[0.2em] uppercase">Telemetria Ao Vivo</h2>
                   </div>
-                  <div class="text-xs text-muted font-mono bg-white/5 px-2 py-1 rounded">
-                      Lighthouse v${latest?.lighthouseVersion || '13.0.1'} // ${new Date(latest?.fetchTime || Date.now()).toLocaleString()}
+                  <div class="flex items-center gap-3">
+                    <select id="dashboard-target-filter" onchange="setTarget(this.value); loadDashboard()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary">
+                      <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
+                      <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
+                      <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+                    </select>
+                    <div class="text-xs text-muted font-mono bg-white/5 px-2 py-1 rounded">
+                        Lighthouse v${latest?.lighthouseVersion || '13.0.1'} // ${new Date(latest?.fetchTime || Date.now()).toLocaleString()}
+                    </div>
                   </div>
                </div>
 
@@ -2131,8 +2174,9 @@
         </div>`;
     }
 
-    let currentPeriod = '24h';
-    function setPeriodFilter(period) {
+    // setPeriodFilter is now defined globally at the top
+    // This function handles the UI update and chart refresh
+    function updatePeriodUI(period) {
       currentPeriod = period;
       document.querySelectorAll('.period-btn').forEach(btn => {
         if (btn.dataset.period === period) {
@@ -2199,9 +2243,9 @@
         });
         
         if (matchingReports.length > 0) {
-          // Average values for this interval
-          const avgBuild = matchingReports.reduce((sum, r) => sum + (r.data?.scores?.build || 0), 0) / matchingReports.length;
-          const avgRender = matchingReports.reduce((sum, r) => sum + (r.data?.scores?.render || 0), 0) / matchingReports.length;
+          // Average values for this interval - access from correct path
+          const avgBuild = matchingReports.reduce((sum, r) => sum + (r.data?.metrics?.scores?.build || r.data?.scores?.build || 0), 0) / matchingReports.length;
+          const avgRender = matchingReports.reduce((sum, r) => sum + (r.data?.metrics?.scores?.render || r.data?.scores?.render || 0), 0) / matchingReports.length;
           buildData.push(Math.round(avgBuild));
           renderData.push(Math.round(avgRender));
         } else {
@@ -3063,10 +3107,17 @@
       const container = document.getElementById('content-area');
       
       // Sync title with sidebar (Testes de Qualidade)
+      const targetSelector = `
+        <select id="quality-target-filter" onchange="setTarget(this.value); loadQualityView()" title="Filter by target" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary mr-2">
+          <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All Targets</option>
+          <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>Application</option>
+          <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo Site</option>
+        </select>
+      `;
       const headerHtml = renderHeader(
           t('qualityScans'), 
           t('qualityGateSubtitle'), 
-          `<button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
+          `${targetSelector}<button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
       );
 
       container.innerHTML = `
@@ -3108,18 +3159,27 @@
         const statusContainer = document.getElementById('gate-status-container');
         
         if (latest) {
+             // Access status from summary and scores from metrics
+             const status = latest.summary?.status || latest.status;
+             const scores = latest.metrics?.scores || latest.scores || {};
+             const target = latest.meta?.target || 'app';
+             const targetColor = target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
+             
              statusContainer.innerHTML = `
                <div class="flex items-center gap-4 mb-4">
-                 <div class="text-4xl">${latest.status === 'pass' ? '✅' : '❌'}</div>
+                 <div class="text-4xl">${status === 'pass' ? '✅' : '❌'}</div>
                  <div>
-                   <div class="text-2xl font-bold ${latest.status === 'pass' ? 'text-success' : 'text-error'}">
-                     ${latest.status === 'pass' ? 'PASSED' : 'FAILED'}
+                   <div class="flex items-center gap-2">
+                     <span class="text-2xl font-bold ${status === 'pass' ? 'text-success' : 'text-error'}">
+                       ${status === 'pass' ? 'PASSED' : 'FAILED'}
+                     </span>
+                     <span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${targetColor}">${target.toUpperCase()}</span>
                    </div>
                    <div class="text-xs text-muted">Last run: ${new Date(json.data[0].timestamp).toLocaleString()}</div>
                  </div>
                </div>
                <div class="grid grid-cols-2 gap-2">
-                 ${Object.entries(latest.scores || {}).map(([k, v]) => `
+                 ${Object.entries(scores).map(([k, v]) => `
                    <div class="bg-black/20 p-2 rounded flex justify-between items-center">
                      <span class="text-xs text-muted uppercase">${k}</span>
                      <span class="font-mono font-bold ${v >= 90 ? 'text-success' : 'text-error'}">${Math.round(v)}</span>
@@ -3131,23 +3191,31 @@
             statusContainer.innerHTML = '<div class="text-muted">No quality reports found.</div>';
         }
 
-        // Load Table
-        const reports = json.data || [];
+        // Load Table with target filtering
+        const allReports = json.data || [];
+        const filteredReports = filterByTarget(allReports);
         new DataTable({
             id: 'quality',
             containerId: 'quality-table-container',
-            data: reports,
+            data: filteredReports,
             pageSize: 10,
             columns: [
                 { key: 'data.status', label: 'Status', render: r => {
-                    if (r.data?.status === 'pass') return '<span class="text-success font-bold">✅ PASS</span>';
-                    if (r.data?.status === 'fail') return '<span class="text-error font-bold">❌ FAIL</span>';
+                    const status = r.data?.summary?.status || r.data?.status;
+                    if (status === 'pass') return '<span class="text-success font-bold">✅ PASS</span>';
+                    if (status === 'fail') return '<span class="text-error font-bold">❌ FAIL</span>';
                     return '<span class="text-warning font-bold">⚠ WARN</span>';
+                }},
+                { key: 'target', label: 'Target', render: r => {
+                    const target = r.data?.meta?.target || (r.filename?.toLowerCase().includes('promo') ? 'promo' : 'app');
+                    const color = target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
+                    return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${color}">${target.toUpperCase()}</span>`;
                 }},
                 { key: 'filename', label: 'Report Name', render: r => `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="viewQualityReport('${r.filename}')">${r.filename.replace('.json','')}</span>` },
                 { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
                 { key: 'data.scores', label: 'Scores', render: r => {
-                    const s = r.data?.scores || {};
+                    // Access scores from the correct path: metrics.scores
+                    const s = r.data?.metrics?.scores || r.data?.scores || {};
                     const formatScore = (val) => isNaN(Number(val)) ? '-' : Math.round(Number(val));
                     return `
                       <div class="flex gap-2 text-[10px] font-mono">
@@ -3526,10 +3594,10 @@
           return;
         }
         
-        // Calculate stats
-        const buildScores = reports.map(r => r.data?.scores?.build || 0).filter(s => s > 0);
-        const renderScores = reports.map(r => r.data?.scores?.render || 0).filter(s => s > 0);
-        const passCount = reports.filter(r => r.data?.status === 'pass').length;
+        // Calculate stats - access scores from correct path
+        const buildScores = reports.map(r => r.data?.metrics?.scores?.build || r.data?.scores?.build || 0).filter(s => s > 0);
+        const renderScores = reports.map(r => r.data?.metrics?.scores?.render || r.data?.scores?.render || 0).filter(s => s > 0);
+        const passCount = reports.filter(r => r.data?.summary?.status === 'pass' || r.data?.status === 'pass').length;
         
         const avgBuild = buildScores.length > 0 ? Math.round(buildScores.reduce((a, b) => a + b, 0) / buildScores.length) : 0;
         const avgRender = renderScores.length > 0 ? Math.round(renderScores.reduce((a, b) => a + b, 0) / renderScores.length) : 0;
@@ -3562,9 +3630,9 @@
           data: {
             labels,
             datasets: [
-              { label: 'Build', data: recentReports.map(r => r.data?.scores?.build || 0), borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3 },
-              { label: 'Render', data: recentReports.map(r => r.data?.scores?.render || 0), borderColor: '#f59e0b', tension: 0.3 },
-              { label: 'UX', data: recentReports.map(r => r.data?.scores?.ux || 0), borderColor: '#a855f7', tension: 0.3 },
+              { label: 'Build', data: recentReports.map(r => r.data?.metrics?.scores?.build || r.data?.scores?.build || 0), borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3 },
+              { label: 'Render', data: recentReports.map(r => r.data?.metrics?.scores?.render || r.data?.scores?.render || 0), borderColor: '#f59e0b', tension: 0.3 },
+              { label: 'UX', data: recentReports.map(r => r.data?.metrics?.scores?.ux || r.data?.scores?.ux || 0), borderColor: '#a855f7', tension: 0.3 },
             ]
           },
           options: {
@@ -3683,7 +3751,7 @@
     }
 
     // --- AI Insights (Refactored) ---
-    let aiReportType = 'technical'; // Default report type
+    // aiReportType is now defined globally at the top
 
     async function loadInsightsView() {
       const container = document.getElementById('content-area');
