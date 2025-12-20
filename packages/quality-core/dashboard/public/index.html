@@ -2637,11 +2637,20 @@
       const container = document.getElementById('content-area');
       const settings = getSettings();
       
+      // Target selector
+      const targetSelector = `
+        <select id="psi-target-filter" onchange="setTarget(this.value); loadPageSpeedView()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+          <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
+          <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
+          <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+        </select>
+      `;
+      
       container.innerHTML = `
          ${renderHeader(
              t('pageSpeed'),
              'Remote Lighthouse test via Google API',
-             `<button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
+             `${targetSelector}<button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
                 <span>🚀</span> ${t('runTest')}
              </button>`
          )}
@@ -3343,10 +3352,19 @@
     async function loadReportsView() {
       const container = document.getElementById('content-area');
       
+      // Target selector for filtering
+      const targetSelector = `
+        <select id="lh-target-filter" onchange="setTarget(this.value); loadReportsView()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+          <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
+          <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
+          <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+        </select>
+      `;
+      
       const headerHtml = renderHeader(
           t('lighthouse'), 
           t('lighthouseReportsSubtitle'),
-          `<button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+          `${targetSelector}<button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
       );
 
       container.innerHTML = `
@@ -3359,14 +3377,31 @@
       try {
         const res = await fetch(`${API_BASE}/reports/lighthouse`);
         const json = await res.json();
-        console.log('[loadReportsView] Lighthouse data received:', json.data?.length || 0, 'reports');
-        console.log('[loadReportsView] Sample report:', json.data?.[0]);
-        // ... (Using DataTable)
+        
+        // Filter by target
+        const allReports = json.data || [];
+        const filteredReports = filterByTarget(allReports.map(r => ({
+          ...r,
+          data: {
+            ...r.data,
+            meta: {
+              target: (r.data?.finalUrl || r.data?.requestedUrl || '').includes('promo') || 
+                      (r.data?.finalUrl || '').includes('github.io') ? 'promo' : 'app'
+            }
+          }
+        })));
+        
         new DataTable({
              id: 'reports',
              containerId: 'reports-list',
-             data: json.data || [],
+             data: filteredReports,
              columns: [
+                { key: 'target', label: 'Target', render: r => {
+                    const url = r.data?.finalUrl || r.data?.requestedUrl || '';
+                    const target = url.includes('promo') || url.includes('github.io') || r.filename?.includes('promo') ? 'promo' : 'app';
+                    const color = target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
+                    return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${color}">${target.toUpperCase()}</span>`;
+                }},
                 { key: 'filename', label: 'Report Name', render: r => `
                     <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition" onclick="viewLighthouseReport('${r.filename}')">
                         <span class="text-xl">📑</span>
