@@ -57,15 +57,61 @@ function runCommand(command, args = [], options = {}) {
     });
 }
 
-// Check definitions with domain categorization
-const checks = [
-    { name: 'Integrity', domain: 'infra', fn: () => runCommand('npm', ['run', 'test:structure']) },
-    { name: 'I18n', domain: 'quality', fn: () => runCommand('npm', ['run', 'test:i18n']) },
-    { name: 'Lint', domain: 'quality', fn: () => runCommand('npm', ['run', 'lint']) },
-    { name: 'Build', domain: 'build', fn: () => runCommand('npm', ['run', 'build']) },
-    { name: 'Quality: APP', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=app']) },
-    { name: 'Quality: PROMO', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=promo']) },
+/**
+ * Check definitions organized into parallelizable phases
+ * Phase 1: Independent checks (can run in parallel)
+ * Phase 2: Build (depends on lint passing for best results)
+ * Phase 3: Quality audits (depends on build, can run in parallel with each other)
+ */
+const phases = [
+    {
+        name: 'Pre-build Checks',
+        parallel: true,
+        checks: [
+            { name: 'Integrity', domain: 'infra', fn: () => runCommand('npm', ['run', 'test:structure']) },
+            { name: 'I18n', domain: 'quality', fn: () => runCommand('npm', ['run', 'test:i18n']) },
+            { name: 'Lint', domain: 'quality', fn: () => runCommand('npm', ['run', 'lint']) },
+        ]
+    },
+    {
+        name: 'Build',
+        parallel: false,
+        checks: [
+            { name: 'Build', domain: 'build', fn: () => runCommand('npm', ['run', 'build']) },
+        ]
+    },
+    {
+        name: 'Quality Audits',
+        parallel: true,
+        checks: [
+            { name: 'Quality: APP', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=app']) },
+            { name: 'Quality: PROMO', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=promo']) },
+        ]
+    }
 ];
+
+async function runPhase(phase) {
+    const phaseResults = [];
+
+    if (phase.parallel && phase.checks.length > 1) {
+        // Run all checks in this phase in parallel
+        const promises = phase.checks.map(async (check) => {
+            const res = await check.fn();
+            return { name: check.name, domain: check.domain, ...res };
+        });
+
+        const results = await Promise.all(promises);
+        phaseResults.push(...results);
+    } else {
+        // Run checks sequentially
+        for (const check of phase.checks) {
+            const res = await check.fn();
+            phaseResults.push({ name: check.name, domain: check.domain, ...res });
+        }
+    }
+
+    return phaseResults;
+}
 
 async function main() {
     startTime = Date.now();
@@ -76,40 +122,44 @@ async function main() {
 
     let failed = false;
 
-    // Run each check with spinner
-    for (let i = 0; i < checks.length; i++) {
-        const check = checks[i];
-
-        ui.startSpinner(`${check.name} (${check.domain}) • ${i + 1}/${checks.length}`);
-
-        const res = await check.fn();
-
-        ui.stopSpinner();
-
-        results.push({
-            name: check.name,
-            domain: check.domain,
-            ...res,
-        });
-
-        if (res.success) {
-            ui.log(
-                `${check.name} OK (${ui.formatDuration(res.duration)})`,
-                { icon: '✓', color: ui.theme.success }
-            );
-        } else {
-            ui.log(
-                `${check.name} FAILED (${ui.formatDuration(res.duration)})`,
-                { icon: '✗', color: ui.theme.error }
-            );
-
-            // Show error output in verbose mode
-            if (FLAGS.verbose && res.output) {
-                console.log(ui.c.dim + res.output.substring(0, 500) + '...' + ui.c.reset);
-            }
-
-            failed = true;
+    // Run each phase
+    for (const phase of phases) {
+        if (phase.parallel && phase.checks.length > 1) {
+            // Show parallel execution indicator
+            ui.startSpinner(`Running ${phase.checks.length} checks in parallel: ${phase.checks.map(c => c.name).join(', ')}`);
         }
+
+        const phaseResults = await runPhase(phase);
+
+        if (phase.parallel && phase.checks.length > 1) {
+            ui.stopSpinner();
+        }
+
+        // Process results
+        for (const res of phaseResults) {
+            results.push(res);
+
+            if (res.success) {
+                ui.log(
+                    `${res.name} OK (${ui.formatDuration(res.duration)})`,
+                    { icon: '✓', color: ui.theme.success }
+                );
+            } else {
+                ui.log(
+                    `${res.name} FAILED (${ui.formatDuration(res.duration)})`,
+                    { icon: '✗', color: ui.theme.error }
+                );
+
+                if (FLAGS.verbose && res.output) {
+                    console.log(ui.c.dim + res.output.substring(0, 500) + '...' + ui.c.reset);
+                }
+
+                failed = true;
+            }
+        }
+
+        // If a phase failed and it's critical (like Build), we could optionally stop
+        // For now, we continue to show all results
     }
 
     // Summary
