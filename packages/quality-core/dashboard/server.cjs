@@ -221,44 +221,104 @@ async function handleAiAnalyze(req, res) {
             // Report type templates
             const templates = {
                 technical: `
-IMPORTANT: Format your response using clean Markdown headers.
+IMPORTANT: Format your response using clean Markdown headers and tables.
 Do NOT use emojis.
 Respond entirely in ${langName}.
-Structure your analysis as follows:
+Be extremely specific and clinical in your analysis. Include exact values, thresholds, and file paths when relevant.
 
 ## Executive Summary
-[Brief technical overview with key metrics]
+[2-3 sentence overview with PASS/FAIL status, critical issue count, and primary concern]
 
-## Key Metrics Analysis
-[Detailed analysis of each score: what it means technically, acceptable thresholds, current status]
+## Metrics Audit
 
-## Critical Issues
-[List violations with severity levels, affected components, and impact on performance/quality]
+### Quality Gate Metrics
+| Metric | Score | Threshold | Status | Priority |
+|--------|-------|-----------|--------|----------|
+[Include ALL metrics from the data with their actual values, acceptable thresholds (90+ green, 70-89 yellow, <70 red), and a priority ranking]
+
+### Lighthouse Core Web Vitals
+| Metric | Value | Target | Impact |
+|--------|-------|--------|--------|
+[List LCP, FCP, CLS, INP, TTI, SI with their values and Google's recommended thresholds]
+
+## Violations Analysis
+
+For EACH violation found, provide:
+
+### [Violation Area]: [Metric Name]
+- **Current Value:** [exact value]
+- **Required Threshold:** [threshold value]  
+- **Severity:** [Critical/High/Medium/Low]
+- **Root Cause:** [Technical explanation of why this violation occurs]
+- **Impact:** [How this affects performance, SEO, or user experience]
+- **Remediation:**
+  1. [Specific step with file path or command]
+  2. [Code change if applicable]
+  3. [Verification step]
+
+## Priority Action Matrix
+
+| Action | Impact | Effort | Priority |
+|--------|--------|--------|----------|
+[List top 5 actions sorted by impact/effort ratio]
 
 ## Technical Recommendations
-[Actionable steps with specific commands, configurations, or code changes]
+
+### Immediate (This Sprint)
+[List 2-3 critical fixes with exact implementation steps]
+
+### Short-term (Next 2 Weeks)  
+[List 2-3 important improvements]
+
+### Long-term (Backlog)
+[List optimization opportunities]
 `,
                 educational: `
 IMPORTANT: Format your response using clean Markdown headers.
 Do NOT use emojis.
 Respond entirely in ${langName}.
-Write in a friendly, educational tone for beginners.
-Structure your analysis as follows:
+Write in a friendly, educational tone for beginners. Use analogies and real-world examples.
 
 ## What's Happening?
-[Simple explanation of the current project state, using analogies and real-world examples]
+[Simple explanation of the current project state, using analogies - like comparing website performance to a car's engine]
 
 ## Understanding Your Scores
-[Explain each metric in simple terms: what it measures, why it matters for users, and what good/bad values look like]
+
+### The Traffic Light System
+Explain that:
+- Green (90-100): Excellent, no action needed
+- Yellow (70-89): Acceptable but could improve
+- Red (0-69): Needs attention
+
+### Your Current Scores
+[For each metric, explain in simple terms what it measures and why it matters for real users]
 
 ## Problems Found
-[List issues with clear explanations: what each problem means, why it happens, and how it affects real users]
+
+For each issue, explain:
+- **What it means:** [Simple explanation]
+- **Why it happens:** [Common causes]
+- **How it affects users:** [Real-world impact, like "users might leave if page loads slowly"]
 
 ## How to Fix It
-[Step-by-step guidance with explanations, starting with the easiest wins. Include learning resources where helpful]
+
+### Easy Wins (Do These First)
+[Simple fixes anyone can do, with step-by-step instructions]
+
+### Medium Effort
+[Fixes that need some technical knowledge]
+
+### Advanced
+[Complex fixes that might need a developer]
 
 ## Next Steps
-[Prioritized action items with estimated difficulty and impact]
+
+1. [First thing to do]
+2. [Second thing to do]
+3. [Third thing to do]
+
+## Learning Resources
+[Links or suggestions for learning more about web performance]
 `
             };
 
