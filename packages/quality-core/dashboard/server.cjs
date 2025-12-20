@@ -40,6 +40,7 @@ const CONFIG = {
         'quality': 'npm run quality',
         'quality:gate': 'npm run quality:gate',
         'lighthouse': 'npm run perf:lighthouse',
+        'perf:lighthouse': 'npm run perf:lighthouse',
         'audit:app': 'npm run audit:app',
         'audit:promo': 'npm run audit:promo',
         'ops:optimize': 'npm run ops:optimize',
@@ -545,7 +546,7 @@ async function handleRequest(req, res) {
     if (url.pathname === '/api/settings' && req.method === 'POST') return handleUpdateSettings(req, res);
     if (url.pathname === '/api/cleanup' && req.method === 'POST') return handleCleanup(req, res);
 
-    if (url.pathname === '/api/run' && req.method === 'POST') return handleRunCommand(req, res);
+    if (url.pathname === '/api/run' && req.method === 'POST') return handleRunCommandByCwd(req, res);
     if ((url.pathname === '/api/verify-gemini' || url.pathname === '/api/verify/gemini') && req.method === 'POST') return handleVerifyGemini(req, res);
     if (url.pathname === '/api/ai-analyze' && req.method === 'POST') return handleAiAnalyze(req, res);
     if ((url.pathname === '/api/verify-github' || url.pathname === '/api/verify/github') && req.method === 'POST') return handleVerifyGitHub(req, res);
@@ -781,14 +782,11 @@ async function handleRunCommandByCwd(req, res, cmdTypeOverride = null) {
                 cmdType = parsed.command || 'quality';
             }
 
-            const commands = {
-                'quality': 'npm run quality',
-                'lighthouse': 'npm run perf:lighthouse'
-            };
-            const cmdStr = commands[cmdType];
+            // Use CONFIG.allowedCommands for all supported commands
+            const cmdStr = CONFIG.allowedCommands[cmdType];
             if (!cmdStr) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                return res.end(JSON.stringify({ error: 'Invalid command type' }));
+                return res.end(JSON.stringify({ error: `Invalid command type: ${cmdType}. Allowed: ${Object.keys(CONFIG.allowedCommands).join(', ')}` }));
             }
 
             res.writeHead(200, {

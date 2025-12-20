@@ -5,55 +5,83 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quality Core Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/main.css">
+  
+  <!-- External Dependencies -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- Tailwind Config with Token System -->
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          fontFamily: { 
+            sans: ['Inter', 'sans-serif'], 
+            mono: ['JetBrains Mono', 'monospace'] 
+          },
           colors: {
-            background: 'var(--bg-background)',
-            surface: 'var(--bg-surface)',
-            surfaceHighlight: 'var(--bg-highlight)',
-            border: 'var(--border-color)',
+            // Background tokens
+            background: 'var(--background-base)',
+            surface: 'var(--background-surface)',
+            'surface-2': 'var(--background-surface-2)',
+            'surface-hover': 'var(--background-surface-hover)',
+            'surface-active': 'var(--background-surface-active)',
+            
+            // Foreground tokens
+            foreground: 'var(--foreground-base)',
+            muted: 'var(--foreground-muted)',
+            subtle: 'var(--foreground-subtle)',
+            
+            // Border tokens
+            border: 'var(--border-base)',
+            'border-strong': 'var(--border-strong)',
+            'border-subtle': 'var(--border-subtle)',
+            
+            // Brand colors
             primary: 'var(--color-primary)',
-            primaryGlow: 'var(--color-primary-glow)',
-            success: '#10b981',
-            warning: '#f59e0b',
-            error: '#ef4444',
-            text: 'var(--text-main)',
-            muted: 'var(--text-muted)'
+            'primary-hover': 'var(--color-primary-hover)',
+            'primary-glow': 'var(--color-primary-glow)',
+            secondary: 'var(--color-secondary)',
+            accent: 'var(--color-accent)',
+            
+            // Semantic colors
+            success: 'var(--color-success)',
+            warning: 'var(--color-warning)',
+            error: 'var(--color-error)',
+            info: 'var(--color-info)',
+          },
+          boxShadow: {
+            'glow': '0 0 20px var(--color-primary-glow)',
+            'glow-lg': '0 0 40px var(--color-primary-glow)',
+          },
+          borderRadius: {
+            'lg': 'var(--radius-lg)',
+            'xl': 'var(--radius-xl)',
           }
         }
       }
     }
   </script>
   <style>
+    /* Legacy variable mappings for backwards compatibility */
     :root {
-      --bg-background: #050505;
-      --bg-surface: #0f0f0f;
-      --bg-highlight: #1A1A1A;
-      --border-color: rgba(255, 255, 255, 0.08);
-      --text-main: #EAEAEA;
-      --text-muted: #a3a3a3;
-      /* Primary & Secondary Colors */
-      --color-primary: #22d3ee;
-      --color-primary-glow: rgba(34, 211, 238, 0.25);
-      --color-secondary: #a855f7;
-      --color-secondary-glow: rgba(168, 85, 247, 0.25);
-      --color-accent: #f59e0b;
-      --color-accent-glow: rgba(245, 158, 11, 0.25);
-      /* Gradients */
-      --gradient-primary: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
-      --gradient-gold: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
-      --gradient-success: linear-gradient(135deg, #10b981 0%, #22d3ee 100%);
-      /* Glass Effects */
-      --glass-bg: rgba(15, 15, 15, 0.6);
-      --glass-border: rgba(255, 255, 255, 0.06);
+      /* Map old names to new tokens */
+      --bg-background: var(--background-base);
+      --bg-surface: var(--background-surface);
+      --bg-highlight: var(--background-surface-2);
+      --border-color: var(--border-base);
+      --text-main: var(--foreground-base);
+      --text-muted: var(--foreground-muted);
+      
+      /* These are already defined in variables.css, keeping for reference */
+      --surfaceHighlight: var(--background-surface-2);
     }
 
     body {
@@ -475,6 +503,59 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+        /* --- Settings Input Fix & WindowConsole Style --- */
+      select, input[type="text"], input[type="url"], input[type="password"], textarea {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+      }
+      select:focus, input:focus, textarea:focus {
+        background-color: rgba(255, 255, 255, 0.08) !important;
+        border-color: var(--primary) !important;
+        outline: none;
+      }
+
+      /* WindowConsole Specifics */
+      .window-console {
+        background-color: #0c0c0c;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .window-header {
+        background-color: #1a1a1a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        height: 48px;
+        justify-content: space-between;
+      }
+      .window-controls {
+        display: flex;
+        gap: 8px;
+      }
+      .window-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        transition: opacity 0.2s;
+      }
+      .window-dot.close { background-color: #ff5f56; }
+      .window-dot.min { background-color: #ffbd2e; }
+      .window-dot.max { background-color: #27c93f; }
+      
+      .window-dot:hover { opacity: 0.8; cursor: pointer; }
+      
+      .terminal-content {
+         font-family: 'Consolas', 'Monaco', monospace;
+         background-color: #0c0c0c;
+         color: #d4d4d4;
+         line-height: 1.5;
+      }
+
+      /* Metric Card Updates */
   </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-primary selection:text-black">
@@ -486,14 +567,21 @@
   <aside id="sidebar" class="w-64 bg-surface/80 backdrop-blur-xl border-r border-white/5 flex flex-col z-50 shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full">
     <!-- Header -->
     <div class="p-6 sidebar-header flex items-center justify-between">
-      <a href="/portcmd/" class="flex items-center gap-3 group" title="Back to PortCmd">
-        <div class="relative w-10 h-10 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-primary group-hover:to-purple-500 transition-all duration-300">
-          <svg class="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-        </div>
+      <div class="flex items-center gap-3">
+        <a id="promo-link" href="/portcmd/" class="group" title="Back to PortCmd">
+          <div class="relative w-10 h-10 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-primary group-hover:to-purple-500 transition-all duration-300">
+            <svg class="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </div>
+        </a>
         <div class="sidebar-text">
-          <div class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">Quality Core</div>
+          <button onclick="window.scrollTo(0,0); window.location.reload()" class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500 hover:opacity-80 transition-opacity text-left">Quality Core</button>
         </div>
-      </a>
+      </div>
+      <script>
+        if (window.location.port === '3333') {
+          document.getElementById('promo-link').href = 'http://localhost:5174/portcmd/';
+        }
+      </script>
       <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5" title="Toggle Sidebar" aria-label="Toggle sidebar">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
@@ -559,45 +647,48 @@
     </div>
   </main>
 
-  <!-- Viewer Modal (WindowConsole Style) -->
-  <div id="viewer-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 md:p-12 pointer-events-none">
-    <div id="viewer-backdrop" class="absolute inset-0 pointer-events-auto" onclick="closeViewer()"></div>
-    
-    <div class="bg-[#0d1117] border border-white/10 rounded-2xl w-full max-w-5xl h-full max-h-[85vh] flex flex-col shadow-2xl relative overflow-hidden pointer-events-auto transition-all duration-300 transform scale-95 opacity-0" id="viewer-container">
+  <!-- WindowConsole Viewer Modal -->
+  <div id="viewer-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity duration-300 opacity-0">
+    <!-- Main Window Container -->
+    <div class="window-console w-full max-w-5xl h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
       
-      <!-- Window Header -->
-      <div class="p-4 border-b border-white/10 flex justify-between items-center bg-surfaceHighlight/50 backdrop-blur-md">
-        <div class="flex items-center gap-4">
-          <div class="flex space-x-2">
-            <div class="w-3 h-3 rounded-full bg-[#ff5f56] shadow-sm"></div>
-            <div class="w-3 h-3 rounded-full bg-[#ffbd2e] shadow-sm"></div>
-            <div class="w-3 h-3 rounded-full bg-[#27c93f] shadow-sm"></div>
-          </div>
-          <div class="h-4 w-[1px] bg-white/10 mx-1"></div>
-          <span class="font-mono text-xs font-bold text-muted uppercase tracking-widest" id="viewer-title">Record Viewer</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <!-- Navigation Buttons -->
-          <div class="flex items-center gap-2 mr-2" style="display: none;">
-            <button id="viewer-prev-btn" onclick="viewerPrev()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-muted hover:text-white transition" aria-label="Previous report">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      <!-- Window Header (Windows 11 Style) -->
+      <div class="window-header flex items-center justify-between">
+         <!-- Left: Icon + Title -->
+         <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="w-5 h-5 rounded bg-primary/20 flex items-center justify-center text-primary text-xs">▶</div>
+            <span class="font-mono text-sm text-white font-medium truncate" id="viewer-title">Terminal</span>
+         </div>
+
+         <!-- Right: Window Controls (Windows 11 Style) -->
+         <div class="flex items-center h-full">
+            <button onclick="minimizeViewer()" class="w-12 h-12 flex items-center justify-center text-gray-400 hover:bg-white/10 transition" title="Minimize">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
             </button>
-            <span id="viewer-counter" class="text-xs text-muted font-mono px-2">1 / 3</span>
-            <button id="viewer-next-btn" onclick="viewerNext()" class="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-muted hover:text-white transition" aria-label="Next report">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <button onclick="maximizeViewer()" class="w-12 h-12 flex items-center justify-center text-gray-400 hover:bg-white/10 transition" title="Maximize">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="1" stroke-width="2"/></svg>
             </button>
-          </div>
-          <div class="h-4 w-[1px] bg-white/10"></div>
-          <button onclick="copyViewerContent()" class="text-xs text-muted hover:text-primary transition px-2 py-1 rounded hover:bg-white/5 flex items-center gap-1">
-            <span>📋</span> Copy
-          </button>
-          <button onclick="closeViewer()" class="text-muted hover:text-white transition p-1" aria-label="Close viewer">✕</button>
-        </div>
+            <button onclick="closeViewer()" class="w-12 h-12 flex items-center justify-center text-gray-400 hover:bg-red-500 hover:text-white transition" title="Close">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+         </div>
       </div>
 
-      <!-- Viewer Content -->
-      <div class="flex-1 p-8 overflow-auto custom-scrollbar prose prose-invert max-w-none font-sans" id="viewer-content">
-        <!-- Content injected here -->
+      <!-- Content Area -->
+      <div id="viewer-content" class="flex-1 p-4 overflow-y-auto custom-scrollbar terminal-content text-sm relative">
+         <!-- Content injected here -->
+      </div>
+      
+      <!-- Footer/Status Bar -->
+      <div class="bg-[#1a1a1a] px-4 py-2 border-t border-white/5 flex justify-between items-center text-[10px] text-muted font-mono" id="viewer-footer">
+         <div class="flex items-center gap-4">
+           <span id="viewer-status" class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-500" id="status-dot"></span>Ready</span>
+           <span id="viewer-elapsed"></span>
+         </div>
+         <div class="flex items-center gap-4">
+           <button onclick="copyViewerContent()" class="hover:text-white transition" title="Copy Logs">📋 Copy</button>
+           <span id="viewer-meta">UTF-8 LF</span>
+         </div>
       </div>
     </div>
   </div>
@@ -859,7 +950,12 @@
         commitPush: 'Commit & Push',
         runTest: 'Run Test',
         newAnalysis: 'New Analysis',
-        analysisHistory: 'Analysis History'
+        analysisHistory: 'Analysis History',
+        qualityGateSubtitle: 'Managed quality control and thresholds',
+        lighthouseReportsSubtitle: 'Archive of performance and quality reports',
+        logsSubtitle: 'System logs and execution history',
+        aiInsightsSubtitle: 'Deep analysis powered by Gemini 1.5 Flash',
+        gitDeploySubtitle: 'Commit and push changes to your repository'
       },
       'pt-BR': {
         dashboard: 'Painel',
@@ -915,7 +1011,12 @@
         commitPush: 'Commit & Push',
         runTest: 'Executar Teste',
         newAnalysis: 'Nova Análise',
-        analysisHistory: 'Histórico de Análises'
+        analysisHistory: 'Histórico de Análises',
+        qualityGateSubtitle: 'Controle de qualidade e limites gerenciados',
+        lighthouseReportsSubtitle: 'Arquivo de relatórios de desempenho e qualidade',
+        logsSubtitle: 'Logs do sistema e histórico de execução',
+        aiInsightsSubtitle: 'Análise profunda com Gemini 1.5 Flash',
+        gitDeploySubtitle: 'Confirme e envie alterações para o seu repositório'
       },
       es: {
         dashboard: 'Panel',
@@ -971,7 +1072,12 @@
         commitPush: 'Commit & Push',
         runTest: 'Ejecutar Prueba',
         newAnalysis: 'Nuevo Análisis',
-        analysisHistory: 'Historial de Análisis'
+        analysisHistory: 'Historial de Análisis',
+        qualityGateSubtitle: 'Control de calidad y umbrales gestionados',
+        lighthouseReportsSubtitle: 'Archivo de informes de rendimiento y calidad',
+        logsSubtitle: 'Registros del sistema e historial de ejecución',
+        aiInsightsSubtitle: 'Análisis profundo con Gemini 1.5 Flash',
+        gitDeploySubtitle: 'Confirma y envía cambios a tu repositorio'
       }
     };
 
@@ -1211,8 +1317,14 @@
       // Update navigation visibility
       updateViewerNavigation();
 
+      // Show modal with animation
       modal.classList.remove('hidden');
+      modal.classList.remove('pointer-events-none');
+      modal.classList.add('pointer-events-auto');
+      
       setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
         container.classList.remove('scale-95', 'opacity-0');
         container.classList.add('scale-100', 'opacity-100');
       }, 10);
@@ -1416,30 +1528,77 @@
       }
     }
 
+    // --- Minimized Console Restore ---
+    function minimizeViewer() {
+      const modal = document.getElementById('viewer-modal');
+      // Hide modal but keep state
+      modal.classList.add('hidden');
+      
+      // Show restore button
+      let restoreBtn = document.getElementById('console-restore-btn');
+      if (!restoreBtn) {
+        restoreBtn = document.createElement('button');
+        restoreBtn.id = 'console-restore-btn';
+        restoreBtn.innerHTML = '▶ Console';
+        restoreBtn.className = 'fixed bottom-4 right-4 z-[200] bg-black/80 text-primary border border-primary/30 px-4 py-2 rounded-full shadow-lg backdrop-blur hover:bg-black hover:border-primary transition-all font-mono text-xs font-bold flex items-center gap-2 animate-slide-in';
+        restoreBtn.onclick = restoreViewer;
+        document.body.appendChild(restoreBtn);
+      }
+      restoreBtn.classList.remove('hidden');
+    }
+
+    function restoreViewer() {
+      const modal = document.getElementById('viewer-modal');
+      const restoreBtn = document.getElementById('console-restore-btn');
+      
+      if (restoreBtn) restoreBtn.classList.add('hidden');
+      modal.classList.remove('hidden');
+    }
+
+    function maximizeViewer() {
+        const container = document.getElementById('viewer-container');
+        const isMaximized = container.classList.contains('w-full');
+        
+        if (isMaximized) {
+            // Restore
+            container.classList.add('max-w-5xl', 'h-[85vh]', 'mx-4');
+            container.classList.remove('w-full', 'h-full', 'm-0', 'rounded-none');
+        } else {
+            // Maximize
+            container.classList.remove('max-w-5xl', 'h-[85vh]', 'mx-4');
+            container.classList.add('w-full', 'h-full', 'm-0', 'rounded-none');
+        }
+    }
+
     function closeViewer() {
       const modal = document.getElementById('viewer-modal');
       const container = document.getElementById('viewer-container');
+      const restoreBtn = document.getElementById('console-restore-btn');
       
+      if (restoreBtn) restoreBtn.classList.add('hidden');
+      
+      // Stop any running timer
+      if (consoleTimerInterval) {
+        clearInterval(consoleTimerInterval);
+        consoleTimerInterval = null;
+      }
+      
+      // Animate out
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
       container.classList.remove('scale-100', 'opacity-100');
       container.classList.add('scale-95', 'opacity-0');
       
       setTimeout(() => {
         modal.classList.add('hidden');
+        modal.classList.remove('pointer-events-auto');
+        modal.classList.add('pointer-events-none');
+        // Reset container size if was maximized
+        container.classList.add('max-w-5xl', 'h-[85vh]', 'mx-4');
+        container.classList.remove('w-full', 'h-full', 'm-0', 'rounded-none');
         viewerReportsList = [];
         viewerCurrentIndex = 0;
       }, 300);
-    }
-
-    function copyViewerContent() {
-      const content = document.getElementById('viewer-content').innerText;
-      navigator.clipboard.writeText(content).then(() => {
-        const btn = document.querySelector('[onclick="copyViewerContent()"]');
-        if (btn) {
-          const original = btn.innerHTML;
-          btn.innerHTML = '<span>✓</span> Copied';
-          setTimeout(() => { btn.innerHTML = original; }, 1500);
-        }
-      });
     }
 
     // --- Settings Modal ---
@@ -1568,6 +1727,22 @@
       if (tab === 'insights') loadInsightsView();
     }
 
+    // --- Views Helpers ---
+
+    function renderHeader(title, subtitle, actions = '') {
+        return `
+            <header class="flex justify-between items-end mb-8 bg-surfaceHighlight/20 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+              <div>
+                <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">${title}</h1>
+                <p class="text-muted text-sm">${subtitle}</p>
+              </div>
+              <div class="flex gap-2">
+                ${actions}
+              </div>
+            </header>
+        `;
+    }
+
     // --- Views ---
 
     let globalReports = [];
@@ -1575,15 +1750,53 @@
 
     async function loadDashboard() {
       const container = document.getElementById('content-area');
-      container.innerHTML = '<div class="text-muted animate-pulse">Loading dashboard...</div>';
+      container.innerHTML = '<div class="text-muted animate-pulse font-mono text-sm p-4">Loading dashboard data...</div>';
 
       try {
-        const res = await fetch(`${API_BASE}/reports/quality`);
-        const json = await res.json();
-        globalReports = json.data || [];
+        const [qRes, lhRes] = await Promise.all([
+             fetch(`${API_BASE}/reports/quality`),
+             fetch(`${API_BASE}/reports/lighthouse`)
+        ]);
+        
+        const qJson = await qRes.json();
+        const lhJson = await lhRes.json();
+        
+        const qualityReports = qJson.data || [];
+        
+        // Normalize Lighthouse reports to match Dashboard schema
+        const lighthouseReports = (lhJson.data || []).map(r => {
+             const cats = r.data?.categories || {};
+             const perf = (cats.performance?.score || 0) * 100;
+             const a11y = (cats.accessibility?.score || 0) * 100;
+             const bp = (cats['best-practices']?.score || 0) * 100;
+             const seo = (cats.seo?.score || 0) * 100;
+             const url = r.data?.finalUrl || '';
+             
+             return {
+                 ...r,
+                 isLighthouse: true,
+                 data: {
+                     ...r.data,
+                     target: (url.includes(':5174') || url.includes('github.io')) ? 'promo' : 'app',
+                     scores: {
+                         build: perf, // Proxy: Performance = Build/Speed
+                         render: perf, // Proxy: Performance = Render
+                         ux: bp,       // Proxy: Best Practices = UX
+                         a11y: a11y,
+                         seo: seo
+                     },
+                     status: perf >= 90 ? 'pass' : (perf >= 50 ? 'warn' : 'fail'),
+                     summary: { score: perf } // Use performance as main score
+                 }
+             };
+        });
+
+        // Merge and sort
+        globalReports = [...qualityReports, ...lighthouseReports].sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
         renderDashboard();
       } catch (err) {
-        container.innerHTML = `<div class="p-4 bg-error/10 text-error rounded">Failed to load dashboard: ${err.message}</div>`;
+        container.innerHTML = `<div class="p-4 bg-error/10 text-error rounded font-mono text-sm">Failed to load dashboard: ${err.message}</div>`;
       }
     }
 
@@ -1594,18 +1807,24 @@
 
     function renderDashboard() {
       const container = document.getElementById('content-area');
+
+      // Helper to infer target if missing
+      const inferTarget = (r) => {
+        if (r.data?.target) return r.data.target;
+        const url = r.data?.url || r.data?.finalUrl || '';
+        // Check for promo indicators (port 5174 or github pages)
+        if (url.includes(':5174') || url.includes('github.io')) return 'promo';
+        return 'app';
+      };
+
       const filteredReports = currentFilter === 'all' 
         ? globalReports 
-        : globalReports.filter(r => (r.data.target || 'app') === currentFilter);
+        : globalReports.filter(r => inferTarget(r) === currentFilter);
 
       const latest = filteredReports.length > 0 ? filteredReports[0].data : null;
       const previous = filteredReports.length > 1 ? filteredReports[1].data : null;
       
       const getScore = (val) => (val === undefined || val === null) ? null : Math.round(val);
-      
-      // Adapt to New Schema (metrics vs scores)
-      // New schema puts detailed metrics in data.metrics, but might not have category scores yet.
-      // We will try to read from metrics.scores if available, or summary.score.
       
       const scores = { 
           build: getScore(latest?.metrics?.scores?.build ?? latest?.scores?.build), 
@@ -1628,238 +1847,192 @@
         return curr - prev;
       };
 
-      // Calculate Best Category
-      let bestCategory = 'None';
-      let bestScore = -1;
-      
-      // If we have no detailed scores, use Summary Score
-      if (Object.values(scores).every(s => s === null)) {
-         if (latest?.summary?.score) {
-             bestScore = latest.summary.score;
-             bestCategory = 'OVERALL';
-             // Fill build score for visual if nothing else
-             scores.build = bestScore; 
-         }
-      } else {
-        Object.entries(scores).forEach(([cat, score]) => {
-            if (score !== null && score > bestScore) {
-                bestScore = score;
-                bestCategory = cat.toUpperCase();
-            }
-        });
+      // Best Score Logic
+      let bestScore = -1, bestCategory = 'None';
+      const validScores = Object.entries(scores).filter(([_, s]) => s !== null);
+      if (validScores.length > 0) {
+        const best = validScores.reduce((a, b) => a[1] > b[1] ? a : b);
+        bestScore = best[1];
+        bestCategory = best[0].toUpperCase();
+      } else if (latest?.summary?.score) {
+         bestScore = latest.summary.score;
+         bestCategory = 'OVERALL';
+         scores.build = bestScore; // Fallback
       }
 
-      // Calculate Average Score
-      const validScores = Object.values(scores).filter(s => s !== null);
-      const avgScore = validScores.length ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) : (latest?.summary?.score || 0);
+      // Average Score
+      const allValues = validScores.map(v => v[1]);
+      const avgScore = allValues.length ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length) : (latest?.summary?.score || 0);
 
       const getColor = (s) => s === null ? 'text-muted' : (s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error'));
       const getBg = (s) => s === null ? 'bg-white/5' : (s >= 90 ? 'bg-success' : (s >= 50 ? 'bg-warning' : 'bg-error'));
 
       const settings = getSettings();
       const projectName = settings.projectName || 'Quality Core';
-      const projectVersion = latest?.meta?.version || 'v1.0.0'; 
 
-      container.innerHTML = `
-        <header class="flex justify-between items-end mb-8 bg-surfaceHighlight/20 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
-          <div>
-            <div class="flex items-center gap-3 mb-2">
-                <h1 class="text-3xl font-bold text-white">${projectName}</h1>
-                <span class="px-2 py-0.5 rounded text-xs font-mono bg-white/10 text-muted">${projectVersion}</span>
-                <span class="px-2 py-0.5 rounded text-xs font-mono ${latest?.meta?.generatedAt || latest?.timestamp ? 'bg-success/10 text-success' : 'bg-white/5 text-muted'}">
-                    ${latest ? 'Active' : 'No Data'}
-                </span>
-            </div>
-            <p class="text-muted text-sm flex items-center gap-4">
-                <span>Quality Core Metrics</span>
-                <span class="w-1 h-1 rounded-full bg-muted"></span>
-                <span>Last Scan: ${latest ? new Date(latest.meta?.generatedAt || latest.timestamp).toLocaleString() : 'Never'}</span>
-                <span class="w-1 h-1 rounded-full bg-muted"></span>
-                <span>Env: ${latest?.meta?.preset || (currentFilter === 'all' ? 'Combined' : currentFilter.toUpperCase())}</span>
-            </p>
-          </div>
-          <div class="flex gap-2">
-            <select id="target-filter" onchange="filterDashboard()" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all" ${currentFilter === 'all' ? 'selected' : ''}>All Targets</option>
-              <option value="app" ${currentFilter === 'app' ? 'selected' : ''}>Application</option>
-              <option value="promo" ${currentFilter === 'promo' ? 'selected' : ''}>Promo Site</option>
-            </select>
-            <button onclick="loadDashboard()" class="px-4 py-2 bg-white/5 text-muted rounded-lg hover:bg-white/10 transition text-sm flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                Refresh
-            </button>
-          </div>
-        </header>
-        
-        <!-- Summary Stats (Primary) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div class="stat-card" style="animation: fadeInUp 0.3s ease-out">
-            <div class="stat-icon">📊</div>
-            <div class="stat-value">${filteredReports.length}</div>
-            <div class="stat-label">Total Reports</div>
-          </div>
-          <div class="stat-card" style="animation: fadeInUp 0.4s ease-out">
-            <div class="stat-icon">🏆</div>
-            <div class="stat-value">${bestScore >= 0 ? bestScore : '-'}</div>
-            <div class="stat-label">Best Score</div>
-            <div class="stat-trend ${bestScore >= 90 ? 'up' : ''}">${bestCategory}</div>
-          </div>
-          <div class="stat-card" style="animation: fadeInUp 0.5s ease-out">
-            <div class="stat-icon">✅</div>
-            <div class="stat-value">${filteredReports.length > 0 ? Math.round((filteredReports.filter(r => r.data?.status === 'pass').length / filteredReports.length) * 100) : 0}%</div>
-            <div class="stat-label">Pass Rate</div>
-          </div>
-          <div class="stat-card" style="animation: fadeInUp 0.6s ease-out">
-            <div class="stat-icon">🕐</div>
-            <div class="stat-value" style="font-size: 1rem;">${latest ? new Date(latest.meta?.generatedAt || latest.timestamp).toLocaleDateString() : '-'}</div>
-            <div class="stat-label">Last Scan</div>
-          </div>
-        </div>
-        
-        <!-- Score Cards with Radial Gauges -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-          ${renderScoreCard('Build', scores.build, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>', getColor(scores.build), getBg(scores.build), getTrend(scores.build, prevScores?.build))}
-          ${renderScoreCard('Render', scores.render, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', getColor(scores.render), getBg(scores.render), getTrend(scores.render, prevScores?.render))}
-          ${renderScoreCard('UX', scores.ux, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/></svg>', getColor(scores.ux), getBg(scores.ux), getTrend(scores.ux, prevScores?.ux))}
-          ${renderScoreCard('A11y', scores.a11y, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>', getColor(scores.a11y), getBg(scores.a11y), getTrend(scores.a11y, prevScores?.a11y))}
-          ${renderScoreCard('SEO', scores.seo, '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>', getColor(scores.seo), getBg(scores.seo), getTrend(scores.seo, prevScores?.seo))}
-        </div>
-
-        <!-- Trend Chart -->
-        <div class="glass-card p-6 mb-8">
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
-            <div>
-              <h3 class="text-sm font-medium text-muted uppercase tracking-widest">Score Trend</h3>
-              <p class="text-xs text-muted mt-1" id="chart-site-name">${settings.projectName || settings.monitorUrl || 'Local Project'}</p>
-            </div>
-            <div class="flex gap-2 items-center">
-              <div id="period-filters" class="flex flex-wrap gap-1 bg-surfaceHighlight/50 p-1 rounded-lg">
-                <button onclick="setPeriodFilter('1h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="1h">1h</button>
-                <button onclick="setPeriodFilter('6h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="6h">6h</button>
-                <button onclick="setPeriodFilter('12h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="12h">12h</button>
-                <button onclick="setPeriodFilter('24h')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all bg-primary text-black" data-period="24h">24h</button>
-                <button onclick="setPeriodFilter('7d')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="7d">7d</button>
-                <button onclick="setPeriodFilter('30d')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="30d">30d</button>
-                <button onclick="setPeriodFilter('6m')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="6m">6m</button>
-                <button onclick="setPeriodFilter('12m')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="12m">12m</button>
-                <button onclick="setPeriodFilter('all')" class="period-btn px-2 py-1 text-xs font-medium rounded transition-all text-muted hover:text-white" data-period="all">All</button>
-              </div>
-              <button onclick="exportChartSVG()" class="px-3 py-1 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:text-white transition" title="Save as SVG">📊 SVG</button>
-            </div>
-          </div>
-          <div class="relative w-full" style="height: 280px; max-height: 40vh;">
-            <canvas id="trend-chart" class="absolute inset-0 w-full h-full"></canvas>
-          </div>
-        </div>
-
-        <!-- Recent Scans & Quick Stats -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="glass-card p-6">
-            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 
-              Recent Scans
-            </h3>
-            <div class="space-y-2" id="recent-scans-list">
-              ${renderRecentScans(filteredReports)}
-            </div>
-          </div>
-          
-          <div class="glass-card p-6">
-            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg> 
-              Quick Stats
-            </h3>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-               <!-- Latest Score (Primary) -->
-               <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
-                  <div class="flex items-center justify-between mb-2">
-                     <div class="text-xs text-muted uppercase">Latest Score</div>
-                     ${prevScores ? `<div class="text-xs font-bold ${avgScore > (Object.values(prevScores).filter(s=>s!==null).reduce((a,b)=>a+b,0)/Object.values(prevScores).filter(s=>s!==null).length || 0) ? 'text-success' : 'text-error'}">
-                       ${avgScore > (Object.values(prevScores).filter(s=>s!==null).reduce((a,b)=>a+b,0)/Object.values(prevScores).filter(s=>s!==null).length || 0) ? '↑' : '↓'} vs last
-                     </div>` : ''}
-                  </div>
-                  <div class="text-3xl font-mono font-bold gradient-text">${latest?.summary?.score || scores.build || '-'}%</div>
-                  <div class="text-[10px] text-muted mt-1">Avg: ${avgScore}%</div>
-               </div>
-               <!-- Best Category (Primary) -->
-               <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
-                  <div class="text-xs text-muted uppercase mb-2">Best Category</div>
-                  <div class="text-2xl font-mono font-bold text-success">${bestCategory}</div>
-                  <div class="text-[10px] text-muted mt-1">Score: ${bestScore >= 0 ? bestScore : '-'}</div>
-               </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-4">
-              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
-                <div class="text-2xl font-mono font-bold text-white">${filteredReports.length}</div>
-                <div class="text-xs text-muted">Total Scans</div>
-              </div>
-              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
-                 <div class="text-2xl font-mono font-bold text-white">${filteredReports.length > 0 ? Math.round((filteredReports.filter(r=>r.data?.status==='pass').length/filteredReports.length)*100) : 0}%</div>
-                 <div class="text-xs text-muted">Pass Rate</div>
-              </div>
-              <div class="bg-surfaceHighlight/50 p-4 rounded-lg">
-                <div class="text-2xl font-mono font-bold ${latest?.summary?.status === 'pass' || latest?.status === 'pass' ? 'text-success' : 'text-error'}">
-                  ${latest?.summary?.status === 'pass' || latest?.status === 'pass' ? 
-                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : 
-                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'}
-                </div>
-                <div class="text-xs text-muted">Last Status</div>
-              </div>
-            </div>
-            ${latest?.violations?.length > 0 ? `
-              <div class="mt-4 pt-4 border-t border-white/5">
-                <div class="text-xs text-muted uppercase tracking-widest mb-2">Top Issues</div>
-                <div class="space-y-2">
-                  ${latest.violations.slice(0, 3).map(v => `
-                    <div class="flex items-center justify-between text-xs p-2 bg-error/5 rounded border border-error/10">
-                      <span class="text-error font-mono">${v.id}</span>
-                      <span class="text-muted block max-w-[180px] truncate" title="${v.value}">${v.value}</span>
-                    </div>
-                  `).join('')}
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-        
-        <!-- Quick Actions -->
-        <div class="glass-card p-6 mt-6">
-           <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              Quick Actions
-           </h3>
-           <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <button onclick="runCommand('quality:gate')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">💎</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Full Quality Gate</span>
-              </button>
-              <button onclick="runCommand('lighthouse')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🔦</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Perf Audit</span>
-              </button>
-              <button onclick="runCommand('audit:app')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">📱</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Audit App</span>
-              </button>
-              <button onclick="runCommand('audit:promo')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">📣</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Audit Promo</span>
-              </button>
-              <button onclick="runCommand('health')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🏥</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Health Check</span>
-              </button>
-              <button onclick="runCommand('ops:optimize')" class="p-4 bg-surfaceHighlight/30 hover:bg-surfaceHighlight rounded-xl flex flex-col items-center gap-3 group transition border border-white/5 hover:border-primary/50 text-center">
-                 <span class="text-2xl group-hover:scale-110 transition filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">🖼️</span>
-                 <span class="text-xs font-mono text-muted group-hover:text-white font-bold">Optimize Images</span>
-              </button>
-           </div>
-        </div>
+      const headerActions = `
+        <select id="target-filter" onchange="filterDashboard()" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary">
+          <option value="all" ${currentFilter === 'all' ? 'selected' : ''}>All Targets</option>
+          <option value="app" ${currentFilter === 'app' ? 'selected' : ''}>Application</option>
+          <option value="promo" ${currentFilter === 'promo' ? 'selected' : ''}>Promo Site</option>
+        </select>
+        <button onclick="loadDashboard()" class="px-4 py-2 bg-white/5 text-muted rounded-lg hover:bg-white/10 transition text-sm flex items-center gap-2">
+            <span>🔄</span> ${t('refresh')}
+        </button>
       `;
 
-      // Render chart
-      renderTrendChart(filteredReports, currentPeriod); // Using currentPeriod state
+      const reports = filteredReports; // Use filteredReports for calculations
+          let totalScore = 0;
+          let scoreCounts = 0;
+          let passCount = 0;
+          
+          reports.forEach(r => {
+              if (r.data?.summary?.score !== undefined && r.data.summary.score !== null) {
+                  totalScore += r.data.summary.score;
+                  scoreCounts++;
+              }
+              if (r.data?.status === 'pass') {
+                  passCount++;
+              }
+          });
+          
+          const avgHealth = scoreCounts > 0 ? Math.round(totalScore / scoreCounts) : 0;
+          const passRate = reports.length > 0 ? Math.round((passCount / reports.length) * 100) : 0;
+          
+          let healthColor = 'text-muted';
+          let healthLabel = 'Unknown';
+          
+          if (reports.length > 0) {
+             if (avgHealth >= 90) { healthColor = 'text-success'; healthLabel = 'Excellent'; }
+             else if (avgHealth >= 70) { healthColor = 'text-info'; healthLabel = 'Good'; }
+             else if (avgHealth >= 50) { healthColor = 'text-warning'; healthLabel = 'Warning'; }
+             else { healthColor = 'text-error'; healthLabel = 'Critical'; }
+          }
+          
+
+          // --- Helper for Vitals ---
+          const renderVitalBar = (label, value, target, unit='s') => {
+              const numVal = parseFloat(value || 0);
+              const isGood = numVal <= target;
+              const width = Math.min(100, Math.max(5, (numVal / (target * 1.5)) * 100)); // Scale relative to target
+              const color = isGood ? 'bg-emerald-500' : (numVal <= target*1.5 ? 'bg-yellow-500' : 'bg-red-500');
+              const textColor = isGood ? 'text-emerald-400' : (numVal <= target*1.5 ? 'text-yellow-400' : 'text-red-400');
+              
+              return `
+                  <div>
+                      <div class="flex justify-between items-end mb-1">
+                          <span class="text-xs text-muted tracking-wide">${label}</span>
+                          <span class="text-xs font-mono font-bold ${textColor}">${numVal.toFixed(2)} ${unit}</span>
+                      </div>
+                      <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                          <div class="h-full ${color} shadow-[0_0_8px_currentColor]" style="width: ${isGood ? 100 : width}%"></div>
+                      </div>
+                  </div>
+              `;
+          };
+
+          const score = latest?.summary?.score || 0;
+          const perfTrend = getTrend(score, previous?.summary?.score);
+
+          // --- PREMIUM DASHBOARD LAYOUT ---
+          container.innerHTML = `
+            <!-- HEADER -->
+            <div class="mb-8 p-1">
+               <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                    <h2 class="text-sm font-bold text-blue-300 tracking-[0.2em] uppercase">Telemetria Ao Vivo</h2>
+                  </div>
+                  <div class="text-xs text-muted font-mono bg-white/5 px-2 py-1 rounded">
+                      Lighthouse v${latest?.lighthouseVersion || '13.0.1'} // ${new Date(latest?.fetchTime || Date.now()).toLocaleString()}
+                  </div>
+               </div>
+
+               <!-- TOP SCORE ROW -->
+               <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-8">
+                   <div class="lg:col-span-1 p-6 glass-card border border-white/5 bg-[#0a0a0a] flex flex-col justify-center items-center relative overflow-hidden">
+                        <div class="text-xs text-muted uppercase tracking-widest mb-2">Performance</div>
+                        <div class="text-5xl font-bold text-orange-500 mb-1 z-10 relative">${score}</div>
+                        
+                        <!-- Trend Indicator -->
+                        <div class="flex items-center gap-2 mb-2 z-10">
+                            <span class="${perfTrend > 0 ? 'text-emerald-400' : (perfTrend < 0 ? 'text-red-400' : 'text-muted')} text-xs font-bold bg-black/50 px-2 py-0.5 rounded-full border border-white/5">
+                                ${perfTrend > 0 ? '↑' : (perfTrend < 0 ? '↓' : '')} ${Math.abs(perfTrend)} pt
+                            </span>
+                        </div>
+
+                        <div class="absolute inset-0 bg-orange-500/5 blur-3xl rounded-full"></div>
+                        <div class="w-full h-1 bg-white/10 mt-2 rounded-full overflow-hidden">
+                            <div class="h-full bg-orange-500" style="width: ${score}%"></div>
+                        </div>
+                   </div>
+                   
+                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y))}
+                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux))}
+                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo))}
+               </div>
+
+               <!-- MAIN CHART & VITALS ROW -->
+               <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                   <!-- Trajectory Chart -->
+                   <div class="glass-card p-6 lg:col-span-2 border border-white/5 bg-[#0a0a0a]">
+                       <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
+                          <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest">Trajetória de Performance</h3>
+                          <div class="flex gap-2">
+                             ${['1h','24h','7d','30d','all'].map(p => `
+                                <button onclick="setPeriodFilter('${p}')" class="px-2 py-1 text-[10px] uppercase font-bold rounded transition-all ${currentPeriod===p ? 'bg-orange-500 text-black shadow-[0_0_10px_rgba(249,115,22,0.4)]' : 'text-muted hover:text-white bg-white/5 hover:bg-white/10'}">${p}</button>
+                             `).join('')}
+                          </div>
+                       </div>
+                       <div class="h-[300px] relative w-full">
+                          <canvas id="trend-chart"></canvas>
+                       </div>
+                   </div>
+
+                   <!-- Core Vitals Status -->
+                   <div class="glass-card p-6 border border-white/5 bg-[#0a0a0a] flex flex-col">
+                       <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest mb-6 border-b border-white/5 pb-4">Status do Sistema</h3>
+                       <div class="space-y-6 flex-1">
+                           ${renderVitalBar('LCP (Largest Contentful Paint)', latest?.metrics?.lcp || 0, 2.5)}
+                           ${renderVitalBar('FCP (First Contentful Paint)', latest?.metrics?.fcp || 0, 1.8)}
+                           ${renderVitalBar('CLS (Cumulative Layout Shift)', latest?.metrics?.cls || 0, 0.1, '')}
+                           ${renderVitalBar('INP (Interaction to Next Paint)', latest?.metrics?.inp || 0, 200, 'ms')}
+                           ${renderVitalBar('TTI (Time to Interactive)', latest?.metrics?.tti || 0, 3.8)}
+                           ${renderVitalBar('SI (Speed Index)', latest?.metrics?.si || 0, 3.4)}
+                       </div>
+                   </div>
+               </div>
+
+               <!-- LOG ROW -->
+               <div class="glass-card p-6 border border-white/5 bg-[#0a0a0a]">
+                     <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest mb-6 border-b border-white/5 pb-4">Log de Detecção de Anomalias</h3>
+                     <div class="text-xs text-muted uppercase mb-4">${latest?.audits?.failed?.length || 0} Issues Found</div>
+                     
+                     <div class="space-y-1">
+                         ${(latest?.audits?.failed || []).slice(0, 8).map(audit => `
+                             <div class="group border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-colors rounded overflow-hidden">
+                                 <button class="w-full flex justify-between items-center px-4 py-3 text-left" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                     <div class="flex items-center gap-3 overflow-hidden">
+                                         <div class="w-1 h-8 bg-red-500/50 rounded-full"></div>
+                                         <span class="text-sm font-medium text-white truncate">${audit.title}</span>
+                                     </div>
+                                     <div class="flex items-center gap-4">
+                                          ${audit.displayValue ? `<span class="text-[10px] font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded">${audit.displayValue}</span>` : ''}
+                                          <svg class="w-4 h-4 text-muted transform group-hover:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                     </div>
+                                 </button>
+                                 <div class="hidden px-4 pb-4 pl-8 text-xs text-muted border-t border-white/5 pt-2">
+                                     ${audit.description}
+                                 </div>
+                             </div>
+                         `).join('')}
+                         ${(!latest?.audits?.failed || latest.audits.failed.length === 0) ? '<div class="text-sm text-muted italic p-4 text-center">Nenhum problema crítico detectado. Sistema estável.</div>' : ''}
+                     </div>
+               </div>
+            </div>
+          `;
+
+      renderTrendChart(filteredReports, currentPeriod); // Should work if chart.js loaded
     }
 
     function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0) {
@@ -2038,31 +2211,46 @@
       
       if (trendChart) trendChart.destroy();
       
-      trendChart = new Chart(canvas, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [
-            { label: 'Build', data: buildData, borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: true },
-            { label: 'Render', data: renderData, borderColor: '#f59e0b', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, spanGaps: true },
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { 
-            legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 11 } } },
-            title: { display: true, text: `${siteName} - ${period.toUpperCase()}`, color: '#666', font: { size: 12 } }
-          },
-          scales: {
-            x: { 
-              grid: { color: 'rgba(255,255,255,0.03)' }, 
-              ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } } 
-            },
-            y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
-          }
-        }
-      });
+       trendChart = new Chart(canvas, {
+         type: 'line',
+         data: {
+           labels,
+           datasets: [
+             { label: 'Build', data: buildData, borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: true },
+             { label: 'Render', data: renderData, borderColor: '#f59e0b', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, spanGaps: true },
+           ]
+         },
+         options: {
+           responsive: true,
+           maintainAspectRatio: false,
+           plugins: { 
+             legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 11 } } },
+             title: { display: true, text: `${siteName} - ${period.toUpperCase()}`, color: '#666', font: { size: 12 } }
+           },
+           scales: {
+             x: { 
+               grid: { color: 'rgba(255,255,255,0.03)' }, 
+               ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } } 
+             },
+             y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
+           }
+         }
+       });
+
+       // Empty state check
+       const hasData = buildData.some(v => v !== null) || renderData.some(v => v !== null);
+       if (!hasData) {
+          const ctx = canvas.getContext('2d');
+          const width = canvas.width;
+          const height = canvas.height;
+          ctx.save();
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '14px sans-serif';
+          ctx.fillText('No data available for this period', width / 2, height / 2);
+          ctx.restore();
+       }
     }
 
     function exportChartSVG() {
@@ -2120,15 +2308,17 @@
       
       container.innerHTML = `
         <!-- Header -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/10">
-          <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold text-white">📡 Site Monitor</h1>
-            <span class="text-xs text-muted font-mono">${settings.monitorUrl}</span>
-          </div>
-          <button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition">
-            <span class="animate-pulse">●</span> Ping Now
-          </button>
-        </div>
+        ${renderHeader(
+            t('siteMonitor'),
+            `<span class="font-mono text-xs bg-white/10 px-2 py-0.5 rounded">${settings.monitorUrl}</span>`,
+            `<button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition flex items-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span> 
+                Ping Now
+            </button>`
+        )}
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
@@ -2248,7 +2438,7 @@
             fill: true,
             tension: 0.3,
             pointRadius: 2,
-          }]
+          }],
         },
         options: {
           responsive: true,
@@ -2263,6 +2453,20 @@
           }
         }
       });
+      
+      // Empty state check
+      if (filtered.length === 0) {
+         const ctx = canvas.getContext('2d');
+         const width = canvas.width;
+         const height = canvas.height;
+         ctx.save();
+         ctx.textAlign = 'center';
+         ctx.textBaseline = 'middle';
+         ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+         ctx.font = '14px sans-serif';
+         ctx.fillText('No data available for this period', width / 2, height / 2);
+         ctx.restore();
+      }
     }
 
     function exportMonitorChartSVG() {
@@ -2362,21 +2566,19 @@
       const settings = getSettings();
       
       container.innerHTML = `
-        <header class="flex justify-between items-end mb-8">
-          <div>
-            <h1 class="text-3xl font-bold text-white mb-2">🚀 PageSpeed Insights</h1>
-            <p class="text-muted text-sm">Remote Lighthouse test via Google API</p>
-          </div>
-          <button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
-            <span>🚀</span> Run Test
-          </button>
-        </header>
+         ${renderHeader(
+             t('pageSpeed'),
+             'Remote Lighthouse test via Google API',
+             `<button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
+                <span>🚀</span> ${t('runTest')}
+             </button>`
+         )}
 
         <!-- Current Results -->
         <div id="psi-results"></div>
 
         <!-- History -->
-        <h3 class="text-lg font-bold text-white mb-4 mt-8 flex items-center gap-2">📜 Scan History</h3>
+        <h3 class="text-lg font-bold text-white mb-4 mt-8 flex items-center gap-2">📜 ${t('analysisHistory')}</h3>
         <div class="grid grid-cols-1 gap-4" id="psi-history-grid">
            <div class="text-muted animate-pulse">Loading history...</div>
         </div>
@@ -2389,7 +2591,7 @@
         const grid = document.getElementById('psi-history-grid');
         
         if(!json.data || json.data.length === 0) {
-          grid.innerHTML = '<div class="p-8 text-center text-muted border border-dashed border-white/10 rounded-xl">No history found.</div>';
+          grid.innerHTML = `<div class="p-8 text-center text-muted border border-dashed border-white/10 rounded-xl">${t('noDataFound')}</div>`;
         } else {
           // Calculate average scores
           const scores = json.data.reduce((acc, r) => {
@@ -2406,9 +2608,9 @@
           // Add metric cards above history - Latest as primary, Avg as secondary
           const metricsHtml = `
             <div class="grid grid-cols-3 gap-4 mb-8">
-              ${renderMetricCardWithAvg('Performance', Math.round((latest.performance?.score || 0) * 100), Math.round((scores.perf / count) * 100))}
-              ${renderMetricCardWithAvg('Accessibility', Math.round((latest.accessibility?.score || 0) * 100), Math.round((scores.a11y / count) * 100))}
-              ${renderMetricCardWithAvg('SEO', Math.round((latest.seo?.score || 0) * 100), Math.round((scores.seo / count) * 100))}
+              ${renderMetricCardWithAvg(t('performance'), Math.round((latest.performance?.score || 0) * 100), Math.round((scores.perf / count) * 100))}
+              ${renderMetricCardWithAvg(t('avgAccessibility'), Math.round((latest.accessibility?.score || 0) * 100), Math.round((scores.a11y / count) * 100))}
+              ${renderMetricCardWithAvg(t('avgSeo'), Math.round((latest.seo?.score || 0) * 100), Math.round((scores.seo / count) * 100))}
             </div>
           `;
           
@@ -2434,7 +2636,7 @@
           grid.insertAdjacentHTML('beforebegin', metricsHtml);
         }
       } catch (e) {
-        document.getElementById('psi-history-grid').innerHTML = '<div class="text-error">Failed to load history</div>';
+        document.getElementById('psi-history-grid').innerHTML = `<div class="text-error">${t('noDataFound')}</div>`;
       }
     }
 
@@ -2468,12 +2670,12 @@
     // Metric Card with Latest (primary) and Average (secondary)
     function renderMetricCardWithAvg(title, latestValue, avgValue) {
       const color = latestValue >= 90 ? 'text-success' : (latestValue >= 50 ? 'text-warning' : 'text-error');
-      const gaugeColor = latestValue >= 90 ? '#10b981' : (latestValue >= 50 ? '#f59e0b' : '#ef4444');
+      const gaugeColor = latestValue >= 90 ? '#10b981' : (latestValue >= 50 ? '#f59e0b' : '#ef4444'); // emerald, amber, rose
       const radius = 32;
       const circumference = 2 * Math.PI * radius;
       const offset = circumference - (latestValue / 100) * circumference;
-      const trend = latestValue - avgValue;
-      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '');
+      const trend = Math.round(latestValue - avgValue);
+      const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '-');
       const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
       
       return `
@@ -2488,12 +2690,16 @@
                       style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
             </svg>
             <div class="absolute inset-0 flex items-center justify-center">
-              <span class="text-lg font-bold ${color}">${latestValue}</span>
+              <span class="text-lg font-bold ${color}">${latestValue}%</span>
             </div>
           </div>
           <div class="stat-label mt-2">${title}</div>
-          ${trend !== 0 ? `<div class="text-[10px] ${trendColor} font-bold">${trendIcon} ${Math.abs(trend)} vs avg</div>` : ''}
-          <div class="text-[10px] text-muted">Avg: ${avgValue}</div>
+          
+          <div class="flex items-center gap-2 mt-1 justify-center">
+              <span class="text-[10px] ${trendColor} font-bold">${trendIcon} ${Math.abs(trend)}%</span>
+              <span class="text-[10px] text-muted">vs avg</span>
+          </div>
+          <div class="text-[9px] text-muted mt-0.5">Avg: ${avgValue}%</div>
         </div>
       `;
     }
@@ -2510,7 +2716,7 @@
       const resultsEl = document.getElementById('psi-results');
       
       btn.disabled = true;
-      btn.innerHTML = '<span class="animate-spin">⏳</span> Running...';
+      btn.innerHTML = `<span class="animate-spin">⏳</span> ${t('runTest')}...`;
       resultsEl.innerHTML = '<div class="glass-card p-8 text-center animate-pulse text-muted">Running remote Lighthouse audit... this may take 15-30s</div>';
 
       try {
@@ -2540,7 +2746,7 @@
           </div>
           
           <div class="glass-card p-6">
-            <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Core Web Vitals</h3>
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">Core Web Vitals</h3>
             <div class="grid grid-cols-3 gap-4">
               <div class="text-center">
                 <div class="text-xl font-mono font-bold text-white">${lhr.audits['largest-contentful-paint']?.displayValue || '-'}</div>
@@ -2565,7 +2771,7 @@
         showToast('Test failed: ' + e.message, 'error');
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<span>🚀</span> Run Test';
+        btn.innerHTML = `<span>🚀</span> ${t('runTest')}`;
       }
     }
 
@@ -2663,76 +2869,99 @@
       }
 
       render() {
-        const sorted = this.getSortedData();
-        const totalPages = Math.ceil(sorted.length / this.pageSize);
-        if(this.currentPage > totalPages) this.currentPage = 1;
-        
-        const start = (this.currentPage - 1) * this.pageSize;
-        const pageData = sorted.slice(start, start + this.pageSize);
+        try {
+          console.log('[DataTable] Rendering, data length:', this.data.length);
+          const sorted = this.getSortedData();
+          const totalPages = Math.ceil(sorted.length / this.pageSize);
+          if(this.currentPage > totalPages) this.currentPage = 1;
+          
+          const start = (this.currentPage - 1) * this.pageSize;
+          const pageData = sorted.slice(start, start + this.pageSize);
+          console.log('[DataTable] Page data length:', pageData.length);
 
-        const tableId = `table-${this.id}`;
-        
-        // Expose instance strictly for onclick handlers (fragile but functional for this static setup)
-        window[`dt_${this.id}`] = this;
+          const tableId = `table-${this.id}`;
+          
+          // Expose instance strictly for onclick handlers (fragile but functional for this static setup)
+          window[`dt_${this.id}`] = this;
 
-        let html = `
-          <div class="glass-card overflow-hidden">
-            <div class="overflow-x-auto">
-              <table class="w-full text-left border-collapse">
-                <thead class="sticky top-0 z-10 bg-[#0f0f0f]/80 backdrop-blur-md">
-                  <tr class="text-[10px] text-muted font-bold uppercase tracking-[0.2em] border-b border-white/[0.08]">
-                    ${this.columns.map(col => `
-                      <th class="py-4 px-6 font-medium cursor-pointer hover:text-white transition whitespace-nowrap" onclick="window['dt_${this.id}'].sort('${col.key}')">
-                        <div class="flex items-center gap-2">
-                          ${col.label}
-                          ${this.sortKey === col.key ? (this.sortDesc ? '<span class="text-primary text-[10px]">▼</span>' : '<span class="text-primary text-[10px]">▲</span>') : ''}
-                        </div>
-                      </th>
-                    `).join('')}
-                    ${this.actions.length ? '<th class="py-4 px-6 text-right">Actions</th>' : ''}
-                  </tr>
-                </thead>
-                <tbody class="text-sm">
-                  ${pageData.length === 0 ? `<tr><td colspan="${this.columns.length + (this.actions.length?1:0)}" class="p-12 text-center text-muted italic">No data found</td></tr>` : ''}
-                  ${pageData.map(row => `
-                    <tr class="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-200 group last:border-0">
+          let html = `
+            <div class="glass-card overflow-hidden">
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead class="sticky top-0 z-10 bg-[#0f0f0f]/80 backdrop-blur-md">
+                    <tr class="text-[10px] text-muted font-bold uppercase tracking-[0.2em] border-b border-white/[0.08]">
                       ${this.columns.map(col => `
-                        <td class="py-4 px-6 text-white/90 align-middle">
-                          ${col.render ? col.render(row) : this.getValue(row, col.key)}
-                        </td>
-                      `).join('')}
-                      ${this.actions.length ? `
-                        <td class="py-4 px-6 text-right align-middle whitespace-nowrap">
-                          <div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
-                            ${this.actions.map(act => `
-                              <button onclick="${act.onClick}(${act.getArgs ? act.getArgs(row) : `'${row.filename}'`})" class="${act.class || 'p-2 hover:bg-white/10 rounded-lg text-muted hover:text-white transition'}" title="${act.title}">
-                                ${act.icon}
-                              </button>
-                            `).join('')}
+                        <th class="py-4 px-6 font-medium cursor-pointer hover:text-white transition whitespace-nowrap" onclick="window['dt_${this.id}'].sort('${col.key}')">
+                          <div class="flex items-center gap-2">
+                            ${col.label}
+                            ${this.sortKey === col.key ? (this.sortDesc ? '<span class="text-primary text-[10px]">▼</span>' : '<span class="text-primary text-[10px]">▲</span>') : ''}
                           </div>
-                        </td>
-                      ` : ''}
+                        </th>
+                      `).join('')}
+                      ${this.actions.length ? '<th class="py-4 px-6 text-right">Actions</th>' : ''}
                     </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-            
-            ${totalPages > 1 ? `
-              <div class="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
-                <div class="text-xs text-muted">Showing ${start+1}-${Math.min(start+this.pageSize, sorted.length)} of ${sorted.length}</div>
-                <div class="flex gap-2">
-                  <button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage-1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">←</button>
-                  ${Array.from({length: totalPages}, (_, i) => i + 1).slice(Math.max(0, this.currentPage-3), this.currentPage+2).map(p => `
-                    <button onclick="window['dt_${this.id}'].setPage(${p})" class="px-2 py-1 rounded text-xs ${p === this.currentPage ? 'bg-primary text-black font-bold' : 'bg-white/5 hover:bg-white/10'}">${p}</button>
-                  `).join('')}
-                  <button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage+1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">→</button>
-                </div>
+                  </thead>
+                  <tbody class="text-sm">
+                    ${pageData.length === 0 ? `<tr><td colspan="${this.columns.length + (this.actions.length?1:0)}" class="p-12 text-center text-muted italic">${t('noDataFound')}</td></tr>` : ''}
+                    ${pageData.map((row, rowIndex) => {
+                      try {
+                        return `
+                          <tr class="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors duration-200 group last:border-0">
+                            ${this.columns.map(col => {
+                              try {
+                                return `
+                                  <td class="py-4 px-6 text-white/90 align-middle">
+                                    ${col.render ? col.render(row) : this.getValue(row, col.key)}
+                                  </td>
+                                `;
+                              } catch (colErr) {
+                                console.error('[DataTable] Column render error:', col.key, colErr);
+                                return '<td class="py-4 px-6 text-error">Error</td>';
+                              }
+                            }).join('')}
+                            ${this.actions.length ? `
+                              <td class="py-4 px-6 text-right align-middle whitespace-nowrap relative z-20">
+                                <div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity duration-200">
+                                  ${this.actions.map(act => `
+                                    <button onclick="${act.onClick}(${act.getArgs ? act.getArgs(row) : `'${row.filename}'`})" class="${act.class || 'p-2 hover:bg-white/10 rounded-lg text-muted hover:text-white transition relative z-20'}" title="${act.title}">
+                                      ${act.icon}
+                                    </button>
+                                  `).join('')}
+                                </div>
+                              </td>
+                            ` : ''}
+                          </tr>
+                        `;
+                      } catch (rowErr) {
+                        console.error('[DataTable] Row render error at index', rowIndex, rowErr);
+                        return '<tr><td colspan="100" class="text-error">Row render error</td></tr>';
+                      }
+                    }).join('')}
+                  </tbody>
+                </table>
               </div>
-            ` : ''}
-          </div>
-        `;
-        document.getElementById(this.containerId).innerHTML = html;
+              
+              ${totalPages > 1 ? `
+                <div class="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
+                  <div class="text-xs text-muted">Showing ${start+1}-${Math.min(start+this.pageSize, sorted.length)} of ${sorted.length}</div>
+                  <div class="flex gap-2">
+                    <button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage-1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">←</button>
+                    ${Array.from({length: totalPages}, (_, i) => i + 1).slice(Math.max(0, this.currentPage-3), this.currentPage+2).map(p => `
+                      <button onclick="window['dt_${this.id}'].setPage(${p})" class="px-2 py-1 rounded text-xs ${p === this.currentPage ? 'bg-primary text-black font-bold' : 'bg-white/5 hover:bg-white/10'}">${p}</button>
+                    `).join('')}
+                    <button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage+1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">→</button>
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+          console.log('[DataTable] HTML generated, length:', html.length);
+          document.getElementById(this.containerId).innerHTML = html;
+          console.log('[DataTable] Render complete');
+        } catch (err) {
+          console.error('[DataTable] Render failed:', err);
+          document.getElementById(this.containerId).innerHTML = `<div class="text-error p-4">DataTable render error: ${err.message}</div>`;
+        }
       }
     }
 
@@ -2809,48 +3038,100 @@
         );
     }
 
+    // --- Navigation ---
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      document.querySelectorAll('#nav-links button').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`button[onclick="switchTab('${tab}')"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      if (tab === 'dashboard') loadDashboard();
+      if (tab === 'profile') loadProfileView();
+      if (tab === 'quality') loadQualityView();
+      if (tab === 'monitor') loadMonitorView();
+      if (tab === 'pagespeed') loadPageSpeedView();
+      if (tab === 'git') loadGitView();
+      if (tab === 'reports') loadReportsView();
+      if (tab === 'logs') loadLogsView();
+      if (tab === 'insights') loadInsightsView();
+    }
+
     // --- Quality View Refactored ---
     async function loadQualityView() {
       const container = document.getElementById('content-area');
+      
+      // Sync title with sidebar (Testes de Qualidade)
+      const headerHtml = renderHeader(
+          t('qualityScans'), 
+          t('qualityGateSubtitle'), 
+          `<button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
+      );
+
       container.innerHTML = `
-        <h1 class="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-          <span>🛡️</span> Quality Scans 
-          <button onclick="runCommand('quality')" class="text-xs bg-primary/10 text-primary px-3 py-1 rounded hover:bg-primary/20 transition">New Scan</button>
-        </h1>
-        <div id="quality-summary-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 hidden">
-           <!-- Injected via JS -->
+        ${headerHtml}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-surfaceHighlight/10 p-6 rounded-2xl border border-white/5 mb-8">
+          <!-- Gate Status -->
+          <div class="space-y-4">
+             <h3 class="text-lg font-bold text-white mb-4">Gate Status</h3>
+             <div id="gate-status-container">
+               <div class="text-muted animate-pulse">Loading status...</div>
+             </div>
+          </div>
+          
+          <!-- Quick Config -->
+          <div class="space-y-4">
+             <h3 class="text-lg font-bold text-white mb-4">Configuration</h3>
+             <div class="glass-card p-4">
+               <div class="flex justify-between items-center mb-2">
+                 <span class="text-sm text-muted">Min Score</span>
+                 <span class="text-primary font-mono">90%</span>
+               </div>
+               <div class="w-full bg-black/50 rounded-full h-2">
+                 <div class="bg-primary h-2 rounded-full" style="width: 90%"></div>
+               </div>
+               <p class="text-[10px] text-muted mt-2">Threshold for blocking deployments.</p>
+             </div>
+          </div>
         </div>
+
+        <h3 class="text-lg font-bold text-white mb-4">Historico de Testes</h3>
         <div id="quality-table-container"></div>
       `;
       
+      // Load status logic
       try {
         const res = await fetch(`${API_BASE}/reports/quality`);
         const json = await res.json();
-        const reports = json.data || [];
-
-        // Render Summary Cards (Top Row)
-        if (reports.length > 0) {
-            const latest = reports[0]; // Assumes sorted new -> old
-            const raw = latest.data?.raw || {};
-            const cards = document.getElementById('quality-summary-cards');
-            cards.classList.remove('hidden');
-            
-            const stats = [
-               { label: 'Bundle Size', value: raw.build?.jsTotal ? `${raw.build.jsTotal}KB` : '-', icon: '📦', color: 'text-blue-400' },
-               { label: 'Lint Errors', value: raw.lint?.errorCount ?? '-', icon: '🧹', color: 'text-purple-400' },
-               { label: 'Contrast', value: raw.contrast?.violationCount ?? '-', icon: '👁️', color: 'text-yellow-400' },
-               { label: 'i18n Issues', value: raw.i18n?.issueCount ?? '-', icon: '🌐', color: 'text-pink-400' }
-            ];
-
-            cards.innerHTML = stats.map(s => `
-                <div class="glass-card p-4 flex flex-col items-center justify-center text-center">
-                    <span class="text-2xl mb-2">${s.icon}</span>
-                    <span class="text-xs text-muted uppercase font-bold">${s.label}</span>
-                    <span class="text-xl font-mono font-bold ${s.color}">${s.value}</span>
-                </div>
-            `).join('');
-        }
+        const latest = json.data?.[0]?.data;
+        const statusContainer = document.getElementById('gate-status-container');
         
+        if (latest) {
+             statusContainer.innerHTML = `
+               <div class="flex items-center gap-4 mb-4">
+                 <div class="text-4xl">${latest.status === 'pass' ? '✅' : '❌'}</div>
+                 <div>
+                   <div class="text-2xl font-bold ${latest.status === 'pass' ? 'text-success' : 'text-error'}">
+                     ${latest.status === 'pass' ? 'PASSED' : 'FAILED'}
+                   </div>
+                   <div class="text-xs text-muted">Last run: ${new Date(json.data[0].timestamp).toLocaleString()}</div>
+                 </div>
+               </div>
+               <div class="grid grid-cols-2 gap-2">
+                 ${Object.entries(latest.scores || {}).map(([k, v]) => `
+                   <div class="bg-black/20 p-2 rounded flex justify-between items-center">
+                     <span class="text-xs text-muted uppercase">${k}</span>
+                     <span class="font-mono font-bold ${v >= 90 ? 'text-success' : 'text-error'}">${Math.round(v)}</span>
+                   </div>
+                 `).join('')}
+               </div>
+             `;
+        } else {
+            statusContainer.innerHTML = '<div class="text-muted">No quality reports found.</div>';
+        }
+
+        // Load Table
+        const reports = json.data || [];
         new DataTable({
             id: 'quality',
             containerId: 'quality-table-container',
@@ -2880,8 +3161,8 @@
                 }}
             ],
             actions: [
-                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'View', onClick: 'viewQualityReport' },
-                { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'quality', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
+                { icon: '👁️', title: 'View', onClick: 'viewQualityReport', class: 'p-2 hover:bg-white/10 rounded transition' },
+                { icon: '🗑️', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'quality', '${r.filename}'`, class: 'p-2 text-error hover:bg-error/10 rounded transition' }
             ]
         });
       } catch(e) { document.getElementById('quality-table-container').innerHTML = `<div class="p-8 text-center text-error border border-error/20 rounded-xl bg-error/5">Error loading scans: ${e.message}</div>`; }
@@ -2915,121 +3196,136 @@
     }
 
     // --- Lighthouse View Refactored ---
-    async function loadReportsView() {
-      const container = document.getElementById('content-area');
-      // Create HTML layout with filter dropdown
-      container.innerHTML = `
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-white flex items-center gap-3">
-              <span>🔦</span> Lighthouse Reports 
-              <button onclick="runCommand('lighthouse')" class="text-xs bg-primary/10 text-primary px-3 py-1 rounded hover:bg-primary/20 transition">New Scan</button>
-            </h1>
-            <select id="lighthouse-target-filter" onchange="window.filterLighthouseReports()" class="px-3 py-2 bg-surfaceHighlight border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary">
-              <option value="all">All Targets</option>
-              <option value="app">Application</option>
-              <option value="promo">Promo Site</option>
-            </select>
-        </div>
-        <div id="lighthouse-summary-cards" class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6"></div>
-        <div id="lighthouse-table-container"></div>
-      `;
-      
-      const res = await fetch(`${API_BASE}/reports/lighthouse`);
-      const json = await res.json();
-      const allReports = (json.data || []).sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-      
-      // Store globally for filtering
-      window.allLighthouseReports = allReports;
+    async function viewQualityReport(filename) {
+      try {
+        const res = await fetch(`${API_BASE}/report/quality/${filename}`);
+        const data = await res.json();
+        
+        if (!data) throw new Error('Report data is undefined or invalid');
 
-      // Filter logic exposed to window
-      window.filterLighthouseReports = () => {
-          const filter = document.getElementById('lighthouse-target-filter').value;
-          const filtered = filter === 'all' 
-             ? window.allLighthouseReports 
-             : window.allLighthouseReports.filter(r => {
-                 // Check metadata first (new reports), then filename fallback
-                 const target = r.data?.metadata?.target || (r.filename.includes('_promo_') ? 'promo' : 'app');
-                 return target === filter;
-             });
-          renderLighthouseContent(filtered);
-      };
+        // Render simple view
+        let html = `
+          <div class="mb-6 p-6 bg-surfaceHighlight/20 rounded-xl border border-white/5 flex justify-between items-center bg-gradient-to-r from-surfaceHighlight/0 via-surfaceHighlight/10 to-surfaceHighlight/0">
+             <div>
+               <h1 class="text-2xl font-bold mb-1">Quality Gate Report</h1>
+               <div class="text-xs text-muted font-mono">${filename}</div>
+             </div>
+             <div class="text-right">
+                <div class="text-3xl font-bold ${data.status === 'pass' ? 'text-success' : (data.status === 'fail' ? 'text-error' : 'text-warning')} uppercase tracking-widest">${data.status || 'UNKNOWN'}</div>
+                <div class="text-[10px] text-muted uppercase tracking-wider">Status</div>
+             </div>
+          </div>
+          
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+             ${Object.entries(data.scores || {}).map(([k,v]) => `
+                <div class="glass-card p-4 text-center group hover:bg-white/5 transition-colors">
+                   <div class="text-2xl font-bold font-mono group-hover:scale-110 transition-transform duration-300 ${v >= 90 ? 'text-success' : (v>=50?'text-warning':'text-error')}">${Math.round(v)}</div>
+                   <div class="text-[10px] text-muted uppercase tracking-wider mt-1">${k}</div>
+                </div>
+             `).join('')}
+          </div>
 
-      // Initial Render
-      window.filterLighthouseReports();
+          <h3 class="text-sm font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+            ⚠️ Violations <span class="px-1.5 py-0.5 bg-white/10 rounded-full text-xs text-white">${(data.violations || []).length}</span>
+          </h3>
+          ${(data.violations || []).length === 0 ? 
+            '<div class="p-8 text-center border border-dashed border-success/30 rounded-xl bg-success/5 text-success">✓ No violations found. Great job!</div>' : 
+            `<div class="space-y-2">
+               ${data.violations.map(v => `
+                 <div class="p-3 bg-error/5 border-l-2 border-error rounded-r-lg text-sm text-white/90 flex gap-3 items-start group hover:bg-error/10 transition">
+                   <span class="text-error mt-0.5">✖</span>
+                   <span class="font-mono text-xs leading-relaxed">${v.message || v}</span>
+                 </div>`).join('')}
+             </div>`
+          }
+        `;
+        
+        showViewer(`Quality: ${filename}`, html, 'html');
+      } catch (e) { showToast('Error loading quality report: ' + e.message, 'error'); }
     }
 
-    function renderLighthouseContent(reports) {
-      // Summary cards
-      const cards = document.getElementById('lighthouse-summary-cards');
-      if (reports.length > 0) {
-        const avgScore = (cat) => Math.round(reports.reduce((a, r) => a + ((r.data?.categories?.[cat]?.score || 0) * 100), 0) / reports.length);
-        
-        const avgPerf = avgScore('performance');
-        const avgA11y = avgScore('accessibility');
-        const avgBest = avgScore('best-practices');
-        const avgSeo = avgScore('seo');
-        
-        const getColor = s => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
-        
-        cards.innerHTML = `
-          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono text-white">${reports.length}</div><div class="text-xs text-muted">Total Reports</div></div>
-          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgPerf)}">${avgPerf}</div><div class="text-xs text-muted">Performance</div></div>
-          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgA11y)}">${avgA11y}</div><div class="text-xs text-muted">Accessibility</div></div>
-          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgBest)}">${avgBest}</div><div class="text-xs text-muted">Best Practices</div></div>
-          <div class="glass-card p-4 text-center"><div class="text-2xl font-bold font-mono ${getColor(avgSeo)}">${avgSeo}</div><div class="text-xs text-muted">SEO</div></div>
-        `;
-      } else {
-        cards.innerHTML = '';
-      }
+    async function loadReportsView() {
+      const container = document.getElementById('content-area');
       
-      new DataTable({
-          id: 'lighthouse',
-          containerId: 'lighthouse-table-container',
-          data: reports,
-          columns: [
-                { key: 'filename', label: 'Report', render: r => {
-                    const target = r.data?.metadata?.target || (r.filename.includes('_promo_') ? 'promo' : 'app');
-                    const badge = target === 'app' ? '<span class="bg-blue-500/20 text-blue-400 text-[10px] px-1 rounded ml-2">APP</span>' : '<span class="bg-purple-500/20 text-purple-400 text-[10px] px-1 rounded ml-2">PROMO</span>';
-                    return `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="viewLighthouseReport('${r.filename}')">${r.filename.replace('.json','').substring(0, 25)}...</span>${badge}`;
-                }},
-                { key: 'data.metadata.formFactor', label: 'Device', render: r => {
-                    const factor = r.data?.metadata?.formFactor || (r.filename.includes('mobile') ? 'mobile' : 'desktop');
-                    return factor === 'mobile' ? '📱 Mobile' : '💻 Desktop';
-                }},
-                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
+      const headerHtml = renderHeader(
+          t('lighthouse'), 
+          t('lighthouseReportsSubtitle'),
+          `<button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+      );
+
+      container.innerHTML = `
+        ${headerHtml}
+        <div id="reports-list" class="space-y-2">
+           <div class="text-muted animate-pulse">Loading reports...</div>
+        </div>
+      `;
+      
+      try {
+        const res = await fetch(`${API_BASE}/reports/lighthouse`);
+        const json = await res.json();
+        console.log('[loadReportsView] Lighthouse data received:', json.data?.length || 0, 'reports');
+        console.log('[loadReportsView] Sample report:', json.data?.[0]);
+        // ... (Using DataTable)
+        new DataTable({
+             id: 'reports',
+             containerId: 'reports-list',
+             data: json.data || [],
+             columns: [
+                { key: 'filename', label: 'Report Name', render: r => `
+                    <div class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition" onclick="viewLighthouseReport('${r.filename}')">
+                        <span class="text-xl">📑</span>
+                        <div>
+                            <div class="font-bold text-white hover:text-primary transition">${r.filename?.replace('lighthouse-', '').replace('.json', '') || 'Unknown'}</div>
+                            <div class="text-[10px] text-muted">${r.data?.finalUrl || r.finalUrl || 'Unknown URL'}</div>
+                        </div>
+                    </div>
+                `},
                 { key: 'data.categories', label: 'Scores', render: r => {
                     const score = (cat) => Math.round((r.data?.categories?.[cat]?.score || 0) * 100);
                     const color = s => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
                     
                     return `
-                     <div class="flex gap-3 text-xs font-mono">
-                        <span class="${color(score('performance'))}" title="Perf">P:${score('performance')}</span>
-                        <span class="${color(score('accessibility'))}" title="A11y">A:${score('accessibility')}</span>
-                        <span class="${color(score('seo'))}" title="SEO">S:${score('seo')}</span>
+                     <div class="flex gap-4 text-xs font-mono">
+                        <span class="${color(score('performance'))}" title="Perf">Perf: ${score('performance')}</span>
+                        <span class="${color(score('accessibility'))}" title="A11y">A11y: ${score('accessibility')}</span>
+                        <span class="${color(score('seo'))}" title="SEO">SEO: ${score('seo')}</span>
                      </div>
                     `;
-                }}
+                }},
+                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted font-mono">${new Date(r.timestamp).toLocaleString()}</span>` }
              ],
              actions: [
-                 { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>', title: 'View', onClick: 'viewLighthouseReport' },
-                 { icon: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'lighthouse', '${r.filename}'`, class: 'p-1 text-error hover:bg-error/10 rounded' }
+                 { icon: '👁️', title: 'View', onClick: 'viewLighthouseReport', class: 'p-2 hover:bg-white/10 rounded transition cursor-pointer pointer-events-auto relative z-30' },
+                 { icon: '🗑️', title: 'Delete', onClick: 'deleteReport', getArgs: r => `'lighthouse', '${r.filename}'`, class: 'p-2 text-error hover:bg-error/10 rounded transition cursor-pointer pointer-events-auto relative z-30' }
              ]
-      });
+        });
+      } catch (err) {
+         document.getElementById('reports-list').innerHTML = `<div class="text-error p-4">Failed to load reports: ${err.message}</div>`;
+      }
     }
 
-    async function viewReport(filename) {
+    async function viewLighthouseReport(filename) {
+      console.log('[viewLighthouseReport] Starting with:', filename);
       try {
         const res = await fetch(`${API_BASE}/report/lighthouse/${filename}`);
-        const json = await res.json();
-        const report = json.data;
+        console.log('[viewLighthouseReport] Fetch response status:', res.status);
         
-        // Basic summary view for the modal
-        const cats = report.categories || {};
+        if (!res.ok) {
+          throw new Error(`Server returned ${res.status}`);
+        }
+        
+        const data = await res.json();
+        console.log('[viewLighthouseReport] Data received:', Object.keys(data));
+        
+        const lhr = data;
+        const cats = lhr.categories || (lhr.data && lhr.data.categories) || {};
+        const finalUrl = lhr.finalUrl || (lhr.data && lhr.data.finalUrl) || 'Unknown URL';
+        
         let html = `
           <div class="mb-8 flex justify-between items-center bg-white/5 p-6 rounded-2xl border border-white/5">
             <div>
               <h1 class="text-2xl font-bold mb-1">Lighthouse Analysis</h1>
-              <p class="text-xs text-muted font-mono">${report.finalUrl}</p>
+              <p class="text-xs text-muted font-mono">${finalUrl}</p>
             </div>
             <div class="flex gap-4">
               ${['performance', 'accessibility', 'best-practices', 'seo'].map(c => `
@@ -3042,7 +3338,7 @@
           </div>
           <h3>Failed Audits</h3>
           <ul class="space-y-2">
-            ${Object.values(report.audits || {}).filter(a => a.score !== null && a.score < 0.5).map(a => `
+            ${Object.values(lhr.audits || (lhr.data && lhr.data.audits) || {}).filter(a => a.score !== null && a.score < 0.5).map(a => `
               <li class="p-3 bg-error/5 border-l-2 border-error rounded text-xs list-none">
                 <strong>${a.title}:</strong> ${a.description}
               </li>
@@ -3050,15 +3346,26 @@
           </ul>
         `;
         
+        console.log('[viewLighthouseReport] Calling showViewer');
         showViewer(`Performance: ${filename}`, html, 'html');
-      } catch (e) { showToast('Error loading lighthouse report', 'error'); }
+        console.log('[viewLighthouseReport] showViewer completed');
+      } catch (e) { 
+        console.error('[viewLighthouseReport] Error:', e);
+        showToast('Error loading lighthouse report: ' + e.message, 'error'); 
+      }
     }
 
-    // --- Logs View Refactored ---
     async function loadLogsView() {
       const container = document.getElementById('content-area');
+      
+      const headerHtml = renderHeader(
+          t('logs'),
+          t('logsSubtitle'),
+          `<button onclick="loadLogsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+      );
+
       container.innerHTML = `
-        <h1 class="text-3xl font-bold text-white mb-6">📝 Audit Logs</h1>
+        ${headerHtml}
         <div id="logs-summary-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"></div>
         <div id="logs-table-container"></div>
       `;
@@ -3076,19 +3383,19 @@
           cards.innerHTML = `
             <div class="glass-card p-4 text-center">
               <div class="text-2xl font-bold font-mono text-white">${logs.length}</div>
-              <div class="text-xs text-muted">Total Logs</div>
+              <div class="text-xs text-muted">${t('totalLogs')}</div>
             </div>
             <div class="glass-card p-4 text-center">
               <div class="text-2xl font-bold font-mono text-success">${passCount}</div>
-              <div class="text-xs text-muted">Passed</div>
+              <div class="text-xs text-muted">${t('passed')}</div>
             </div>
             <div class="glass-card p-4 text-center">
               <div class="text-2xl font-bold font-mono text-error">${failCount}</div>
-              <div class="text-xs text-muted">Failed</div>
+              <div class="text-xs text-muted">${t('failed')}</div>
             </div>
             <div class="glass-card p-4 text-center">
               <div class="text-2xl font-bold font-mono text-warning">${logs.length - passCount - failCount}</div>
-              <div class="text-xs text-muted">Other</div>
+              <div class="text-xs text-muted">${t('other')}</div>
             </div>
           `;
         }
@@ -3101,8 +3408,8 @@
             containerId: 'logs-table-container',
             data: logs,
             columns: [
-                { key: 'filename', label: 'Log File', render: (r, idx) => `<span class="font-mono text-sm text-primary font-bold cursor-pointer hover:underline" onclick="viewLogEntry(${logs.indexOf(r)})">${r.filename}</span>` },
-                { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` }
+                { key: 'filename', label: t('logFile'), render: (r, idx) => `<span class="font-mono text-sm text-primary font-bold cursor-pointer hover:underline" onclick="viewLogEntry(${logs.indexOf(r)})">${r.filename}</span>` },
+                { key: 'timestamp', label: t('date'), render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` }
             ],
             actions: []
         });
@@ -3135,14 +3442,11 @@
       
       container.innerHTML = `
         <!-- Compact Header -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 pb-3 border-b border-white/10">
-          <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold text-white">${settings.projectName || 'Site Profile'}</h1>
-            <span class="text-xs text-muted font-mono">${settings.monitorUrl}</span>
-            ${settings.githubRepo ? `<a href="https://github.com/${settings.githubRepo}" target="_blank" class="text-xs text-primary hover:underline">📂 ${settings.githubRepo}</a>` : ''}
-          </div>
-          <button onclick="openSettings()" class="px-3 py-1 bg-white/5 text-muted rounded text-xs hover:bg-white/10">⚙️ Edit</button>
-        </div>
+        ${renderHeader(
+            settings.projectName || t('siteProfile'),
+            `${settings.monitorUrl} ${settings.githubRepo ? `<a href="https://github.com/${settings.githubRepo}" target="_blank" class="text-xs text-primary hover:underline ml-2">📂 ${settings.githubRepo}</a>` : ''}`,
+            '<button onclick="openSettings()" class="px-3 py-1 bg-white/5 text-muted rounded text-xs hover:bg-white/10">⚙️ Edit</button>'
+        )}
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -3307,17 +3611,15 @@
     // --- Git View ---
     async function loadGitView() {
       const container = document.getElementById('content-area');
+      
+      const headerHtml = renderHeader(
+          t('gitDeploy'),
+          t('gitDeploySubtitle'),
+          `<button onclick="loadGitView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+      );
+
       container.innerHTML = `
-        <header class="flex justify-between items-center mb-8">
-          <div>
-            <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-              Git & Deploy
-            </h1>
-            <p class="text-muted text-sm">Commit and push changes</p>
-          </div>
-          <button onclick="loadGitView()" class="px-4 py-2 bg-white/5 text-muted rounded-lg hover:bg-white/10 transition text-sm">Refresh</button>
-        </header>
+        ${headerHtml}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Status Column -->
@@ -3384,18 +3686,16 @@
       const container = document.getElementById('content-area');
       const settings = getSettings();
       
+      const headerHtml = renderHeader(
+          '✨ AI Insights',
+          'Deep analysis powered by Gemini 1.5 Flash',
+          `<button onclick="runAiAnalysis()" class="px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
+              <span>✨</span> New Analysis
+           </button>`
+      );
+      
       container.innerHTML = `
-         <header class="flex justify-between items-center mb-8">
-           <div>
-             <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-               <span class="text-purple-400">✨</span> AI Insights
-             </h1>
-             <p class="text-muted text-sm">Deep analysis powered by Gemini 1.5 Flash</p>
-           </div>
-           <button onclick="runAiAnalysis()" class="px-4 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
-             <span>✨</span> New Analysis
-           </button>
-         </header>
+         ${headerHtml}
 
          ${!settings.geminiKey ? `
            <div class="glass-card p-4 mb-6 border-l-4 border-warning bg-warning/5 text-warning flex items-center gap-3">
@@ -3467,18 +3767,15 @@
                 body: JSON.stringify({ key: settings.geminiKey, prompt })
             });
             const json = await res.json();
-            if (json.candidates && json.candidates.length > 0) {
-                const text = json.candidates[0]?.content?.parts?.[0]?.text || '';
-                if (text) {
-                    resultsEl.innerHTML = `<div class="glass-card p-8 relative overflow-hidden group"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div><div class="prose prose-invert max-w-none">${marked.parse(text)}</div></div>`;
-                    loadInsightsView();
-                } else {
-                    throw new Error('Empty response from AI');
-                }
+            
+            // Backend returns { content: "...", provider: "..." }
+            if (json.content) {
+                 resultsEl.innerHTML = `<div class="glass-card p-8 relative overflow-hidden group"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div><div class="prose prose-invert max-w-none">${marked.parse(json.content)}</div></div>`;
+                 loadInsightsView();
             } else if (json.error) {
                 throw new Error(json.error.message || JSON.stringify(json.error));
             } else { 
-                throw new Error('Invalid AI response format'); 
+                throw new Error('Invalid AI response format: ' + JSON.stringify(json).substring(0, 50)); 
             }
         } catch(e) { resultsEl.innerHTML = `<div class="glass-card p-6 text-error">Analysis failed: ${e.message}</div>`; }
     }
@@ -3504,10 +3801,19 @@
             body: JSON.stringify({ key: settings.geminiKey, prompt })
         });
         const json = await res.json();
-        if (json.contents) {
-            const text = json.candidates?.[0]?.content?.parts?.[0]?.text || '';
-            textarea.value = text.replace(/`/g, '').trim();
-        } else { throw new Error('Invalid AI response'); }
+        
+        if (json.content) {
+            textarea.value = json.content;
+            textarea.disabled = false;
+        } else if(json.error) {
+             showToast('AI Error: ' + json.error, 'error');
+             textarea.value = originalText;
+             textarea.disabled = false;
+        } else {
+             showToast('Failed to generate: Invalid response', 'error');
+             textarea.value = originalText;
+             textarea.disabled = false;
+        }
       } catch (e) { showToast('Failed: ' + e.message, 'error'); textarea.value = 'feat: '; }
       textarea.disabled = false;
     }
@@ -3560,44 +3866,186 @@
         }
     }
 
+    // --- WindowConsole State ---
+    let consoleStartTime = null;
+    let consoleTimerInterval = null;
+
     function showCommandModal(title) {
         const modal = document.getElementById('viewer-modal');
         const content = document.getElementById('viewer-content');
         const titleEl = document.getElementById('viewer-title');
-        content.innerHTML = '';
+        const container = document.getElementById('viewer-container');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('viewer-status');
+        const elapsedEl = document.getElementById('viewer-elapsed');
+        
+        // Clear content and set title
+        content.innerHTML = '<div class="flex items-center gap-3 text-muted p-4"><div class="w-3 h-3 rounded-full bg-primary animate-pulse"></div><span>Initializing...</span></div>';
         titleEl.innerText = title;
+        
+        // Update status
+        if (statusDot) statusDot.className = 'w-2 h-2 rounded-full bg-yellow-500 animate-pulse';
+        if (statusText) statusText.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></span> Running...';
+        
+        // Start timer
+        consoleStartTime = Date.now();
+        if (consoleTimerInterval) clearInterval(consoleTimerInterval);
+        consoleTimerInterval = setInterval(() => {
+            if (elapsedEl && consoleStartTime) {
+                const elapsed = Math.floor((Date.now() - consoleStartTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                elapsedEl.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+            }
+        }, 1000);
+        
+        // Show modal properly
         modal.classList.remove('hidden');
-        document.getElementById('viewer-container').classList.add('scale-100', 'opacity-100');
+        modal.classList.remove('pointer-events-none');
+        modal.classList.add('pointer-events-auto');
+        
+        // Animate modal AND container in
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modal.classList.add('opacity-100');
+            container.classList.remove('scale-95', 'opacity-0');
+            container.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        
         return content;
     }
 
+    function updateConsoleStatus(status, isError = false) {
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('viewer-status');
+        
+        if (consoleTimerInterval) {
+            clearInterval(consoleTimerInterval);
+            consoleTimerInterval = null;
+        }
+        
+        if (statusDot) {
+            statusDot.classList.remove('animate-pulse');
+            statusDot.className = `w-2 h-2 rounded-full ${isError ? 'bg-red-500' : 'bg-green-500'}`;
+        }
+        if (statusText) {
+            statusText.innerHTML = `<span class="w-2 h-2 rounded-full ${isError ? 'bg-red-500' : 'bg-green-500'}"></span> ${status}`;
+        }
+    }
+
+    function minimizeViewer() {
+        // For now, just close - full minimize requires docked state implementation
+        closeViewer();
+        showToast('Console minimized', 'info');
+    }
+
+    function maximizeViewer() {
+        const container = document.getElementById('viewer-container');
+        if (container.classList.contains('max-w-5xl')) {
+            // Maximize
+            container.classList.remove('max-w-5xl', 'h-[85vh]', 'mx-4');
+            container.classList.add('w-full', 'h-full', 'm-0', 'rounded-none');
+        } else {
+            // Restore
+            container.classList.add('max-w-5xl', 'h-[85vh]', 'mx-4');
+            container.classList.remove('w-full', 'h-full', 'm-0', 'rounded-none');
+        }
+    }
+
+    function copyViewerContent() {
+        const content = document.getElementById('viewer-content');
+        if (content) {
+            const text = content.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Logs copied to clipboard', 'success');
+            }).catch(() => {
+                showToast('Failed to copy', 'error');
+            });
+        }
+    }
+
     async function runCommand(commandKey) {
-        const content = showCommandModal(`Executing: ${commandKey}...`);
+        const content = showCommandModal(`Executing: ${commandKey}`);
+        
+        // Output Buffer for performance
+        let outputBuffer = [];
+        let isProcessing = false;
+        let isFirstData = true;
+
+        // Efficient DOM Updater using requestAnimationFrame
+        const flushBuffer = () => {
+            if (outputBuffer.length === 0) {
+                isProcessing = false;
+                return;
+            }
+
+            if (isFirstData) {
+                content.innerHTML = ''; // Clear loading indicator
+                isFirstData = false;
+            }
+
+            const fragment = document.createDocumentFragment();
+            
+            // Process all buffered items at once
+            const chunk = outputBuffer.splice(0, outputBuffer.length);
+            
+            chunk.forEach(({ text, isErr }) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                div.className = `font-mono text-xs leading-relaxed whitespace-pre-wrap break-words ${isErr ? 'text-red-400' : 'text-zinc-300'}`;
+                fragment.appendChild(div);
+            });
+
+            content.appendChild(fragment);
+            content.scrollTop = content.scrollHeight;
+
+            requestAnimationFrame(flushBuffer);
+        };
+
+        const appendLog = (text, isErr = false) => {
+            outputBuffer.push({ text, isErr });
+            if (!isProcessing) {
+                isProcessing = true;
+                requestAnimationFrame(flushBuffer);
+            }
+        };
+
         try {
+            console.log('[runCommand] Starting:', commandKey);
             const res = await fetch(`${API_BASE}/run`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ command: commandKey })
             });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
             await readStream(res, 
                 (text, isErr) => {
-                    const line = document.createElement('div');
-                    line.textContent = text;
-                    line.className = `font-mono text-xs mb-1 ${isErr ? 'text-red-400' : 'text-zinc-300'}`;
-                    content.appendChild(line);
-                    content.scrollTop = content.scrollHeight;
+                    appendLog(text, isErr);
                 },
                 (code) => {
-                    const line = document.createElement('div');
-                    line.textContent = `\nProcess exited with code ${code}`;
-                    line.className = `font-bold mt-4 font-mono ${code === 0 ? 'text-success' : 'text-error'}`;
-                    content.appendChild(line);
-                    if (code === 0 && commandKey === 'quality') loadQualityView();
-                    if (code === 0 && commandKey === 'lighthouse') loadReportsView();
+                    console.log('[runCommand] Done, code:', code);
+                    updateConsoleStatus(code === 0 ? 'Completed successfully' : `Exited with code ${code}`, code !== 0);
+                    appendLog(`\n✓ Process exited with code ${code}`, code !== 0);
+                    
+                    // Trigger refreshes after short delay
+                    setTimeout(() => {
+                        if (code === 0 && (commandKey === 'quality' || commandKey === 'quality:gate')) loadQualityView();
+                        if (code === 0 && (commandKey === 'lighthouse' || commandKey === 'perf:lighthouse')) loadReportsView();
+                    }, 500);
                 },
-                (err) => content.innerHTML += `<div class="text-error font-bold mt-2">Error: ${err}</div>`
+                (err) => {
+                    console.error('[runCommand] Stream Error:', err);
+                    updateConsoleStatus('Error', true);
+                    appendLog(`Stream Error: ${err}`, true);
+                }
             );
-        } catch (e) { content.innerHTML += `<div class="text-error font-bold mt-2">Connection failed: ${e.message}</div>`; }
+        } catch (e) { 
+            console.error('[runCommand] Exception:', e);
+            updateConsoleStatus('Connection Failed', true);
+            content.innerHTML += `<div class="text-red-400 font-bold mt-4 p-3 border border-red-500/20 bg-red-500/10 rounded">Connection failed: ${e.message}</div>`; 
+        }
     }
 
 // Duplicate function removed
@@ -3647,7 +4095,15 @@ Rules:
         });
         
         const aiJson = await aiRes.json();
-        const content = aiJson.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'chore: update files';
+        
+        // Use normalized content or fallback to raw (if provider didn't normalize)
+        let content = aiJson.content;
+        
+        if (!content && aiJson.candidates) {
+             content = aiJson.candidates?.[0]?.content?.parts?.[0]?.text;
+        }
+        
+        content = (content || 'chore: update files').trim();
         
         resultDiv.classList.remove('hidden');
         resultDiv.querySelector('pre').textContent = content;
@@ -3716,38 +4172,46 @@ Rules:
     }
   </script>
   <!-- Viewer Modal -->
-  <div id="viewer-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-    <div class="glass-card w-full max-w-5xl max-h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
-      <div class="flex items-center justify-between p-4 border-b border-white/10 shrink-0 bg-white/5">
-        <div class="flex items-center gap-4 overflow-hidden">
-          <div class="flex gap-1.5 opacity-70 hover:opacity-100 transition">
-              <div class="w-3 h-3 rounded-full bg-[#FF5F56]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#FFBD2E]"></div>
-              <div class="w-3 h-3 rounded-full bg-[#27C93F]"></div>
-          </div>
-          <div class="font-mono text-sm text-gray-300 truncate max-w-md" id="viewer-title">Viewer</div>
-        </div>
-        <div class="flex items-center gap-4">
-           <!-- Navigation -->
-           <div class="flex items-center gap-2 bg-black/20 rounded-lg p-1 border border-white/5" style="display: none;">
-              <button id="viewer-prev-btn" onclick="if(viewerCurrentIndex > 0) { viewerCurrentIndex--; displayCurrentReport(); }" class="p-1.5 hover:bg-white/10 rounded transition disabled:opacity-30">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-              </button>
-              <span id="viewer-counter" class="text-xs font-mono text-muted min-w-[50px] text-center"></span>
-              <button id="viewer-next-btn" onclick="if(viewerCurrentIndex < viewerReportsList.length-1) { viewerCurrentIndex++; displayCurrentReport(); }" class="p-1.5 hover:bg-white/10 rounded transition disabled:opacity-30">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-              </button>
-           </div>
-           
-           <div class="h-6 w-px bg-white/10"></div>
-           
-           <button onclick="document.getElementById('viewer-modal').classList.add('hidden')" class="p-1.5 hover:bg-white/10 rounded transition text-muted hover:text-white">
-             <kbd class="hidden sm:inline font-mono text-[10px] bg-white/10 px-1.5 py-0.5 rounded mr-2">ESC</kbd>
-             <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-           </button>
-        </div>
+  <!-- WindowConsole Viewer Modal -->
+  <div id="viewer-modal" onclick="if(event.target === this) closeViewer()" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+    <!-- Main Window Container -->
+    <div class="window-console w-full max-w-5xl h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
+      
+      <!-- Window Header -->
+      <div class="window-header">
+         <!-- Traffic Lights -->
+         <div class="window-controls">
+            <div class="window-dot close" onclick="closeViewer()" title="Close"></div>
+            <div class="window-dot min" title="Minimize"></div>
+            <div class="window-dot max" title="Maximize"></div>
+         </div>
+
+         <!-- Title -->
+         <div class="flex-1 text-center font-mono text-xs text-gray-400 font-bold tracking-wide truncate px-4" id="viewer-title">
+            Terminal
+         </div>
+
+         <!-- Actions -->
+         <div class="flex items-center gap-3">
+             <div class="flex items-center gap-1 bg-white/5 rounded px-2 py-1" id="viewer-nav-controls" style="display: none;">
+                 <button id="viewer-prev-btn" class="text-gray-400 hover:text-white transition disabled:opacity-30">◄</button>
+                 <span id="viewer-counter" class="text-[10px] font-mono text-muted min-w-[40px] text-center"></span>
+                 <button id="viewer-next-btn" class="text-gray-400 hover:text-white transition disabled:opacity-30">►</button>
+             </div>
+             <button onclick="closeViewer()" class="text-gray-500 hover:text-white transition text-xs">✕</button>
+         </div>
       </div>
-      <div id="viewer-content" class="p-0 overflow-y-auto flex-1 font-mono text-sm custom-scrollbar bg-[#0D0D0D]"></div>
+
+      <!-- Content Area -->
+      <div id="viewer-content" class="flex-1 p-6 overflow-y-auto custom-scrollbar terminal-content text-sm relative">
+         <!-- Content injected here -->
+      </div>
+      
+      <!-- Footer/Status Bar -->
+      <div class="bg-[#1a1a1a] px-4 py-2 border-t border-white/5 flex justify-between items-center text-[10px] text-muted font-mono" id="viewer-footer">
+         <span id="viewer-status">Ready</span>
+         <span id="viewer-meta">UTF-8</span>
+      </div>
     </div>
   </div>
 

@@ -39,6 +39,10 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const promoUrl = typeof window !== 'undefined' && window.location.port === '5173'
+    ? 'http://localhost:5174/portcmd/'
+    : '/portcmd/';
+
   const collapsed = isMobile || settings.sidebarCollapsed;
 
   const glassStyle = {
@@ -77,8 +81,9 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       style={{ ...glassStyle, borderColor: 'var(--border-color)' }}
     >
       {/* Header */}
+      {/* Header */}
       <div className="h-16 flex items-center relative border-b shrink-0 px-3" style={{ borderColor: 'var(--border-color)' }}>
-        <a href="/portcmd/app/" className="flex items-center justify-center p-2 rounded-lg hover:bg-surfaceHover transition-colors group">
+        <a href={promoUrl} className="flex items-center justify-center p-2 rounded-lg hover:bg-surfaceHover transition-colors group" title={t('backToSite') || "Back to Site"}>
           <div className="relative w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center overflow-hidden group-hover:bg-primary transition-all duration-300">
             <Terminal size={18} className="transition-all duration-300 group-hover:translate-x-8 group-hover:opacity-0" />
             <ArrowLeft size={18} className="absolute text-white -translate-x-8 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
@@ -87,8 +92,8 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         
         <AnimatePresence>
           {!collapsed && (
-            <motion.a 
-              href="/portcmd/app/"
+            <motion.button 
+              onClick={() => { window.scrollTo(0, 0); window.location.reload(); }}
               variants={textVariants}
               initial="hidden"
               animate="visible"
@@ -97,7 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               style={{ color: 'var(--sidebar-text)' }}
             >
               PortCmd
-            </motion.a>
+            </motion.button>
           )}
         </AnimatePresence>
         

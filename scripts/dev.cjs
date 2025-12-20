@@ -10,8 +10,11 @@
  * - Graceful shutdown
  */
 
-const { spawn } = require('child_process');
+const { spawn, exec } = require('child_process');
 const http = require('http');
+
+const util = require('util');
+const execPromise = util.promisify(exec);
 
 // ============================================================================
 // CONFIGURATION
@@ -164,12 +167,58 @@ function shutdown() {
     setTimeout(() => process.exit(0), 1000);
 }
 
-function main() {
+async function killProcessOnPort(port) {
+    try {
+        if (isWindows) {
+            const { stdout } = await execPromise(`netstat -ano | findstr :${port}`);
+            if (stdout) {
+                const lines = stdout.trim().split('\n');
+                for (const line of lines) {
+                    const parts = line.trim().split(/\s+/);
+                    const pid = parts[parts.length - 1];
+                    // Ignore PID 0 (System Idle Process) and check if it's a number
+                    if (pid && pid !== '0' && /^\d+$/.test(pid)) {
+                        try {
+                            // Using taskkill /F /PID checks
+                            await execPromise(`taskkill /F /PID ${pid}`);
+                            console.log(`${YELLOW}[ORCHESTRATOR]${RESET} Killed PID ${pid} on port ${port}`);
+                        } catch (e) {
+                            // potentially already dead or access denied
+                        }
+                    }
+                }
+            }
+        } else {
+            await execPromise(`lsof -ti:${port} | xargs kill -9`);
+        }
+    } catch (e) {
+        // Ignore checking errors (e.g. if netstat finds nothing)
+    }
+}
+
+async function killPorts() {
+    console.log(`${YELLOW}[ORCHESTRATOR]${RESET} Cleaning up ports...`);
+    // Extract ports from SERVICES config
+    const ports = SERVICES.map(s => {
+        try {
+            return new URL(s.url).port;
+        } catch (e) { return null; }
+    }).filter(Boolean);
+
+    await Promise.all(ports.map(killProcessOnPort));
+    // Small delay to ensure OS releases locks
+    await new Promise(resolve => setTimeout(resolve, 1000));
+}
+
+
+async function main() {
     // Clear screen and show banner (skip in CI)
     if (!isCI) {
         console.clear();
         console.log('\x1b[36m' + BANNER + RESET);
     }
+
+    await killPorts();
 
     console.log(`${YELLOW}[ORCHESTRATOR]${RESET} Starting services...\n`);
 
@@ -187,3 +236,4 @@ function main() {
 }
 
 main();
+

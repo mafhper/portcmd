@@ -1,57 +1,85 @@
+/**
+ * Gemini AI Provider - Based on Farol Insight implementation
+ * Uses @google/genai SDK exactly as documented in detalhes-farol.md
+ */
 const { GoogleGenAI } = require("@google/genai");
 
 module.exports = function createGeminiProvider({ apiKey }) {
+  if (!apiKey) {
+    throw new Error("Gemini API key is required");
+  }
+
   const ai = new GoogleGenAI({ apiKey });
 
   return {
-    id: "gemini",
+    name: "gemini",
 
     async validateKey() {
-      // Smoke test to check if key is valid
-      await ai.models.list();
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`
+        );
+        return response.ok;
+      } catch (e) {
+        return false;
+      }
     },
 
     async listModels() {
-      const res = await ai.models.list();
-      return res.models.map(m => m.name);
+      try {
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1/models?key=${apiKey}`
+        );
+        const data = await response.json();
+        return data.models || [];
+      } catch (e) {
+        console.error("Failed to list models:", e.message);
+        return [];
+      }
     },
 
     async generate(req) {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), req.timeoutMs);
-
       const start = Date.now();
 
       try {
+        // Use gemini-2.5-flash as in Farol Insight
         const response = await ai.models.generateContent({
-          model: req.model,
-          contents: [{ role: "user", parts: [{ text: req.prompt }] }],
-          generationConfig: {
-            temperature: req.temperature,
-            maxOutputTokens: req.maxTokens
-          },
-          // Note: AbortSignal might not be supported in all versions of the new SDK node-client directly depending on transport,
-          // but we keep the structure. If it throws, we catch.
+          model: "gemini-2.5-flash",
+          contents: req.prompt,
         });
 
-        const candidate = response?.candidates?.[0];
-        const text = candidate?.content?.parts?.[0]?.text;
+        // Debug: log the response structure
+        console.log("[Gemini] Response structure:", Object.keys(response));
 
-        if (!text) throw new Error("EMPTY_RESPONSE");
+        // Try different ways to access the text content
+        let content;
+
+        if (typeof response.text === 'string') {
+          content = response.text;
+        } else if (typeof response.text === 'function') {
+          content = response.text();
+        } else if (response.candidates?.[0]?.content?.parts?.[0]?.text) {
+          content = response.candidates[0].content.parts[0].text;
+        } else if (response.response?.text) {
+          content = typeof response.response.text === 'function'
+            ? response.response.text()
+            : response.response.text;
+        } else {
+          console.log("[Gemini] Full response:", JSON.stringify(response, null, 2));
+          content = "Unable to extract text from response";
+        }
 
         return {
+          content,
+          model: "gemini-2.5-flash",
           provider: "gemini",
-          model: req.model,
-          content: text,
-          latencyMs: Date.now() - start,
-          tokens: {
-            input: response.usageMetadata?.promptTokenCount ?? null,
-            output: response.usageMetadata?.candidatesTokenCount ?? null
-          }
+          latency: Date.now() - start,
+          timestamp: new Date().toISOString(),
         };
-      } finally {
-        clearTimeout(timer);
+      } catch (error) {
+        console.error("Gemini Error:", error.message);
+        throw new Error(`Gemini Error: ${error.message}`);
       }
-    }
+    },
   };
 };

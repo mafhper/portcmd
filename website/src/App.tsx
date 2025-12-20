@@ -20,13 +20,19 @@ const App = () => {
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           
           {/* Logo with Hover Effect */}
-          <a href="/portcmd/" className="flex items-center gap-2 font-bold text-xl tracking-tight group">
-            <div className="relative bg-brand-500/20 p-1.5 rounded-lg text-brand-500 overflow-hidden group-hover:bg-brand-500 group-hover:text-white transition-colors">
+          {/* Logo with Hover Effect */}
+          <div className="flex items-center gap-2 font-bold text-xl tracking-tight group">
+            <a href={appUrl} className="relative bg-brand-500/20 p-1.5 rounded-lg text-brand-500 overflow-hidden group-hover:bg-brand-500 group-hover:text-white transition-colors cursor-pointer" title={t('launchApp')}>
               <Terminal size={20} className="transition-transform duration-300 group-hover:translate-x-full group-hover:opacity-0" />
               <ArrowLeft size={20} className="absolute top-1.5 left-1.5 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
-            </div>
-            <span className="group-hover:text-white transition-colors">PortCmd</span>
-          </a>
+            </a>
+            <button 
+              onClick={() => { window.scrollTo(0, 0); window.location.reload(); }} 
+              className="group-hover:text-white transition-colors hover:text-brand-500"
+            >
+              PortCmd
+            </button>
+          </div>
 
           <div className="flex items-center space-x-4 md:space-x-6">
             <div className="relative">

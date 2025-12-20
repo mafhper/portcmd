@@ -15,11 +15,18 @@ const DEFAULT_CONFIG = {
     }
 };
 
-function applyCiPolicy(req, config = DEFAULT_CONFIG) {
+function applyCiPolicy(req, partialConfig = {}) {
+    // Merge provided config with defaults
+    const config = {
+        mode: partialConfig.mode || DEFAULT_CONFIG.mode,
+        budget: { ...DEFAULT_CONFIG.budget, ...partialConfig.budget },
+        timeouts: { ...DEFAULT_CONFIG.timeouts, ...partialConfig.timeouts }
+    };
+
     const finalReq = { ...req };
 
     // Set Mode
-    const mode = config.mode || 'interactive';
+    const mode = config.mode;
 
     // Enforce Timeout based on mode
     if (!finalReq.timeoutMs) {
