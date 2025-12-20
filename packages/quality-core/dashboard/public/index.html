@@ -556,6 +556,21 @@
          line-height: 1.5;
       }
 
+      /* Background Styles */
+      body.bg-solid { background-image: none !important; }
+      
+      body.bg-animated { 
+         background: linear-gradient(-45deg, rgba(34, 211, 238, 0.1), rgba(168, 85, 247, 0.1), rgba(34, 211, 238, 0.1));
+         background-size: 400% 400%;
+         animation: gradient-flow 15s ease infinite;
+      }
+      
+      @keyframes gradient-flow {
+         0% { background-position: 0% 50%; }
+         50% { background-position: 100% 50%; }
+         100% { background-position: 0% 50%; }
+      }
+
       /* Metric Card Updates */
   </style>
 </head>
@@ -706,6 +721,7 @@
       <div class="flex border-b border-white/10 px-6">
         <button onclick="switchSettingsTab('profile')" class="settings-tab active px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="profile" data-i18n="profile">📋 Profile</button>
         <button onclick="switchSettingsTab('api')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="api" data-i18n="apiKeys">🔑 API Keys</button>
+        <button onclick="switchSettingsTab('appearance')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="appearance">🎨 Appearance</button>
         <button onclick="switchSettingsTab('data')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="data">📊 Data</button>
       </div>
 
@@ -742,6 +758,57 @@
           </div>
         </div>
         
+        <!-- Appearance Tab -->
+        <div id="settings-appearance-tab" class="space-y-6 hidden">
+            <div>
+                <label class="block text-sm font-medium text-muted mb-2">Theme Mode</label>
+                <div class="flex gap-2">
+                    <button onclick="setThemeMode('dark')" id="btn-theme-dark" class="flex-1 py-2 px-3 rounded-lg border border-white/10 bg-surfaceHighlight hover:border-primary transition flex items-center justify-center gap-2">
+                        <span>🌙</span> Dark
+                    </button>
+                    <button onclick="setThemeMode('light')" id="btn-theme-light" class="flex-1 py-2 px-3 rounded-lg border border-white/10 bg-surfaceHighlight hover:border-primary transition flex items-center justify-center gap-2">
+                        <span>☀️</span> Light
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-muted mb-2">Primary Color</label>
+                <div class="flex items-center gap-3">
+                    <input type="color" id="theme-primary-color" value="#22d3ee" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0" onchange="previewTheme()">
+                    <span class="text-xs text-muted">Click to pick a custom accent color</span>
+                    <button onclick="resetThemeColor()" class="text-xs text-primary hover:underline ml-auto">Reset Default</button>
+                </div>
+            </div>
+
+            <div class="space-y-4 border-t border-white/5 pt-4">
+                <div>
+                   <div class="flex justify-between mb-1">
+                      <label class="text-sm font-medium text-muted">Glass Opacity</label>
+                      <span id="val-glass-opacity" class="text-xs font-mono text-white">0.9</span>
+                   </div>
+                   <input type="range" id="theme-glass-opacity" min="0.5" max="1" step="0.05" value="0.92" class="w-full accent-primary" oninput="previewTheme()">
+                </div>
+                
+                <div>
+                   <div class="flex justify-between mb-1">
+                      <label class="text-sm font-medium text-muted">Blur Strength</label>
+                      <span id="val-glass-blur" class="text-xs font-mono text-white">12px</span>
+                   </div>
+                   <input type="range" id="theme-glass-blur" min="0" max="20" step="1" value="12" class="w-full accent-primary" oninput="previewTheme()">
+                </div>
+                
+                <div>
+                   <label class="block text-sm font-medium text-muted mb-2">Background Style</label>
+                   <select id="theme-bg-style" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none" onchange="previewTheme()">
+                        <option value="default">Default (Subtle Gradient)</option>
+                        <option value="solid">Solid Color (Flat)</option>
+                        <option value="animated">Animated (Flowing)</option>
+                   </select>
+                </div>
+            </div>
+        </div>
+
         <!-- API Tab -->
         <div id="settings-api-tab" class="space-y-6 hidden">
           <div>
@@ -890,8 +957,10 @@
 
     // --- Init ---
     document.addEventListener('DOMContentLoaded', () => {
+      const settings = getSettings();
       loadSettings();
       initI18n(); // Initialize i18n
+      applyTheme(settings); // Apply visual theme
       loadDashboard();
     });
 
@@ -1205,12 +1274,112 @@
       });
       document.getElementById('settings-profile-tab').classList.toggle('hidden', tab !== 'profile');
       document.getElementById('settings-api-tab').classList.toggle('hidden', tab !== 'api');
+      document.getElementById('settings-appearance-tab').classList.toggle('hidden', tab !== 'appearance');
       document.getElementById('settings-data-tab').classList.toggle('hidden', tab !== 'data');
       
       // Load server settings when switching to data tab
-      if (tab === 'data') {
-        loadServerSettings();
-      }
+      if (tab === 'data') loadServerSettings();
+      // Refresh inputs when switching to appearance
+      if (tab === 'appearance') applyTheme(getSettings());
+    }
+
+    // --- Theme Manager ---
+    function applyTheme(settings) {
+        const root = document.documentElement;
+        const isDark = settings.themeMode !== 'light'; // Default to dark
+        
+        // Mode
+        if (!isDark) {
+            root.classList.remove('dark');
+            root.style.colorScheme = 'light';
+            document.getElementById('btn-theme-light')?.classList.add('ring-2', 'ring-primary', 'bg-primary/10');
+            document.getElementById('btn-theme-dark')?.classList.remove('ring-2', 'ring-primary', 'bg-primary/10');
+        } else {
+            root.classList.add('dark');
+            root.style.colorScheme = 'dark';
+            document.getElementById('btn-theme-dark')?.classList.add('ring-2', 'ring-primary', 'bg-primary/10');
+            document.getElementById('btn-theme-light')?.classList.remove('ring-2', 'ring-primary', 'bg-primary/10');
+        }
+
+        // Custom Primary Color
+        if (settings.themeColor && settings.themeColor !== '#22d3ee') {
+            root.style.setProperty('--color-primary', settings.themeColor);
+            // Simple hex to rgba approximation for glow could be added here if needed
+        } else {
+            root.style.removeProperty('--color-primary');
+        }
+
+        // Glass Effects
+        const rgb = isDark ? '15, 15, 15' : '255, 255, 255';
+        const defaultOpacity = isDark ? 0.7 : 0.92;
+        const opacity = settings.glassOpacity !== undefined ? settings.glassOpacity : defaultOpacity;
+        const blur = settings.glassBlur !== undefined ? settings.glassBlur : 12;
+
+        root.style.setProperty('--glass-bg', `rgba(${rgb}, ${opacity})`);
+        root.style.setProperty('--glass-blur', `${blur}px`);
+
+        // Update Inputs
+        const colorInput = document.getElementById('theme-primary-color');
+        if (colorInput) colorInput.value = settings.themeColor || '#22d3ee';
+        
+        const opacityInput = document.getElementById('theme-glass-opacity');
+        if (opacityInput) {
+             opacityInput.value = opacity;
+             document.getElementById('val-glass-opacity').innerText = opacity;
+        }
+
+        const blurInput = document.getElementById('theme-glass-blur');
+        if (blurInput) {
+            blurInput.value = blur;
+            document.getElementById('val-glass-blur').innerText = blur + 'px';
+        }
+        
+        // Background Style
+        const bgStyle = settings.themeBgStyle || 'default';
+        document.body.classList.remove('bg-solid', 'bg-animated');
+        if (bgStyle === 'solid') document.body.classList.add('bg-solid');
+        if (bgStyle === 'animated') document.body.classList.add('bg-animated');
+        
+        const bgSelect = document.getElementById('theme-bg-style');
+        if (bgSelect) bgSelect.value = bgStyle;
+    }
+
+    function setThemeMode(mode) {
+        const settings = getSettings();
+        settings.themeMode = mode;
+        saveSettingsData(settings);
+        applyTheme(settings);
+    }
+
+    function previewTheme() {
+        const color = document.getElementById('theme-primary-color').value;
+        const opacity = document.getElementById('theme-glass-opacity').value;
+        const blur = document.getElementById('theme-glass-blur').value;
+        const bgStyle = document.getElementById('theme-bg-style').value;
+        
+        const settings = getSettings();
+        settings.themeColor = color;
+        settings.glassOpacity = opacity;
+        settings.glassBlur = blur;
+        settings.themeBgStyle = bgStyle;
+        
+        applyTheme(settings); // Preview directly
+    }
+
+    function saveThemeFromPreview() {
+         // This is effectively done in saveSettings if we read inputs, 
+         // but previewTheme already updates the visual state. 
+         // We need to ensure saveSettings reads these values.
+    }
+
+    function resetThemeColor() {
+        const settings = getSettings();
+        settings.themeColor = '#22d3ee';
+        settings.glassOpacity = undefined; // Reset to default
+        settings.glassBlur = 12;
+        settings.themeBgStyle = 'default';
+        saveSettingsData(settings);
+        applyTheme(settings);
     }
 
     // Auto-detect GitHub repo from .github.io URLs
@@ -1656,6 +1825,16 @@
       document.getElementById('github-repo-input').value = settings.githubRepo || '';
       document.getElementById('pagespeed-key-input').value = settings.pagespeedKey || '';
       document.getElementById('gemini-key-input').value = settings.geminiKey || '';
+      
+      // Init theme inputs
+      if(document.getElementById('theme-primary-color')) {
+          document.getElementById('theme-primary-color').value = settings.themeColor || '#22d3ee';
+          document.getElementById('theme-glass-opacity').value = settings.glassOpacity || 0.92;
+          document.getElementById('val-glass-opacity').innerText = settings.glassOpacity || 0.92;
+          document.getElementById('theme-glass-blur').value = settings.glassBlur || 12;
+          document.getElementById('val-glass-blur').innerText = (settings.glassBlur || 12) + 'px';
+      }
+
       switchSettingsTab('profile');
       document.getElementById('settings-modal').classList.remove('hidden');
     }
@@ -1665,17 +1844,29 @@
     }
     
     function saveSettings() {
+      const settings = getSettings(); // Get current settings to preserve themeMode and monitorPeriod
       const data = {
         projectName: document.getElementById('project-name-input').value.trim(),
-        githubToken: document.getElementById('github-token-input').value.trim(),
-        monitorUrl: document.getElementById('monitor-url-input').value.trim(),
         githubRepo: document.getElementById('github-repo-input').value.trim(),
+        // Security: Don't overwrite keys with empty strings if they are masked/not changed (basic logic)
+        // For this demo, we assume simple save
+        githubToken: document.getElementById('github-token-input').value.trim(),
         pagespeedKey: document.getElementById('pagespeed-key-input').value.trim(),
         geminiKey: document.getElementById('gemini-key-input').value.trim(),
-        language: document.getElementById('language-select').value
+        monitorPeriod: settings.monitorPeriod, // Assuming monitorPeriod is managed elsewhere or preserved
+        language: document.getElementById('language-select').value, // Get from select input
+        monitorUrl: document.getElementById('monitor-url-input').value.trim(),
+        
+        // Appearances
+        themeMode: settings.themeMode, // Preserved from toggle
+        themeColor: document.getElementById('theme-primary-color').value,
+        glassOpacity: document.getElementById('theme-glass-opacity').value,
+        glassBlur: document.getElementById('theme-glass-blur').value,
+        themeBgStyle: document.getElementById('theme-bg-style').value
       };
       saveSettingsData(data);
       setLanguage(data.language); // Apply immediately
+      applyTheme(data); // Apply theme settings immediately
       
       // Save server-side settings (retention policy)
       saveServerSettings();
