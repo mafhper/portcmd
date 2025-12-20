@@ -1812,27 +1812,43 @@
         // Normalize Lighthouse reports to match Dashboard schema
         const lighthouseReports = (lhJson.data || []).map(r => {
              const cats = r.data?.categories || {};
+             const audits = r.data?.audits || {};
              const perf = (cats.performance?.score || 0) * 100;
              const a11y = (cats.accessibility?.score || 0) * 100;
              const bp = (cats['best-practices']?.score || 0) * 100;
              const seo = (cats.seo?.score || 0) * 100;
-             const url = r.data?.finalUrl || '';
+             const url = r.data?.finalUrl || r.data?.requestedUrl || '';
+             
+             // Extract Core Web Vitals from audits (convert ms to seconds where needed)
+             const lcp = (audits['largest-contentful-paint']?.numericValue || 0) / 1000; // ms to s
+             const fcp = (audits['first-contentful-paint']?.numericValue || 0) / 1000; // ms to s
+             const cls = audits['cumulative-layout-shift']?.numericValue || 0; // unitless
+             const si = (audits['speed-index']?.numericValue || 0) / 1000; // ms to s
+             const tti = (audits['interactive']?.numericValue || 0) / 1000; // ms to s
+             const inp = audits['experimental-interaction-to-next-paint']?.numericValue || 0; // ms
+             
+             // Determine target from URL
+             const target = (url.includes(':5174') || url.includes('github.io') || url.includes('promo')) ? 'promo' : 'app';
              
              return {
                  ...r,
                  isLighthouse: true,
                  data: {
                      ...r.data,
-                     target: (url.includes(':5174') || url.includes('github.io')) ? 'promo' : 'app',
+                     target,
                      scores: {
-                         build: perf, // Proxy: Performance = Build/Speed
-                         render: perf, // Proxy: Performance = Render
-                         ux: bp,       // Proxy: Best Practices = UX
+                         build: perf,
+                         render: perf,
+                         ux: bp,
                          a11y: a11y,
                          seo: seo
                      },
+                     // Core Web Vitals
+                     metrics: {
+                         lcp, fcp, cls, si, tti, inp
+                     },
                      status: perf >= 90 ? 'pass' : (perf >= 50 ? 'warn' : 'fail'),
-                     summary: { score: perf } // Use performance as main score
+                     summary: { score: perf }
                  }
              };
         });
@@ -1947,22 +1963,33 @@
           }
           
 
-          // --- Helper for Vitals ---
-          const renderVitalBar = (label, value, target, unit='s') => {
+          // --- Helper for Vitals with enhanced indicators ---
+          const renderVitalBar = (label, value, threshold, unit='s') => {
               const numVal = parseFloat(value || 0);
-              const isGood = numVal <= target;
-              const width = Math.min(100, Math.max(5, (numVal / (target * 1.5)) * 100)); // Scale relative to target
-              const color = isGood ? 'bg-emerald-500' : (numVal <= target*1.5 ? 'bg-yellow-500' : 'bg-red-500');
-              const textColor = isGood ? 'text-emerald-400' : (numVal <= target*1.5 ? 'text-yellow-400' : 'text-red-400');
+              const isGood = numVal <= threshold;
+              const isModerate = numVal > threshold && numVal <= threshold * 1.5;
+              const width = Math.min(100, Math.max(5, (numVal / (threshold * 2)) * 100));
+              
+              // Colors based on status
+              const color = isGood ? 'bg-emerald-500' : (isModerate ? 'bg-yellow-500' : 'bg-red-500');
+              const textColor = isGood ? 'text-emerald-400' : (isModerate ? 'text-yellow-400' : 'text-red-400');
+              const statusIcon = isGood ? '✓' : (isModerate ? '!' : '✗');
+              const statusLabel = isGood ? 'Good' : (isModerate ? 'Needs Improvement' : 'Poor');
               
               return `
-                  <div>
+                  <div class="py-1">
                       <div class="flex justify-between items-end mb-1">
-                          <span class="text-xs text-muted tracking-wide">${label}</span>
-                          <span class="text-xs font-mono font-bold ${textColor}">${numVal.toFixed(2)} ${unit}</span>
+                          <div class="flex items-center gap-1.5">
+                            <span class="text-[9px] ${textColor}">${statusIcon}</span>
+                            <span class="text-[10px] text-muted tracking-wide">${label}</span>
+                          </div>
+                          <div class="text-right">
+                            <span class="text-[10px] font-mono font-bold ${textColor}">${numVal.toFixed(2)}${unit}</span>
+                            <span class="text-[8px] text-muted ml-1">(target: ≤${threshold}${unit})</span>
+                          </div>
                       </div>
                       <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-                          <div class="h-full ${color} shadow-[0_0_8px_currentColor]" style="width: ${isGood ? 100 : width}%"></div>
+                          <div class="h-full ${color} shadow-[0_0_8px_currentColor] transition-all duration-500" style="width: ${width}%"></div>
                       </div>
                   </div>
               `;
