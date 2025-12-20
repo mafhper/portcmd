@@ -186,6 +186,7 @@
       padding: 1.25rem;
       background: var(--glass-bg);
       backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       transition: all 0.3s ease;
@@ -712,8 +713,8 @@
         <!-- Profile Tab -->
         <div id="settings-profile-tab" class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-muted mb-2" data-i18n="language">Language</label>
-            <select id="language-select" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none">
+            <label for="language-select" class="block text-sm font-medium text-muted mb-2" data-i18n="language">Language</label>
+            <select id="language-select" title="Select language" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none">
               <option value="en">English (US)</option>
               <option value="pt-BR">Português (BR)</option>
               <option value="es">Español</option>
@@ -3763,13 +3764,52 @@
         const loadingText = currentLang === 'pt-BR' ? 'Executando análise profunda...' : currentLang === 'es' ? 'Ejecutando análisis profundo...' : 'Running deep analysis...';
         resultsEl.innerHTML = `<div class="glass-card p-8 text-center animate-pulse"><div class="text-4xl mb-4">✨</div>${loadingText}</div>`;
         try {
+            // Fetch quality gate data
             const qualityRes = await fetch(`${API_BASE}/reports/quality`);
             const qualityJson = await qualityRes.json();
-            const lastQuality = qualityJson.data?.[0]?.data || {};
+            const latestQuality = qualityJson.data?.[0] || {};
+            
+            // Access the correct paths in quality report
+            const qualityStatus = latestQuality.data?.summary?.status || latestQuality.summary?.status || 'unknown';
+            const qualityScore = latestQuality.data?.summary?.score || latestQuality.summary?.score || 0;
+            const qualityViolations = latestQuality.data?.violations || latestQuality.violations || [];
+            const qualityMetrics = latestQuality.data?.metrics?.scores || latestQuality.metrics?.scores || {};
+            
+            // Fetch Lighthouse data
             const lhRes = await fetch(`${API_BASE}/reports/lighthouse`);
             const lhJson = await lhRes.json();
-            const lastLh = lhJson.data?.[0]?.data?.categories || {};
-            const prompt = `Analyze project status: QualityGate ${lastQuality.status}, Perf ${Math.round((lastLh.performance?.score||0)*100)}. Suggest improvements.`;
+            const latestLh = lhJson.data?.[0]?.data || {};
+            const lhCategories = latestLh.categories || {};
+            const perfScore = Math.round((lhCategories.performance?.score || 0) * 100);
+            const a11yScore = Math.round((lhCategories.accessibility?.score || 0) * 100);
+            const seoScore = Math.round((lhCategories.seo?.score || 0) * 100);
+            const bpScore = Math.round((lhCategories['best-practices']?.score || 0) * 100);
+            
+            // Build comprehensive prompt
+            const violationsText = qualityViolations.length > 0 
+                ? `Violations found: ${qualityViolations.map(v => `${v.area}: ${v.metric} = ${v.value} (threshold: ${v.threshold}, severity: ${v.severity})`).join('; ')}`
+                : 'No violations found.';
+            
+            const metricsText = Object.entries(qualityMetrics)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(', ');
+            
+            const prompt = `Analyze this web project quality report:
+
+**Quality Gate:**
+- Status: ${qualityStatus.toUpperCase()}
+- Overall Score: ${qualityScore}/100
+- Metrics: ${metricsText || 'Not available'}
+- ${violationsText}
+
+**Lighthouse Performance:**
+- Performance: ${perfScore}/100
+- Accessibility: ${a11yScore}/100
+- Best Practices: ${bpScore}/100
+- SEO: ${seoScore}/100
+
+Provide actionable recommendations to improve both quality gate compliance and performance metrics.`;
+
             const res = await fetch(`${API_BASE}/ai-analyze`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -4183,6 +4223,8 @@ Rules:
     // Add a floating button for mobile only
     const floatBtn = document.createElement('button');
     floatBtn.className = 'md:hidden fixed top-4 right-4 z-50 p-2 bg-surface border border-white/10 rounded-lg text-white shadow-lg';
+    floatBtn.setAttribute('title', 'Toggle Menu');
+    floatBtn.setAttribute('aria-label', 'Toggle navigation menu');
     floatBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>';
     floatBtn.onclick = toggleSidebar;
     if(!document.querySelector('.mobile-toggle')) {

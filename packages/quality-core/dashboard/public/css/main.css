@@ -463,6 +463,7 @@ body::before {
     z-index: 10;
     background: var(--background-surface-2);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .data-table th {
@@ -842,6 +843,7 @@ select option:checked {
     padding: 1rem;
     background: var(--glass-bg);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
