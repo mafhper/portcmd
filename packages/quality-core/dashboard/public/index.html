@@ -2383,7 +2383,10 @@
         ${renderHeader(
             t('siteMonitor'),
             `<span class="font-mono text-xs bg-white/10 px-2 py-0.5 rounded">${settings.monitorUrl}</span>`,
-            `<button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition flex items-center gap-2">
+            `<button onclick="analyzeMonitorWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
+                 <span>✨</span> AI Analysis
+             </button>
+             <button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition flex items-center gap-2">
                 <span class="relative flex h-2 w-2">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -2650,7 +2653,11 @@
          ${renderHeader(
              t('pageSpeed'),
              'Remote Lighthouse test via Google API',
-             `${targetSelector}<button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
+             `${targetSelector}
+              <button onclick="analyzePageSpeedWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
+                 <span>✨</span> AI Analysis
+              </button>
+              <button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
                 <span>🚀</span> ${t('runTest')}
              </button>`
          )}
@@ -2718,6 +2725,92 @@
         }
       } catch (e) {
         document.getElementById('psi-history-grid').innerHTML = `<div class="text-error">${t('noDataFound')}</div>`;
+      }
+    }
+
+    // --- Logs View ---
+    async function loadLogsView() {
+      const container = document.getElementById('content-area');
+      const settings = getSettings();
+      
+      // Target selector
+      const targetSelector = `
+        <select id="logs-target-filter" onchange="setTarget(this.value); loadLogsView()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+          <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
+          <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
+          <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+        </select>
+      `;
+
+      container.innerHTML = `
+         ${renderHeader(
+             'Log de Anomalias', // Portuguese as requested
+             'System events, build errors and deployment status',
+             `${targetSelector}
+              <button onclick="analyzeLogsWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2">
+                 <span>✨</span> AI Analysis
+              </button>`
+         )}
+         
+         <!-- GitHub Pages Status -->
+         <div id="gh-pages-status" class="mb-6"></div>
+
+         <!-- Logs Console -->
+         <div class="glass-card p-0 overflow-hidden flex flex-col h-[600px]">
+            <div class="px-4 py-2 bg-white/5 border-b border-white/5 flex justify-between items-center">
+               <span class="font-mono text-xs text-muted">system.log</span>
+               <div class="flex gap-2">
+                   <button onclick="loadLogsView()" class="text-xs hover:text-white transition">Refresh</button>
+                   <button onclick="document.getElementById('logs-output').innerHTML = ''" class="text-xs hover:text-white transition">Clear</button>
+               </div>
+            </div>
+            <div id="logs-output" class="flex-1 p-4 font-mono text-xs overflow-y-auto text-muted whitespace-pre-wrap">Loading system logs...</div>
+         </div>
+      `;
+
+      // Check GitHub Pages Status (Mocked/Inferred for now)
+      const monitorUrl = settings.monitorUrl || '';
+      const isPromo = monitorUrl.includes('github.io');
+      
+      if (isPromo || currentTarget === 'promo' || currentTarget === 'all') {
+         const recentPings = pingHistory.filter(p => p.url.includes('github.io')).slice(-5);
+         const hasDown = recentPings.some(p => !p.ok);
+         
+         const statusDiv = document.getElementById('gh-pages-status');
+         if (hasDown) {
+             statusDiv.innerHTML = `
+                <div class="p-4 bg-error/10 border-l-4 border-error rounded-r-lg flex items-start gap-4 animate-pulse">
+                    <span class="text-2xl">🚨</span>
+                    <div>
+                        <h3 class="font-bold text-white mb-1">GitHub Pages Deployment Issue Detected</h3>
+                        <p class="text-sm text-white/80">The promo site appears to be unreachable or returning errors. Check your repository Actions tab for build failures.</p>
+                        <div class="mt-2 text-xs font-mono text-error">Last check: ${new Date().toLocaleTimeString()}</div>
+                    </div>
+                </div>
+             `;
+         } else {
+             // Optional: Show healthy status if strictly in logs view
+             // statusDiv.innerHTML = '<div class="text-xs text-success flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-success"></span> GitHub Pages Status: Healthy</div>';
+         }
+      }
+
+      try {
+        // Fetch logs (using run command as proxy or actual endpoint if available)
+        // For now, simulate/fetch dummy logs or real logs if endpoint exists
+        // We'll try to fetch from a logs endpoint, if not we show recent activity
+        
+        const logs = [
+            `[${new Date().toISOString()}] INFO: Dashboard loaded`,
+            `[${new Date().toISOString()}] INFO: Checking system health...`,
+            ...pingHistory.slice(-10).map(p => `[${new Date(p.timestamp).toISOString()}] ${p.ok ? 'INFO' : 'ERROR'}: Ping ${p.url} - ${p.latency}ms`),
+            // Simulate a build error if target is promo to test the feature
+            // `[${new Date().toISOString()}] ERROR: GitHub Pages build failed for commit 8d9c462` 
+        ].join('\n');
+        
+        document.getElementById('logs-output').innerText = logs;
+        
+      } catch (e) {
+        document.getElementById('logs-output').innerHTML = `<span class="text-error">Failed to load logs: ${e.message}</span>`;
       }
     }
 
@@ -3153,7 +3246,11 @@
       const headerHtml = renderHeader(
           t('qualityScans'), 
           t('qualityGateSubtitle'), 
-          `${targetSelector}<button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
+          `${targetSelector}
+           <button onclick="analyzeQualityWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
+              <span>✨</span> AI Analysis
+           </button>
+           <button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
       );
 
       container.innerHTML = `
@@ -3364,7 +3461,11 @@
       const headerHtml = renderHeader(
           t('lighthouse'), 
           t('lighthouseReportsSubtitle'),
-          `${targetSelector}<button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+          `${targetSelector}
+           <button onclick="analyzeLighthouseWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
+              <span>✨</span> AI Analysis
+           </button>
+           <button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
       );
 
       container.innerHTML = `
@@ -3884,6 +3985,196 @@
                 showViewer(`Insight: ${filename}`, marked.parse(content), 'html');
             } else { showToast('Report not found', 'error'); }
         } catch(e) { showToast('Error loading insight', 'error'); }
+    }
+
+    // Reusable AI analysis for any page
+    async function analyzePageWithAI(pageSource, contextData, containerId = null) {
+        const settings = getSettings();
+        if (!settings.geminiKey) { 
+            showToast('Gemini API key required. Configure in Settings.', 'warning'); 
+            return; 
+        }
+        
+        const loadingText = currentLang === 'pt-BR' ? 'Analisando com IA...' : 
+                           currentLang === 'es' ? 'Analizando con IA...' : 'Analyzing with AI...';
+        
+        // If container specified, show loading there; otherwise use modal
+        if (containerId) {
+            const container = document.getElementById(containerId);
+            if (container) {
+                container.classList.remove('hidden');
+                container.innerHTML = `<div class="glass-card p-8 text-center animate-pulse"><div class="text-4xl mb-4">✨</div>${loadingText}</div>`;
+            }
+        } else {
+            showViewer('AI Analysis', `<div class="text-center animate-pulse p-8"><div class="text-4xl mb-4">✨</div>${loadingText}</div>`, 'html');
+        }
+        
+        try {
+            // Build prompt with target context
+            const targetLabel = currentTarget === 'all' ? 'all targets' : currentTarget.toUpperCase();
+            const prompt = `Analyze this ${pageSource} data for ${targetLabel}:
+
+${contextData}
+
+Provide specific, actionable recommendations.`;
+
+            const res = await fetch(`${API_BASE}/ai-analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    key: settings.geminiKey, 
+                    prompt,
+                    reportType: aiReportType,
+                    language: currentLang,
+                    pageSource // New field for history tracking
+                })
+            });
+            
+            const json = await res.json();
+            
+            if (json.content) {
+                const resultHtml = `<div class="prose prose-invert max-w-none">${marked.parse(json.content)}</div>`;
+                if (containerId) {
+                    document.getElementById(containerId).innerHTML = `<div class="glass-card p-8 relative overflow-hidden"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div>${resultHtml}</div>`;
+                } else {
+                    showViewer(`AI Analysis: ${pageSource}`, resultHtml, 'html');
+                }
+                showToast('Analysis complete!', 'success');
+            } else if (json.error) {
+                throw new Error(json.error.message || JSON.stringify(json.error));
+            } else {
+                throw new Error('Invalid response');
+            }
+        } catch (e) {
+            const errorHtml = `<div class="glass-card p-6 text-error">Analysis failed: ${e.message}</div>`;
+            if (containerId) {
+                document.getElementById(containerId).innerHTML = errorHtml;
+            } else {
+                showViewer('Analysis Error', errorHtml, 'html');
+            }
+        }
+    }
+
+    // Quick AI analysis for Quality page
+    async function analyzeQualityWithAI() {
+        try {
+            const res = await fetch(`${API_BASE}/reports/quality`);
+            const json = await res.json();
+            const filtered = filterByTarget(json.data || []);
+            const latest = filtered[0]?.data || {};
+            
+            const scores = latest.metrics?.scores || latest.scores || {};
+            const violations = latest.violations || [];
+            const status = latest.summary?.status || latest.status || 'unknown';
+            
+            const context = `**Quality Gate Status:** ${status.toUpperCase()}
+**Target:** ${currentTarget}
+**Scores:** ${Object.entries(scores).map(([k,v]) => `${k}: ${v}`).join(', ') || 'N/A'}
+**Violations (${violations.length}):** ${violations.map(v => v.message || v).join('; ') || 'None'}`;
+            
+            analyzePageWithAI('Quality Gate', context);
+        } catch (e) {
+            showToast('Failed to load quality data: ' + e.message, 'error');
+        }
+    }
+
+    // Quick AI analysis for Lighthouse page
+    async function analyzeLighthouseWithAI() {
+        try {
+            const res = await fetch(`${API_BASE}/reports/lighthouse`);
+            const json = await res.json();
+            const filtered = filterByTarget(json.data?.map(r => ({...r, data: {...r.data, meta: {target: (r.data?.finalUrl || '').includes('promo') ? 'promo' : 'app'}}})) || []);
+            const latest = filtered[0]?.data || {};
+            
+            const cats = latest.categories || {};
+            const perf = Math.round((cats.performance?.score || 0) * 100);
+            const a11y = Math.round((cats.accessibility?.score || 0) * 100);
+            const bp = Math.round((cats['best-practices']?.score || 0) * 100);
+            const seo = Math.round((cats.seo?.score || 0) * 100);
+            
+            const context = `**Lighthouse Report**
+**Target:** ${currentTarget}
+**URL:** ${latest.finalUrl || 'Unknown'}
+**Scores:**
+- Performance: ${perf}/100
+- Accessibility: ${a11y}/100
+- Best Practices: ${bp}/100
+- SEO: ${seo}/100`;
+            
+            analyzePageWithAI('Lighthouse', context);
+        } catch (e) {
+            showToast('Failed to load Lighthouse data: ' + e.message, 'error');
+        }
+    }
+
+    // Quick AI analysis for Monitor page
+    async function analyzeMonitorWithAI() {
+        try {
+            const settings = getSettings();
+            if (!settings.monitorUrl) { showToast('No monitor URL configured', 'warning'); return; }
+            
+            const recentPings = pingHistory.filter(p => p.url === settings.monitorUrl).slice(-20);
+            const latencies = recentPings.map(p => p.latency);
+            const avgLatency = latencies.length > 0 ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : 0;
+            const uptime = recentPings.length > 0 ? Math.round((recentPings.filter(p => p.ok).length / recentPings.length) * 100) : 0;
+            
+            const context = `**Site Monitor Analysis**
+**Target URL:** ${settings.monitorUrl}
+**Uptime (last 20 pings):** ${uptime}%
+**Avg Latency:** ${avgLatency}ms
+**Recent Pings:** ${recentPings.map(p => `${new Date(p.timestamp).toLocaleTimeString()}: ${p.latency}ms (${p.ok?'OK':'FAIL'})`).join('; ')}`;
+
+            analyzePageWithAI('Site Monitor', context);
+        } catch (e) {
+            showToast('Analysis failed: ' + e.message, 'error');
+        }
+    }
+    
+    // Quick AI analysis for Logs page
+    async function analyzeLogsWithAI() {
+        try {
+           const logEl = document.getElementById('logs-output');
+           const logs = logEl ? logEl.innerText : 'No logs available';
+           
+           const context = `**System Logs Analysis**
+**Log Content (Excerpt):**
+${logs.substring(0, 5000)}...`;
+
+           analyzePageWithAI('System Logs', context);
+        } catch (e) {
+            showToast('Analysis failed: ' + e.message, 'error');
+        }
+    }
+
+    // Quick AI analysis for PageSpeed page
+    async function analyzePageSpeedWithAI() {
+        try {
+            const resultsEl = document.getElementById('psi-results');
+            if (!resultsEl || !resultsEl.innerHTML) { showToast('Run a test first', 'warning'); return; }
+            
+            // Extract scores from current view
+            const getScore = (label) => {
+                const el = Array.from(document.querySelectorAll('.radial-progress')).find(e => e.nextElementSibling?.innerText.includes(label));
+                return el ? el.innerText.replace('%','') : '0';
+            };
+            
+            const perf = getScore(t('performance'));
+            const a11y = getScore(t('accessibility'));
+            const bp = getScore(t('bestPractices'));
+            const seo = getScore(t('seo'));
+            
+            const context = `**PageSpeed Insights Analysis**
+**Target:** ${currentTarget}
+**Scores:**
+- Performance: ${perf}/100
+- Accessibility: ${a11y}/100
+- Best Practices: ${bp}/100
+- SEO: ${seo}/100`;
+
+            analyzePageWithAI('PageSpeed Insights', context);
+        } catch (e) {
+            showToast('Analysis failed: ' + e.message, 'error');
+        }
     }
 
     async function runAiAnalysis() {
