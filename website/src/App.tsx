@@ -33,7 +33,7 @@ const App = () => {
             case 'quality': return <QualityCore />;
             case 'updates': return <Updates />;
             case 'author': return <Author />;
-            default: return <Home />;
+            default: return <Home onNavigate={setCurrentView} />;
           }
         })()}
       </Suspense>

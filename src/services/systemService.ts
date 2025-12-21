@@ -1,8 +1,19 @@
-import { ProcessEntry, SavedProject, GitHubStatus, SiteStatus } from '../types';
+import { ProcessEntry, SavedProject, GitHubStatus, SiteStatus, ProcessType, ProcessStatus } from '../types';
 
 export const SystemService = {
   getProcesses: async (): Promise<ProcessEntry[]> => {
     try {
+      // @ts-expect-error - Vite env
+      if (import.meta.env.DEV) {
+        // Generate mock data for development
+        return [
+          { pid: 1001, name: 'node', type: ProcessType.DEVELOPMENT, port: 3000, cpuUsage: 2.5, memoryUsage: 150, address: 'localhost', user: 'dev', status: ProcessStatus.RUNNING, commandLine: 'npm start', managedById: 'mn_123', isFavorite: false },
+          { pid: 1002, name: 'postgres', type: ProcessType.DATABASE, port: 5432, cpuUsage: 1.2, memoryUsage: 300, address: 'localhost', user: 'postgres', status: ProcessStatus.RUNNING, commandLine: 'postgres -D data', isFavorite: false },
+          { pid: 1003, name: 'docker', type: ProcessType.SYSTEM, port: 8080, cpuUsage: 0.5, memoryUsage: 50, address: 'localhost', user: 'root', status: ProcessStatus.RUNNING, commandLine: 'docker-compose up', isFavorite: true },
+          { pid: 1004, name: 'python', type: ProcessType.DEVELOPMENT, port: 8000, cpuUsage: 0.8, memoryUsage: 120, address: 'localhost', user: 'dev', status: ProcessStatus.RUNNING, commandLine: 'python manage.py runserver', isFavorite: false },
+          { pid: 1005, name: 'redis', type: ProcessType.DATABASE, port: 6379, cpuUsage: 0.3, memoryUsage: 80, address: 'localhost', user: 'redis', status: ProcessStatus.RUNNING, commandLine: 'redis-server', isFavorite: false }
+        ];
+      }
       const res = await fetch('/api/processes');
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();

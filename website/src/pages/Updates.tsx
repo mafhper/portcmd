@@ -23,7 +23,7 @@ const Updates = () => {
   useEffect(() => {
     const fetchCommits = async () => {
       try {
-        const res = await fetch('https://api.github.com/repos/mafhper/port-command/commits?per_page=10');
+        const res = await fetch('https://api.github.com/repos/mafhper/portcmd/commits?per_page=10');
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
         setCommits(data);

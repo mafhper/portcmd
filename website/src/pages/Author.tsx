@@ -32,7 +32,7 @@ const Author = () => {
                 <a href="#" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white">
                     <Twitter size={24} />
                 </a>
-                <a href="#" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white">
+                <a href="https://mafhper.github.io/personal-news" target="_blank" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white">
                     <Globe size={24} />
                 </a>
             </div>
@@ -41,7 +41,7 @@ const Author = () => {
 
       {/* Featured Project: AuraWall */}
       <div className="mt-8 grid md:grid-cols-2 gap-8">
-        <div className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+        <a href="https://mafhper.github.io/aurawall/" target="_blank" className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors group cursor-pointer block">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold text-white">{t('wallTitle')}</h3>
                 <ArrowUpRight className="text-zinc-500 group-hover:text-cyan-400 transition-colors" />
@@ -50,9 +50,9 @@ const Author = () => {
                 {t('wallDesc')}
             </p>
             <div className="inline-flex text-xs font-mono text-cyan-400 bg-cyan-900/20 px-2 py-1 rounded">
-                {t('comingSoon')}
+                {t('visitSite')}
             </div>
-        </div>
+        </a>
 
         <div className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors">
             <h3 className="text-xl font-bold text-white mb-4">{t('contact')}</h3>

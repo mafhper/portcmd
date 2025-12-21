@@ -363,10 +363,15 @@
     .prose a:hover { text-decoration: underline; }
 
     /* Collapsed Sidebar */
+    /* Collapsed Sidebar */
     .sidebar-collapsed { width: 80px !important; }
-    .sidebar-collapsed .sidebar-text { display: none; }
+    .sidebar-collapsed .sidebar-text { display: none !important; }
     .sidebar-collapsed .sidebar-header { justify-content: center; }
     .sidebar-collapsed .sidebar-link { justify-content: center; padding-left: 0; padding-right: 0; }
+    .sidebar-collapsed h4 { display: none; } 
+    .sidebar-collapsed .p-4 { padding: 1rem 0.5rem; text-align: center; }
+    .sidebar-collapsed .space-y-2 { display: flex; flex-direction: column; gap: 0.5rem; }
+    .sidebar-collapsed .space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0; }
 
     /* Toast Animations */
     @keyframes slide-in {
@@ -505,10 +510,17 @@
       background-clip: text;
     }
         /* --- Settings Input Fix & WindowConsole Style --- */
+      /* Default (Light/Adaptive) */
       select, input[type="text"], input[type="url"], input[type="password"], textarea {
-        background-color: rgba(255, 255, 255, 0.05) !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
-        color: white !important;
+        background-color: var(--bg-surface, #ffffff);
+        border-color: var(--border-subtle, #e2e8f0);
+        color: var(--text-main, #1a1a1a);
+      }
+      /* Dark Mode Overrides */
+      html.dark select, html.dark input[type="text"], html.dark input[type="url"], html.dark input[type="password"], html.dark textarea {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+        color: white;
       }
       select:focus, input:focus, textarea:focus {
         background-color: rgba(255, 255, 255, 0.08) !important;
@@ -575,7 +587,12 @@
       body.light-bg {
          --text-main: #1a1a1a;
          --text-muted: #555555;
-         --bg-highlight: rgba(0, 0, 0, 0.05);
+         --bg-background: #f8fafc;
+         --bg-surface: #ffffff;
+         --bg-highlight: #f1f5f9;
+         --border-base: #e2e8f0;
+         --border-subtle: #cbd5e1;
+         --glass-bg: rgba(255, 255, 255, 0.9);
          --glass-border: rgba(0, 0, 0, 0.1);
          color: #1a1a1a;
       }
@@ -656,11 +673,11 @@
       <div class="glass-card p-3 sm:p-4">
         <h4 class="text-xs font-bold text-muted uppercase mb-3 sidebar-text hidden sm:block" data-i18n="quickActions">Quick Actions</h4>
         <div class="space-y-2 sm:space-y-2 flex sm:block gap-2 sm:gap-0">
-          <button onclick="runCommand('quality:gate')" title="Full Quality Gate" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-primary/10 text-primary rounded hover:bg-primary/20 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runQuality">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="hidden sm:inline sidebar-text">Full Quality Gate</span>
+          <button onclick="runCommand('quality:gate')" title="Full Quality Gate" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runQuality">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="hidden sm:inline sidebar-text">Full Quality Gate</span>
           </button>
-          <button onclick="runCommand('perf:lighthouse')" title="Perf Audit" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:bg-white/5 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runPerf">
-             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="hidden sm:inline sidebar-text">Perf Audit</span>
+          <button onclick="runCommand('perf:lighthouse')" title="Perf Audit" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runPerf">
+             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="hidden sm:inline sidebar-text">Perf Audit</span>
           </button>
         </div>
 
@@ -1112,7 +1129,20 @@
         criticalIssuesFound: 'Critical issues found',
         vsLast: 'vs last',
         project: 'Project',
-        loading: 'Loading...'
+        loading: 'Loading...',
+        // System Status
+        systemStatus: 'System Status',
+        connection: 'Connection',
+        avgLatency: 'Avg Latency',
+        uptime: 'Uptime',
+        lastCheck: 'Last Check',
+        online: 'Online',
+        offline: 'Offline',
+        checking: 'Checking',
+        current: 'Current',
+        minMax: 'Min / Max',
+        vsAvg: 'vs Avg',
+        avg: 'Avg'
       },
       'pt-BR': {
         dashboard: 'Painel',
@@ -1126,7 +1156,7 @@
         aiInsights: 'Insights IA',
         quickActions: 'Ações Rápidas',
         runQuality: 'Executar Qualidade',
-        runPerf: 'Executar Perf',
+        runPerf: 'Executar Performance',
         settings: 'Configurações',
         projectName: 'Nome do Projeto',
         publishedUrl: 'URL do Site Publicado',
@@ -1197,7 +1227,20 @@
         criticalIssuesFound: 'Problemas críticos encontrados',
         vsLast: 'vs anterior',
         project: 'Projeto',
-        loading: 'Carregando...'
+        loading: 'Carregando...',
+        // System Status
+        systemStatus: 'Status do Sistema',
+        connection: 'Conexão',
+        avgLatency: 'Latência Média',
+        uptime: 'Uptime',
+        lastCheck: 'Última Verificação',
+        online: 'Online',
+        offline: 'Offline',
+        checking: 'Verificando',
+        current: 'Atual',
+        minMax: 'Mín / Máx',
+        vsAvg: 'vs Média',
+        avg: 'Média'
       },
       es: {
         dashboard: 'Panel',
@@ -1282,7 +1325,20 @@
         criticalIssuesFound: 'Problemas críticos encontrados',
         vsLast: 'vs anterior',
         project: 'Proyecto',
-        loading: 'Cargando...'
+        loading: 'Cargando...',
+        // System Status
+        systemStatus: 'Estado del Sistema',
+        connection: 'Conexión',
+        avgLatency: 'Latencia Media',
+        uptime: 'Tiempo de Actividad',
+        lastCheck: 'Última Comprobación',
+        online: 'En Línea',
+        offline: 'Desconectado',
+        checking: 'Comprobando',
+        current: 'Actual',
+        minMax: 'Mín / Máx',
+        vsAvg: 'vs Prom.',
+        avg: 'Prom.'
       }
     };
 
@@ -2293,7 +2349,29 @@
           render: getScore(latest?.metrics?.scores?.render ?? latest?.scores?.render), 
           ux: getScore(latest?.metrics?.scores?.ux ?? latest?.scores?.ux), 
           a11y: getScore(latest?.metrics?.scores?.a11y ?? latest?.scores?.a11y), 
+          a11y: getScore(latest?.metrics?.scores?.a11y ?? latest?.scores?.a11y), 
           seo: getScore(latest?.metrics?.scores?.seo ?? latest?.scores?.seo) 
+      };
+
+      // Calculate averages for score cards
+      const allReports = globalReports || [];
+      const targetReports = filterByTarget(allReports);
+      const scoreStats = targetReports.reduce((acc, r) => {
+          const s = r.data?.metrics?.scores || r.data?.scores || {};
+          if(s.a11y) { acc.a11y.sum += s.a11y; acc.a11y.count++; }
+          if(s.ux) { acc.ux.sum += s.ux; acc.ux.count++; }
+          if(s.seo) { acc.seo.sum += s.seo; acc.seo.count++; }
+          return acc;
+      }, { 
+        a11y: {sum:0, count:0}, 
+        ux: {sum:0, count:0}, 
+        seo: {sum:0, count:0} 
+      });
+
+      const avgScores = {
+          a11y: scoreStats.a11y.count ? Math.round(scoreStats.a11y.sum / scoreStats.a11y.count) : 0,
+          ux: scoreStats.ux.count ? Math.round(scoreStats.ux.sum / scoreStats.ux.count) : 0,
+          seo: scoreStats.seo.count ? Math.round(scoreStats.seo.sum / scoreStats.seo.count) : 0
       };
 
       const prevScores = previous ? {
@@ -2372,6 +2450,8 @@
           }
           
           // --- Health Gate Card (RFC-0001 implementation) ---
+          const score = latest?.summary?.score || 0;
+          const perfTrend = getTrend(score, previous?.summary?.score);
           const evaluateHealthGate = () => {
               const perf = score || 0;
               const lcp = parseFloat(latest?.metrics?.lcp || 0);
@@ -2445,7 +2525,7 @@
                                   </li>
                               `).join('')}
                           </ul>
-                      ` : '<div class="flex items-center gap-2 text-xs text-emerald-400/90 bg-emerald-500/10 px-2 py-1.5 rounded"><span>✓</span><span>${t("allMetricsWithinTarget")}</span></div>'}
+                      ` : `<div class="flex items-center gap-2 text-xs text-emerald-400/90 bg-emerald-500/10 px-2 py-1.5 rounded"><span>✓</span><span>${t("allMetricsWithinTarget")}</span></div>`}
                   </div>
               `;
           };
@@ -2482,8 +2562,7 @@
               `;
           };
 
-          const score = latest?.summary?.score || 0;
-          const perfTrend = getTrend(score, previous?.summary?.score);
+
 
           // --- PREMIUM DASHBOARD LAYOUT ---
           container.innerHTML = `
@@ -2526,26 +2605,26 @@
                    
                    <!-- Compact System Stats -->
                    <div class="glass-card p-4 border border-white/5">
-                       <span class="text-[10px] text-muted uppercase tracking-wider block mb-3">System Status</span>
+                       <span class="text-[10px] text-muted uppercase tracking-wider block mb-3">${t('systemStatus')}</span>
                        <div class="grid grid-cols-2 gap-3">
                            <div class="flex flex-col">
                                <div class="flex items-center gap-2 mb-1">
                                    <span class="w-2 h-2 rounded-full ${isUp ? 'bg-success shadow-[0_0_8px_#10b981] animate-pulse' : 'bg-error'}"></span>
-                                   <span class="text-xs font-bold ${isUp ? 'text-success' : 'text-error'}">${isUp ? 'Online' : 'Offline'}</span>
+                                   <span class="text-xs font-bold ${isUp ? 'text-success' : 'text-error'}">${isUp ? t('online') : t('offline')}</span>
                                </div>
-                               <span class="text-[10px] text-muted">Connection</span>
+                               <span class="text-[10px] text-muted">${t('connection')}</span>
                            </div>
                            <div class="flex flex-col">
                                <span class="font-mono text-sm text-white font-bold">${avgLatency}ms</span>
-                               <span class="text-[10px] text-muted">Avg Latency</span>
+                               <span class="text-[10px] text-muted">${t('avgLatency')}</span>
                            </div>
                            <div class="flex flex-col">
                                <span class="font-mono text-sm text-white font-bold">${uptime}%</span>
-                               <span class="text-[10px] text-muted">Uptime</span>
+                               <span class="text-[10px] text-muted">${t('uptime')}</span>
                            </div>
                            <div class="flex flex-col">
-                               <span class="font-mono text-xs text-white/70">${lastCheck}</span>
-                               <span class="text-[10px] text-muted">Last Check</span>
+                               <span class="font-mono text-sm text-white font-bold">${lastCheck}</span>
+                               <span class="text-[10px] text-muted">${t('lastCheck')}</span>
                            </div>
                        </div>
                    </div>
@@ -2580,9 +2659,11 @@
                    </div>
                    
                    <!-- SECONDARY: Other Scores -->
-                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y))}
-                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux))}
-                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo))}
+                   <!-- SECONDARY: Other Scores -->
+                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y), avgScores.a11y)}
+                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux), avgScores.ux)}
+                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo), avgScores.seo)}
+               </div>
                </div>
 
                <!-- MAIN CHART & VITALS ROW -->
@@ -2672,12 +2753,11 @@
       renderTrendChart(filteredReports, currentPeriod); // Should work if chart.js loaded
     }
 
-    function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0) {
+    function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0, avg = 0) {
       const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '');
       const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
-      const trendBg = trend > 0 ? 'bg-success/20' : (trend < 0 ? 'bg-error/20' : 'bg-white/5');
       
-      // Radial gauge calculations - smaller for compact layout
+      // Radial gauge calculations
       const radius = 28;
       const circumference = 2 * Math.PI * radius;
       const progress = score === null ? 0 : score;
@@ -2686,11 +2766,16 @@
       // Color based on score
       const gaugeColor = score === null ? '#64748b' : (score >= 90 ? '#10b981' : (score >= 50 ? '#f59e0b' : '#ef4444'));
       
+      // Comparison vs Average
+      const diffAvg = score - avg;
+      const diffAvgIcon = diffAvg > 0 ? '↑' : (diffAvg < 0 ? '↓' : '');
+      const diffAvgColor = diffAvg > 0 ? 'text-success' : (diffAvg < 0 ? 'text-error' : 'text-muted');
+
       return `
-        <div class="glass-card p-3 sm:p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02] flex flex-col items-center text-center" style="animation: fadeInUp 0.5s ease-out">
+        <div class="glass-card p-3 sm:p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02] flex flex-col items-center text-center">
           <!-- Radial Gauge (centered) -->
           <div class="relative mb-2">
-            <svg width="64" height="64" class="score-gauge">
+            <svg width="64" height="64" viewBox="0 0 64 64" class="score-gauge">
               <circle class="gauge-bg" cx="32" cy="32" r="${radius}" 
                       fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
               <circle class="gauge-fill" cx="32" cy="32" r="${radius}" 
@@ -2700,21 +2785,27 @@
                       stroke-dashoffset="${offset}"
                       style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
             </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center">
-              <span class="text-lg font-bold ${colorClass}">${score === null ? '-' : score}</span>
+            <div class="absolute inset-0 flex items-center justify-center">
+              <span class="text-lg font-bold ${colorClass} leading-none">${score === null ? '-' : score}</span>
             </div>
           </div>
           
-          <!-- Label (centered, no wrap) -->
-          <div class="text-[9px] sm:text-[10px] text-muted font-bold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-1">${title}</div>
+          <!-- Label -->
+          <div class="text-[9px] sm:text-[10px] text-muted font-bold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-1 mb-2">${title}</div>
           
-          <!-- Trend -->
-          ${trend !== 0 ? `
-            <div class="flex items-center gap-1 mt-1">
-              <span class="text-xs font-bold ${trendColor}">${trendIcon}${Math.abs(trend)}</span>
-              <span class="text-[8px] text-muted">vs last</span>
-            </div>
-          ` : '<div class="text-[9px] text-success/80 mt-1">✓ Stable</div>'}
+          <!-- Stats Row -->
+          <div class="flex items-center justify-center gap-3 w-full border-t border-white/5 pt-2">
+             <!-- Trend -->
+             <div class="flex flex-col items-center">
+                <span class="text-[10px] font-bold ${trendColor}">${trendIcon} ${Math.abs(trend)}%</span> 
+                <span class="text-[8px] text-muted whitespace-nowrap">${t('vsLast')}</span>
+             </div>
+             <!-- Avg -->
+             <div class="flex flex-col items-center pl-3 border-l border-white/5">
+                <span class="text-[10px] font-bold text-white/70">${avg}%</span>
+                <span class="text-[8px] text-muted whitespace-nowrap">${t('avg')}</span>
+             </div>
+          </div>
         </div>`;
     }
     
@@ -4095,6 +4186,7 @@
 
       container.innerHTML = `
         ${headerHtml}
+        <div id="reports-stats" class="mb-6"></div>
         <div id="reports-list" class="space-y-2">
            <div class="text-muted animate-pulse">Loading reports...</div>
         </div>
@@ -4116,6 +4208,38 @@
             }
           }
         })));
+
+        // Calculate and Render Stats
+        if (filteredReports.length > 0) {
+            const stats = filteredReports.reduce((acc, r) => {
+                const cats = r.data?.categories || {};
+                acc.perf += (cats.performance?.score || 0) * 100;
+                acc.a11y += (cats.accessibility?.score || 0) * 100;
+                acc.seo += (cats.seo?.score || 0) * 100;
+                return acc;
+            }, { perf: 0, a11y: 0, seo: 0 });
+            
+            const count = filteredReports.length;
+            const avg = {
+                perf: Math.round(stats.perf / count),
+                a11y: Math.round(stats.a11y / count),
+                seo: Math.round(stats.seo / count)
+            };
+            
+            document.getElementById('reports-stats').innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="glass-card p-4 text-center">
+                        <div class="text-2xl font-bold font-mono text-white">${count}</div>
+                        <div class="text-xs text-muted">Total Reports</div>
+                    </div>
+                    ${renderMetricCard(t('avgPerformance'), avg.perf).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                    ${renderMetricCard(t('avgAccessibility'), avg.a11y).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                    ${renderMetricCard(t('avgSeo'), avg.seo).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                </div>
+            `;
+        } else {
+            document.getElementById('reports-stats').innerHTML = '';
+        }
         
         new DataTable({
              id: 'reports',

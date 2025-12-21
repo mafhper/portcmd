@@ -124,5 +124,16 @@
   "comingSoon": "Próximamente",
   "contact": "Contacto",
   "contactDesc": "¿Interesado en colaborar o tienes preguntas sobre PortCmd?",
-  "touch": "Ponerse en contacto"
+  "touch": "Ponerse en contacto",
+  "appFunctions": "Funciones de la Aplicación",
+  "appFunc1": "Gestión de Puertos",
+  "appFunc1Desc": "Visualice y termine procesos activos que ocupan puertos.",
+  "appFunc2": "Panel de Desarrollo",
+  "appFunc2Desc": "Vista centralizada para todos sus servicios en ejecución.",
+  "appFunc3": "Organizador de Proyectos",
+  "appFunc3Desc": "Mantenga sus repositorios y scripts organizados.",
+  "qcPromoTitle": "Impulsado por Quality Core",
+  "qcPromoDesc": "Construido para durar. PortCmd utiliza Quality Core para asegurar rendimiento y seguridad en cada característica.",
+  "qcPromoButton": "Conocer Quality Core",
+  "visitSite": "Visitar Sitio"
 }
