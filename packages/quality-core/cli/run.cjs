@@ -84,8 +84,8 @@ const phases = [
         name: 'Quality Audits',
         parallel: true,
         checks: [
-            { name: 'Quality: APP', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=app']) },
-            { name: 'Quality: PROMO', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=promo']) },
+            { name: 'Quality: APP', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=app'], { env: { ...process.env, PORT: '4174' } }) },
+            { name: 'Quality: PROMO', domain: 'quality', fn: () => runCommand('node', ['packages/quality-core/cli/quality.cjs', '--target=promo'], { env: { ...process.env, PORT: '4175' } }) },
         ]
     }
 ];

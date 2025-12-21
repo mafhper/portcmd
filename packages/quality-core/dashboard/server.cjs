@@ -12,6 +12,9 @@ const { execSync } = require('child_process');
 const { marked } = require('marked');
 const util = require('util');
 
+// Load environment variables from .env.local
+require('dotenv').config({ path: path.join(process.cwd(), '.env.local') });
+
 // ============================================================================ 
 // CONFIGURATION
 // ============================================================================ 
@@ -528,6 +531,40 @@ async function handleGitPush(req, res) {
 }
 
 // ============================================================================ 
+// ENVIRONMENT CONFIG HANDLER
+// ============================================================================ 
+
+/**
+ * Returns sanitized environment variables to the dashboard.
+ * Env vars have priority over localStorage in the dashboard.
+ */
+async function handleEnvConfig(req, res) {
+    // Only expose VITE_ prefixed env vars (safe for client)
+    const envConfig = {
+        geminiKey: process.env.VITE_GEMINI_API_KEY || '',
+        geminiKey2: process.env.VITE_GEMINI_API_KEY_2 || '',
+        geminiKey3: process.env.VITE_GEMINI_API_KEY_3 || '',
+        pagespeedKey: process.env.VITE_PAGESPEED_API_KEY || '',
+        githubToken: process.env.VITE_GITHUB_TOKEN || '',
+        projectName: process.env.VITE_PROJECT_NAME || '',
+        monitorUrl: process.env.VITE_MONITOR_URL || '',
+        appUrl: process.env.VITE_APP_URL || '',
+        promoUrl: process.env.VITE_PROMO_URL || '',
+        githubRepo: process.env.VITE_GITHUB_REPO || '',
+    };
+
+    // Check if any values are set
+    const hasEnvConfig = Object.values(envConfig).some(v => v !== '');
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+        success: true,
+        hasEnvConfig,
+        config: envConfig
+    }));
+}
+
+// ============================================================================ 
 // API ROUTES
 // ============================================================================ 
 
@@ -652,6 +689,9 @@ async function handleRequest(req, res) {
     if (url.pathname === '/api/git/status') return handleGitStatus(req, res);
     if (url.pathname === '/api/git/commit' && req.method === 'POST') return handleGitCommit(req, res);
     if (url.pathname === '/api/git/push' && req.method === 'POST') return handleGitPush(req, res);
+
+    // Environment configuration endpoint (used by dashboard to get env settings)
+    if (url.pathname === '/api/env') return handleEnvConfig(req, res);
 
     // Static files
     return handleStaticFile(req, res);

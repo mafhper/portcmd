@@ -570,6 +570,23 @@
          50% { background-position: 100% 50%; }
          100% { background-position: 0% 50%; }
       }
+      
+      /* Light background text contrast */
+      body.light-bg {
+         --text-main: #1a1a1a;
+         --text-muted: #555555;
+         --bg-highlight: rgba(0, 0, 0, 0.05);
+         --glass-border: rgba(0, 0, 0, 0.1);
+         color: #1a1a1a;
+      }
+      body.light-bg .text-white { color: #1a1a1a !important; }
+      body.light-bg .text-muted { color: #555555 !important; }
+      body.light-bg .glass-card { 
+         background: rgba(255, 255, 255, 0.8) !important; 
+         border-color: rgba(0, 0, 0, 0.1) !important;
+      }
+      body.light-bg .sidebar-link { color: #333 !important; }
+      body.light-bg .sidebar-link.active { color: var(--color-primary) !important; }
 
       /* Metric Card Updates */
   </style>
@@ -580,7 +597,7 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden md:hidden transition-opacity duration-300"></div>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 bg-surface/80 backdrop-blur-xl border-r border-white/5 flex flex-col z-50 shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full">
+  <aside id="sidebar" class="w-64 border-r border-white/5 flex flex-col z-50 shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full" style="background: var(--glass-bg, rgba(15,15,15,0.8)); backdrop-filter: blur(var(--glass-blur, 12px)); -webkit-backdrop-filter: blur(var(--glass-blur, 12px));">
     <!-- Header -->
     <div class="p-6 sidebar-header flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -615,13 +632,13 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span class="sidebar-text">Quality Scans</span>
       </button>
       <button onclick="switchTab('monitor')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="siteMonitor">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg><span class="sidebar-text">Site Monitor</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="sidebar-text">Site Monitor</span>
       </button>
       <button onclick="switchTab('pagespeed')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="pageSpeed">
-         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">PageSpeed</span>
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">PageSpeed</span>
       </button>
       <button onclick="switchTab('git')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="gitDeploy">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg><span class="sidebar-text">Git & Deploy</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 21V9a9 9 0 009 9"/></svg><span class="sidebar-text">Git &amp; Deploy</span>
       </button>
       <button onclick="switchTab('reports')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="lighthouse">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span class="sidebar-text">Lighthouse</span>
@@ -630,20 +647,20 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="sidebar-text">Logs</span>
       </button>
       <button onclick="switchTab('insights')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="aiInsights">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg><span class="sidebar-text">AI Insights</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg><span class="sidebar-text">AI Insights</span>
       </button>
     </nav>
 
     <!-- Footer Actions -->
     <div class="p-4 border-t border-white/5 space-y-2">
-      <div class="glass-card p-4">
-        <h4 class="text-xs font-bold text-muted uppercase mb-3 sidebar-text" data-i18n="quickActions">Quick Actions</h4>
-        <div class="space-y-2">
-          <button onclick="runCommand('quality:gate')" class="w-full text-left px-3 py-2 text-xs font-medium bg-primary/10 text-primary rounded hover:bg-primary/20 transition flex items-center gap-2" data-i18n="runQuality">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">Full Quality Gate</span>
+      <div class="glass-card p-3 sm:p-4">
+        <h4 class="text-xs font-bold text-muted uppercase mb-3 sidebar-text hidden sm:block" data-i18n="quickActions">Quick Actions</h4>
+        <div class="space-y-2 sm:space-y-2 flex sm:block gap-2 sm:gap-0">
+          <button onclick="runCommand('quality:gate')" title="Full Quality Gate" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-primary/10 text-primary rounded hover:bg-primary/20 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runQuality">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="hidden sm:inline sidebar-text">Full Quality Gate</span>
           </button>
-          <button onclick="runCommand('perf:lighthouse')" class="w-full text-left px-3 py-2 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:bg-white/5 transition flex items-center gap-2" data-i18n="runPerf">
-             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">Perf Audit</span>
+          <button onclick="runCommand('perf:lighthouse')" title="Perf Audit" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-surfaceHighlight text-muted rounded hover:bg-white/5 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runPerf">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="hidden sm:inline sidebar-text">Perf Audit</span>
           </button>
         </div>
 
@@ -657,7 +674,7 @@
   </aside>
 
   <!-- Main Content -->
-  <main class="flex-1 overflow-auto relative bg-background">
+  <main class="flex-1 overflow-auto relative">
     <div class="max-w-7xl mx-auto p-8 relative z-10" id="content-area">
       <!-- Content injected via JS -->
     </div>
@@ -800,11 +817,18 @@
                 
                 <div>
                    <label class="block text-sm font-medium text-muted mb-2">Background Style</label>
-                   <select id="theme-bg-style" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none" onchange="previewTheme()">
+                   <select id="theme-bg-style" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none" onchange="toggleBgColorPicker(); previewTheme()">
                         <option value="default">Default (Subtle Gradient)</option>
                         <option value="solid">Solid Color (Flat)</option>
                         <option value="animated">Animated (Flowing)</option>
                    </select>
+                </div>
+                <div id="solid-color-picker-container" class="hidden">
+                   <label class="block text-sm font-medium text-muted mb-2">Background Color</label>
+                   <div class="flex items-center gap-3">
+                      <input type="color" id="theme-bg-color" value="#0a0a0a" class="w-12 h-10 cursor-pointer rounded border border-white/10" oninput="previewTheme()">
+                      <span id="val-bg-color" class="text-xs font-mono text-white">#0a0a0a</span>
+                   </div>
                 </div>
             </div>
         </div>
@@ -899,6 +923,7 @@
     let monitorPeriod = '1h';
     let pingHistory = JSON.parse(localStorage.getItem('pingHistory') || '[]');
     const API_BASE = '/api';
+    let settings = null; // Will be initialized after getSettings is defined
 
     // --- Toast Notification System ---
     function showToast(message, type = 'info', duration = 4000) {
@@ -944,20 +969,58 @@
     }
 
 
-    // --- Settings (localStorage) ---
+    // --- Settings (localStorage + env config) ---
+    // Env vars from .env.local have priority over localStorage
+    let envConfig = null; // Will be populated from /api/env
+
     function getSettings() {
       try {
-        return JSON.parse(localStorage.getItem('quality_dashboard_settings') || '{}');
+        const localSettings = JSON.parse(localStorage.getItem('quality_dashboard_settings') || '{}');
+        
+        // If env config loaded, merge with env taking priority
+        if (envConfig && envConfig.hasEnvConfig) {
+          const env = envConfig.config;
+          return {
+            ...localSettings,
+            // Env vars override localStorage values if they exist
+            geminiKey: env.geminiKey || localSettings.geminiKey,
+            pagespeedKey: env.pagespeedKey || localSettings.pagespeedKey,
+            githubToken: env.githubToken || localSettings.githubToken,
+            projectName: env.projectName || localSettings.projectName,
+            monitorUrl: env.monitorUrl || localSettings.monitorUrl,
+            githubRepo: env.githubRepo || localSettings.githubRepo,
+          };
+        }
+        return localSettings;
       } catch { return {}; }
     }
     
     function saveSettingsData(data) {
       localStorage.setItem('quality_dashboard_settings', JSON.stringify(data));
+      settings = data; // Update global variable
+    }
+
+    // Fetch env config from server
+    async function loadEnvConfig() {
+      try {
+        const res = await fetch(`${API_BASE}/env`);
+        const json = await res.json();
+        if (json.success) {
+          envConfig = json;
+          console.log('[Settings] Env config loaded:', json.hasEnvConfig ? 'Found' : 'Empty');
+        }
+      } catch (e) {
+        console.warn('[Settings] Could not load env config:', e.message);
+      }
     }
 
     // --- Init ---
-    document.addEventListener('DOMContentLoaded', () => {
-      const settings = getSettings();
+    document.addEventListener('DOMContentLoaded', async () => {
+      // First load env config from server
+      await loadEnvConfig();
+      
+      // Then get merged settings (env has priority)
+      settings = getSettings(); 
       loadSettings();
       initI18n(); // Initialize i18n
       applyTheme(settings); // Apply visual theme
@@ -1025,7 +1088,31 @@
         lighthouseReportsSubtitle: 'Archive of performance and quality reports',
         logsSubtitle: 'System logs and execution history',
         aiInsightsSubtitle: 'Deep analysis powered by Gemini 1.5 Flash',
-        gitDeploySubtitle: 'Commit and push changes to your repository'
+        gitDeploySubtitle: 'Commit and push changes to your repository',
+        // Health Gate & Dashboard
+        healthGate: 'Health Gate',
+        allTargetsMet: 'All targets met',
+        minorIssues: 'Minor issues',
+        actionRequired: 'Action required',
+        excellent: 'Excellent',
+        good: 'Good',
+        needsWork: 'Needs work',
+        critical: 'Critical',
+        stable: 'Stable',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Other Metrics',
+        performanceTrajectory: 'Performance Trajectory',
+        qualityScoresOverTime: 'Quality scores over time',
+        issuesAndAlerts: 'Issues & Alerts',
+        noCriticalIssues: 'No critical issues detected',
+        allSystemsNormal: 'All systems operating normally',
+        allMetricsWithinTarget: 'All metrics within target',
+        allSystemsHealthy: 'All systems healthy',
+        minorIssuesDetected: 'Minor issues detected',
+        criticalIssuesFound: 'Critical issues found',
+        vsLast: 'vs last',
+        project: 'Project',
+        loading: 'Loading...'
       },
       'pt-BR': {
         dashboard: 'Painel',
@@ -1086,7 +1173,31 @@
         lighthouseReportsSubtitle: 'Arquivo de relatórios de desempenho e qualidade',
         logsSubtitle: 'Logs do sistema e histórico de execução',
         aiInsightsSubtitle: 'Análise profunda com Gemini 1.5 Flash',
-        gitDeploySubtitle: 'Confirme e envie alterações para o seu repositório'
+        gitDeploySubtitle: 'Confirme e envie alterações para o seu repositório',
+        // Health Gate & Dashboard
+        healthGate: 'Health Gate',
+        allTargetsMet: 'Todas as metas atingidas',
+        minorIssues: 'Problemas menores',
+        actionRequired: 'Ação necessária',
+        excellent: 'Excelente',
+        good: 'Bom',
+        needsWork: 'Precisa melhorar',
+        critical: 'Crítico',
+        stable: 'Estável',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Outras Métricas',
+        performanceTrajectory: 'Trajetória de Performance',
+        qualityScoresOverTime: 'Scores de qualidade ao longo do tempo',
+        issuesAndAlerts: 'Problemas e Alertas',
+        noCriticalIssues: 'Nenhum problema crítico detectado',
+        allSystemsNormal: 'Todos os sistemas operando normalmente',
+        allMetricsWithinTarget: 'Todas as métricas dentro do alvo',
+        allSystemsHealthy: 'Todos os sistemas saudáveis',
+        minorIssuesDetected: 'Problemas menores detectados',
+        criticalIssuesFound: 'Problemas críticos encontrados',
+        vsLast: 'vs anterior',
+        project: 'Projeto',
+        loading: 'Carregando...'
       },
       es: {
         dashboard: 'Panel',
@@ -1147,7 +1258,31 @@
         lighthouseReportsSubtitle: 'Archivo de informes de rendimiento y calidad',
         logsSubtitle: 'Registros del sistema e historial de ejecución',
         aiInsightsSubtitle: 'Análisis profundo con Gemini 1.5 Flash',
-        gitDeploySubtitle: 'Confirma y envía cambios a tu repositorio'
+        gitDeploySubtitle: 'Confirma y envía cambios a tu repositorio',
+        // Health Gate & Dashboard
+        healthGate: 'Health Gate',
+        allTargetsMet: 'Todas las metas cumplidas',
+        minorIssues: 'Problemas menores',
+        actionRequired: 'Acción requerida',
+        excellent: 'Excelente',
+        good: 'Bueno',
+        needsWork: 'Necesita mejora',
+        critical: 'Crítico',
+        stable: 'Estable',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Otras Métricas',
+        performanceTrajectory: 'Trayectoria de Rendimiento',
+        qualityScoresOverTime: 'Puntuaciones de calidad a lo largo del tiempo',
+        issuesAndAlerts: 'Problemas y Alertas',
+        noCriticalIssues: 'No se detectaron problemas críticos',
+        allSystemsNormal: 'Todos los sistemas operando normalmente',
+        allMetricsWithinTarget: 'Todas las métricas dentro del objetivo',
+        allSystemsHealthy: 'Todos los sistemas saludables',
+        minorIssuesDetected: 'Problemas menores detectados',
+        criticalIssuesFound: 'Problemas críticos encontrados',
+        vsLast: 'vs anterior',
+        project: 'Proyecto',
+        loading: 'Cargando...'
       }
     };
 
@@ -1199,7 +1334,7 @@
 
 
     function initI18n() {
-      const settings = getSettings();
+      // Use global settings
       // Auto-detect if not set
       if (!settings.language) {
         const navLang = navigator.language;
@@ -1336,12 +1471,53 @@
         
         // Background Style
         const bgStyle = settings.themeBgStyle || 'default';
-        document.body.classList.remove('bg-solid', 'bg-animated');
-        if (bgStyle === 'solid') document.body.classList.add('bg-solid');
+        const bgColor = settings.themeBgColor || '#0a0a0a';
+        document.body.classList.remove('bg-solid', 'bg-animated', 'light-bg');
+        
+        if (bgStyle === 'solid') {
+            document.body.classList.add('bg-solid');
+            document.body.style.backgroundColor = bgColor;
+            
+            // Auto adjust text color based on background luminosity
+            const isLightBg = getColorLuminosity(bgColor) > 0.5;
+            if (isLightBg) {
+                document.body.classList.add('light-bg');
+            }
+        } else {
+            document.body.style.backgroundColor = '';
+        }
         if (bgStyle === 'animated') document.body.classList.add('bg-animated');
         
         const bgSelect = document.getElementById('theme-bg-style');
-        if (bgSelect) bgSelect.value = bgStyle;
+        if (bgSelect) {
+            bgSelect.value = bgStyle;
+            toggleBgColorPicker(); // Sync visibility
+        }
+        
+        const bgColorInput = document.getElementById('theme-bg-color');
+        if (bgColorInput) {
+            bgColorInput.value = bgColor;
+            const valEl = document.getElementById('val-bg-color');
+            if (valEl) valEl.innerText = bgColor;
+        }
+    }
+    
+    // Calculate relative luminosity of a color (0 = dark, 1 = light)
+    function getColorLuminosity(hex) {
+        const r = parseInt(hex.slice(1, 3), 16) / 255;
+        const g = parseInt(hex.slice(3, 5), 16) / 255;
+        const b = parseInt(hex.slice(5, 7), 16) / 255;
+        // Relative luminance formula
+        const toLinear = (c) => c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+        return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+    }
+    
+    function toggleBgColorPicker() {
+        const bgStyle = document.getElementById('theme-bg-style')?.value;
+        const container = document.getElementById('solid-color-picker-container');
+        if (container) {
+            container.classList.toggle('hidden', bgStyle !== 'solid');
+        }
     }
 
     function setThemeMode(mode) {
@@ -1356,12 +1532,18 @@
         const opacity = document.getElementById('theme-glass-opacity').value;
         const blur = document.getElementById('theme-glass-blur').value;
         const bgStyle = document.getElementById('theme-bg-style').value;
+        const bgColor = document.getElementById('theme-bg-color')?.value || '#0a0a0a';
+        
+        // Update color display
+        const valBgColor = document.getElementById('val-bg-color');
+        if (valBgColor) valBgColor.innerText = bgColor;
         
         const settings = getSettings();
         settings.themeColor = color;
         settings.glassOpacity = opacity;
         settings.glassBlur = blur;
         settings.themeBgStyle = bgStyle;
+        settings.themeBgColor = bgColor;
         
         applyTheme(settings); // Preview directly
     }
@@ -1862,7 +2044,8 @@
         themeColor: document.getElementById('theme-primary-color').value,
         glassOpacity: document.getElementById('theme-glass-opacity').value,
         glassBlur: document.getElementById('theme-glass-blur').value,
-        themeBgStyle: document.getElementById('theme-bg-style').value
+        themeBgStyle: document.getElementById('theme-bg-style').value,
+        themeBgColor: document.getElementById('theme-bg-color')?.value || '#0a0a0a'
       };
       saveSettingsData(data);
       setLanguage(data.language); // Apply immediately
@@ -2146,7 +2329,7 @@
       const getColor = (s) => s === null ? 'text-muted' : (s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error'));
       const getBg = (s) => s === null ? 'bg-white/5' : (s >= 90 ? 'bg-success' : (s >= 50 ? 'bg-warning' : 'bg-error'));
 
-      const settings = getSettings();
+      // Use global settings (initialized at DOMContentLoaded)
       const projectName = settings.projectName || 'Quality Core';
 
       const headerActions = `
@@ -2188,6 +2371,84 @@
              else { healthColor = 'text-error'; healthLabel = 'Critical'; }
           }
           
+          // --- Health Gate Card (RFC-0001 implementation) ---
+          const evaluateHealthGate = () => {
+              const perf = score || 0;
+              const lcp = parseFloat(latest?.metrics?.lcp || 0);
+              const cls = parseFloat(latest?.metrics?.cls || 0);
+              const inp = parseFloat(latest?.metrics?.inp || 0);
+              
+              const reasons = [];
+              let status = 'PASS';
+              
+              // Core Web Vitals check
+              if (lcp > 2.5) {
+                  reasons.push({ code: 'LCP_EXCEEDED', text: `LCP ${lcp.toFixed(2)}s > 2.5s target`, severity: 'critical' });
+              }
+              if (cls > 0.1) {
+                  reasons.push({ code: 'CLS_EXCEEDED', text: `CLS ${cls.toFixed(2)} > 0.1 target`, severity: 'critical' });
+              }
+              if (inp > 200) {
+                  reasons.push({ code: 'INP_EXCEEDED', text: `INP ${inp}ms > 200ms target`, severity: 'critical' });
+              }
+              
+              // Performance score check
+              if (perf < 60) {
+                  reasons.push({ code: 'PERF_CRITICAL', text: `Performance score ${perf} is critical`, severity: 'critical' });
+              } else if (perf < 80) {
+                  reasons.push({ code: 'PERF_LOW', text: `Performance score ${perf} below 80 target`, severity: 'warning' });
+              }
+              
+              // Determine status
+              const hasCritical = reasons.some(r => r.severity === 'critical');
+              const hasWarning = reasons.some(r => r.severity === 'warning');
+              
+              if (hasCritical || perf < 60) status = 'FAIL';
+              else if (hasWarning || perf < 80) status = 'WARN';
+              else status = 'PASS';
+              
+              return { status, reasons, summary: status === 'PASS' ? t('allSystemsHealthy') : (status === 'WARN' ? t('minorIssuesDetected') : t('criticalIssuesFound')) };
+          };
+          
+          const healthGate = evaluateHealthGate();
+          
+          const renderHealthGate = (gate) => {
+              const statusColors = {
+                  PASS: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/30', text: 'text-emerald-400', dot: 'bg-emerald-500', icon: '✓' },
+                  WARN: { bg: 'bg-amber-500/10', border: 'border-amber-500/30', text: 'text-amber-400', dot: 'bg-amber-500', icon: '!' },
+                  FAIL: { bg: 'bg-red-500/10', border: 'border-red-500/30', text: 'text-red-400', dot: 'bg-red-500', icon: '✗' }
+              };
+              const c = statusColors[gate.status];
+              
+              return `
+                  <div class="glass-card p-4 lg:p-5 ${c.bg} ${c.border} border transition-all duration-300 hover:shadow-lg">
+                      <div class="flex items-center justify-between mb-3">
+                          <div class="flex items-center gap-3">
+                              <span class="w-4 h-4 rounded-full ${c.dot} shadow-[0_0_12px_currentColor] animate-pulse"></span>
+                              <div>
+                                  <span class="text-xl font-bold ${c.text}">${gate.status}</span>
+                                  <p class="text-[10px] text-muted">${gate.status === 'PASS' ? t('allTargetsMet') : (gate.status === 'WARN' ? t('minorIssues') : t('actionRequired'))}</p>
+                              </div>
+                          </div>
+                          <div class="text-right">
+                              <span class="text-xs text-muted uppercase tracking-wider block">${t('healthGate')}</span>
+                              <span class="text-[9px] text-muted/50" title="PASS: All Core Web Vitals OK and Performance ≥ 80&#10;WARN: Minor issues with non-critical metrics&#10;FAIL: Core Web Vitals exceeded or Performance < 60">ⓘ What's this?</span>
+                          </div>
+                      </div>
+                      <p class="text-sm text-white/90 mb-3 font-medium">${gate.summary}</p>
+                      ${gate.reasons.length > 0 ? `
+                          <ul class="space-y-1.5">
+                              ${gate.reasons.slice(0, 3).map(r => `
+                                  <li class="text-xs ${r.severity === 'critical' ? 'text-red-400 bg-red-500/10' : 'text-amber-400 bg-amber-500/10'} flex items-center gap-2 px-2 py-1 rounded">
+                                      <span class="text-sm">${r.severity === 'critical' ? '✗' : '!'}</span>
+                                      <span>${r.text}</span>
+                                  </li>
+                              `).join('')}
+                          </ul>
+                      ` : '<div class="flex items-center gap-2 text-xs text-emerald-400/90 bg-emerald-500/10 px-2 py-1.5 rounded"><span>✓</span><span>${t("allMetricsWithinTarget")}</span></div>'}
+                  </div>
+              `;
+          };
 
           // --- Helper for Vitals with enhanced indicators ---
           const renderVitalBar = (label, value, threshold, unit='s') => {
@@ -2203,18 +2464,18 @@
               const statusLabel = isGood ? 'Good' : (isModerate ? 'Needs Improvement' : 'Poor');
               
               return `
-                  <div class="py-1">
-                      <div class="flex justify-between items-end mb-1">
+                  <div class="py-2">
+                      <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end mb-1.5 gap-0.5">
                           <div class="flex items-center gap-1.5">
-                            <span class="text-[9px] ${textColor}">${statusIcon}</span>
-                            <span class="text-[10px] text-muted tracking-wide">${label}</span>
+                            <span class="text-[10px] sm:text-xs ${textColor}">${statusIcon}</span>
+                            <span class="text-[11px] sm:text-xs text-muted/90 font-medium">${label}</span>
                           </div>
                           <div class="text-right">
-                            <span class="text-[10px] font-mono font-bold ${textColor}">${numVal.toFixed(2)}${unit}</span>
-                            <span class="text-[8px] text-muted ml-1">(target: ≤${threshold}${unit})</span>
+                            <span class="text-[11px] sm:text-sm font-mono font-bold ${textColor}">${numVal.toFixed(2)}${unit}</span>
+                            <span class="text-[9px] sm:text-[10px] text-muted ml-1">(target: ≤${threshold}${unit})</span>
                           </div>
                       </div>
-                      <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                      <div class="h-1.5 bg-white/10 rounded-full overflow-hidden">
                           <div class="h-full ${color} shadow-[0_0_8px_currentColor] transition-all duration-500" style="width: ${width}%"></div>
                       </div>
                   </div>
@@ -2227,67 +2488,98 @@
           // --- PREMIUM DASHBOARD LAYOUT ---
           container.innerHTML = `
             <!-- HEADER -->
-            <div class="mb-8 p-1">
-               <div class="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
-                  <div class="flex items-center gap-3">
-                    <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                    <h2 class="text-sm font-bold text-blue-300 tracking-[0.2em] uppercase">Telemetria Ao Vivo</h2>
+            <div class="mb-6 lg:mb-8">
+               <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 border-b border-white/5 pb-4">
+                  <!-- Left: Project Identity -->
+                  <div class="flex items-center gap-4">
+                     <div class="flex flex-col">
+                        <span class="text-[10px] text-muted uppercase tracking-wider">${t('project')}</span>
+                        <h1 class="text-lg sm:text-xl font-bold text-white">${settings.projectName || 'Quality Core'}</h1>
+                     </div>
+                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full ${healthGate.status === 'PASS' ? 'bg-emerald-500/10 border-emerald-500/30' : (healthGate.status === 'WARN' ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30')} border">
+                        <span class="w-2 h-2 rounded-full ${healthGate.status === 'PASS' ? 'bg-emerald-500' : (healthGate.status === 'WARN' ? 'bg-amber-500' : 'bg-red-500')} animate-pulse"></span>
+                        <span class="text-xs font-bold ${healthGate.status === 'PASS' ? 'text-emerald-400' : (healthGate.status === 'WARN' ? 'text-amber-400' : 'text-red-400')}">${healthGate.status}</span>
+                     </div>
                   </div>
-                  <div class="flex items-center gap-3">
+                  
+                  <!-- Right: Controls -->
+                  <div class="flex items-center gap-3 flex-wrap">
                     <select id="dashboard-target-filter" onchange="setTarget(this.value); loadDashboard()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary">
-                      <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
-                      <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
-                      <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+                      <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All Targets</option>
+                      <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>Application</option>
+                      <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo Site</option>
                     </select>
-                    <div class="text-xs text-muted font-mono bg-white/5 px-2 py-1 rounded">
-                        <span class="text-white/50">Lighthouse v${latest?.lighthouseVersion || '13.0.1'}</span> <span class="mx-2 text-white/20">|</span> <span id="live-clock" class="text-blue-300 font-bold">Loading...</span>
+                    <div class="text-[10px] text-muted font-mono bg-white/5 px-2 py-1 rounded flex items-center gap-2">
+                        <span class="hidden sm:inline text-white/40">Lighthouse ${latest?.lighthouseVersion ? 'v' + latest.lighthouseVersion : ''}</span>
+                        <span class="hidden sm:inline text-white/20">•</span>
+                        <span id="live-clock" class="text-blue-300 font-medium">${t('loading')}</span>
                     </div>
                   </div>
                </div>
 
-               <!-- SYSTEM HEALTH BAR -->
-               <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 p-4 bg-white/5 border border-white/5 rounded-xl backdrop-blur-sm relative overflow-hidden">
-                    <div class="absolute inset-0 bg-blue-500/5 blur-3xl"></div>
-                    <div class="flex flex-col relative z-10">
-                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">System Status</span>
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full ${isUp ? 'bg-success shadow-[0_0_8px_#10b981] animate-pulse' : 'bg-error shadow-[0_0_8px_#ef4444]'}"></span>
-                            <span class="font-bold text-sm ${isUp ? 'text-success' : 'text-error'}">${isUp ? 'Online' : 'Offline'}</span>
-                        </div>
-                    </div>
-                    <div class="flex flex-col relative z-10">
-                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Avg Latency</span>
-                        <span class="font-mono text-sm text-white">${avgLatency}ms</span>
-                    </div>
-                     <div class="flex flex-col relative z-10">
-                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Uptime (20 checks)</span>
-                        <span class="font-mono text-sm text-white">${uptime}%</span>
-                    </div>
-                    <div class="flex flex-col relative z-10">
-                        <span class="text-[10px] text-muted uppercase tracking-wider mb-1">Last Check</span>
-                        <span class="font-mono text-xs text-white/70 mt-0.5">${lastCheck}</span>
-                    </div>
+               <!-- HEALTH GATE + SYSTEM STATS -->
+               <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                   <!-- Health Gate (Primary) -->
+                   <div class="lg:col-span-2">
+                       ${renderHealthGate(healthGate)}
+                   </div>
+                   
+                   <!-- Compact System Stats -->
+                   <div class="glass-card p-4 border border-white/5">
+                       <span class="text-[10px] text-muted uppercase tracking-wider block mb-3">System Status</span>
+                       <div class="grid grid-cols-2 gap-3">
+                           <div class="flex flex-col">
+                               <div class="flex items-center gap-2 mb-1">
+                                   <span class="w-2 h-2 rounded-full ${isUp ? 'bg-success shadow-[0_0_8px_#10b981] animate-pulse' : 'bg-error'}"></span>
+                                   <span class="text-xs font-bold ${isUp ? 'text-success' : 'text-error'}">${isUp ? 'Online' : 'Offline'}</span>
+                               </div>
+                               <span class="text-[10px] text-muted">Connection</span>
+                           </div>
+                           <div class="flex flex-col">
+                               <span class="font-mono text-sm text-white font-bold">${avgLatency}ms</span>
+                               <span class="text-[10px] text-muted">Avg Latency</span>
+                           </div>
+                           <div class="flex flex-col">
+                               <span class="font-mono text-sm text-white font-bold">${uptime}%</span>
+                               <span class="text-[10px] text-muted">Uptime</span>
+                           </div>
+                           <div class="flex flex-col">
+                               <span class="font-mono text-xs text-white/70">${lastCheck}</span>
+                               <span class="text-[10px] text-muted">Last Check</span>
+                           </div>
+                       </div>
+                   </div>
                </div>
 
                <!-- TOP SCORE ROW -->
                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 lg:mb-8">
-                   <div class="p-4 sm:p-6 glass-card border border-white/5 bg-[#0a0a0a] flex flex-col justify-center items-center relative overflow-hidden">
-                        <div class="text-[10px] sm:text-xs text-muted uppercase tracking-widest mb-2">Performance</div>
-                        <div class="text-4xl sm:text-5xl font-bold text-orange-500 mb-1 z-10 relative">${score}</div>
+                   <!-- PRIMARY: Performance Score -->
+                   <div class="p-4 sm:p-6 glass-card border ${score >= 90 ? 'border-emerald-500/30' : (score >= 50 ? 'border-amber-500/30' : 'border-red-500/30')} flex flex-col justify-center items-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                        <div class="text-[10px] sm:text-xs text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full ${score >= 90 ? 'bg-emerald-500' : (score >= 50 ? 'bg-amber-500' : 'bg-red-500')} animate-pulse"></span>
+                            ${t('performance')}
+                        </div>
+                        <div class="text-4xl sm:text-5xl font-bold ${score >= 90 ? 'text-emerald-400' : (score >= 50 ? 'text-orange-500' : 'text-red-500')} mb-1 z-10 relative transition-colors">${score}</div>
+                        
+                        <!-- Status Message -->
+                        <div class="text-[10px] font-medium ${score >= 90 ? 'text-emerald-400/80' : (score >= 50 ? 'text-amber-400/80' : 'text-red-400/80')} mb-2">
+                            ${score >= 90 ? '✓ ' + t('excellent') : (score >= 80 ? '◐ ' + t('good') : (score >= 50 ? '! ' + t('needsWork') : '✗ ' + t('critical')))}
+                        </div>
                         
                         <!-- Trend Indicator -->
-                        <div class="flex items-center gap-2 mb-2 z-10">
+                        <div class="flex items-center gap-2 z-10">
                             <span class="${perfTrend > 0 ? 'text-emerald-400' : (perfTrend < 0 ? 'text-red-400' : 'text-muted')} text-xs font-bold bg-black/50 px-2 py-0.5 rounded-full border border-white/5">
-                                ${perfTrend > 0 ? '↑' : (perfTrend < 0 ? '↓' : '')} ${Math.abs(perfTrend)} pt
+                                ${perfTrend > 0 ? '↑' : (perfTrend < 0 ? '↓' : '→')} ${Math.abs(perfTrend)} pt
                             </span>
                         </div>
 
-                        <div class="absolute inset-0 bg-orange-500/5 blur-3xl rounded-full"></div>
-                        <div class="w-full h-1 bg-white/10 mt-2 rounded-full overflow-hidden">
-                            <div class="h-full bg-orange-500" style="width: ${score}%"></div>
+                        <div class="absolute inset-0 ${score >= 90 ? 'bg-emerald-500/5' : (score >= 50 ? 'bg-orange-500/5' : 'bg-red-500/5')} blur-3xl rounded-full group-hover:opacity-75 transition-opacity"></div>
+                        <div class="w-full h-1.5 bg-white/10 mt-3 rounded-full overflow-hidden">
+                            <div class="h-full ${score >= 90 ? 'bg-emerald-500' : (score >= 50 ? 'bg-orange-500' : 'bg-red-500')} transition-all duration-500" style="width: ${score}%"></div>
                         </div>
                    </div>
                    
+                   <!-- SECONDARY: Other Scores -->
                    ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y))}
                    ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux))}
                    ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo))}
@@ -2296,12 +2588,15 @@
                <!-- MAIN CHART & VITALS ROW -->
                <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
                    <!-- Trajectory Chart -->
-                   <div class="glass-card p-4 lg:p-6 xl:col-span-2 border border-white/5 bg-[#0a0a0a]">
+                   <div class="glass-card p-4 lg:p-6 xl:col-span-2 border border-white/5">
                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 lg:mb-6 border-b border-white/5 pb-4">
-                          <h3 class="text-[10px] sm:text-xs font-bold text-blue-300 uppercase tracking-widest">Trajetória de Performance</h3>
+                          <div>
+                              <h3 class="text-xs sm:text-sm font-bold text-white mb-1">${t('performanceTrajectory')}</h3>
+                              <p class="text-[10px] text-muted">${t('qualityScoresOverTime')} • <span class="text-cyan-400">Build</span> vs <span class="text-amber-400">Render</span></p>
+                          </div>
                           <div class="flex gap-1 sm:gap-2 flex-wrap">
                              ${['1h','24h','7d','30d','all'].map(p => `
-                                <button onclick="setPeriodFilter('${p}')" class="px-2 py-1 text-[10px] uppercase font-bold rounded transition-all ${currentPeriod===p ? 'bg-orange-500 text-black shadow-[0_0_10px_rgba(249,115,22,0.4)]' : 'text-muted hover:text-white bg-white/5 hover:bg-white/10'}">${p}</button>
+                                <button onclick="setPeriodFilter('${p}')" class="px-2 py-1 text-[10px] uppercase font-bold rounded transition-all ${currentPeriod===p ? 'bg-primary text-black shadow-[0_0_10px_rgba(34,211,238,0.4)]' : 'text-muted hover:text-white bg-white/5 hover:bg-white/10'}">${p}</button>
                              `).join('')}
                           </div>
                        </div>
@@ -2311,23 +2606,38 @@
                    </div>
 
                    <!-- Core Vitals Status -->
-                   <div class="glass-card p-4 lg:p-6 border border-white/5 bg-[#0a0a0a] flex flex-col">
-                       <h3 class="text-[10px] sm:text-xs font-bold text-blue-300 uppercase tracking-widest mb-4 lg:mb-6 border-b border-white/5 pb-4">Status do Sistema</h3>
-                       <div class="space-y-4 lg:space-y-6 flex-1 grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-1 gap-3 xl:gap-0 xl:block">
-                           ${renderVitalBar('LCP (Largest Contentful Paint)', latest?.metrics?.lcp || 0, 2.5)}
-                           ${renderVitalBar('FCP (First Contentful Paint)', latest?.metrics?.fcp || 0, 1.8)}
-                           ${renderVitalBar('CLS (Cumulative Layout Shift)', latest?.metrics?.cls || 0, 0.1, '')}
-                           ${renderVitalBar('INP (Interaction to Next Paint)', latest?.metrics?.inp || 0, 200, 'ms')}
-                           ${renderVitalBar('TTI (Time to Interactive)', latest?.metrics?.tti || 0, 3.8)}
-                           ${renderVitalBar('SI (Speed Index)', latest?.metrics?.si || 0, 3.4)}
+                   <div class="glass-card p-4 lg:p-6 border border-white/5 flex flex-col">
+                       <!-- Core Web Vitals Section -->
+                       <div class="mb-4">
+                           <h3 class="text-[10px] sm:text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                               <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                               ${t('coreWebVitals')}
+                           </h3>
+                           <div class="space-y-3">
+                               ${renderVitalBar('LCP (Largest Contentful Paint)', latest?.metrics?.lcp || 0, 2.5)}
+                               ${renderVitalBar('CLS (Cumulative Layout Shift)', latest?.metrics?.cls || 0, 0.1, '')}
+                               ${renderVitalBar('INP (Interaction to Next Paint)', latest?.metrics?.inp || 0, 200, 'ms')}
+                           </div>
+                       </div>
+                       
+                       <!-- Other Metrics Section -->
+                       <div class="pt-3 border-t border-white/5">
+                           <h3 class="text-[10px] sm:text-xs font-bold text-muted uppercase tracking-widest mb-3">${t('otherMetrics')}</h3>
+                           <div class="space-y-2 opacity-80">
+                               ${renderVitalBar('FCP (First Contentful Paint)', latest?.metrics?.fcp || 0, 1.8)}
+                               ${renderVitalBar('TTI (Time to Interactive)', latest?.metrics?.tti || 0, 3.8)}
+                               ${renderVitalBar('SI (Speed Index)', latest?.metrics?.si || 0, 3.4)}
+                           </div>
                        </div>
                    </div>
                </div>
 
-               <!-- LOG ROW -->
-               <div class="glass-card p-6 border border-white/5 bg-[#0a0a0a]">
-                     <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest mb-6 border-b border-white/5 pb-4">Log de Detecção de Anomalias</h3>
-                     <div class="text-xs text-muted uppercase mb-4">${latest?.audits?.failed?.length || 0} Issues Found</div>
+               <!-- ISSUES & ALERTS ROW -->
+               <div class="glass-card p-6 border border-white/5">
+                     <h3 class="text-xs font-bold text-blue-300 uppercase tracking-widest mb-4 border-b border-white/5 pb-4 flex items-center justify-between">
+                         <span>${t('issuesAndAlerts')}</span>
+                         <span class="text-[10px] font-normal text-muted">${latest?.audits?.failed?.length || 0} found</span>
+                     </h3>
                      
                      <div class="space-y-1">
                          ${(latest?.audits?.failed || []).slice(0, 8).map(audit => `
@@ -2347,7 +2657,13 @@
                                  </div>
                              </div>
                          `).join('')}
-                         ${(!latest?.audits?.failed || latest.audits.failed.length === 0) ? '<div class="text-sm text-muted italic p-4 text-center">Nenhum problema crítico detectado. Sistema estável.</div>' : ''}
+                         ${(!latest?.audits?.failed || latest.audits.failed.length === 0) ? `
+                             <div class="flex flex-col items-center justify-center py-8 text-center">
+                                 <div class="text-3xl mb-3">✨</div>
+                                 <p class="text-sm text-emerald-400 font-medium">${t('noCriticalIssues')}</p>
+                                 <p class="text-xs text-muted mt-1">${t('allSystemsNormal')}</p>
+                             </div>
+                         ` : ''}
                      </div>
                </div>
             </div>
@@ -2361,8 +2677,8 @@
       const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
       const trendBg = trend > 0 ? 'bg-success/20' : (trend < 0 ? 'bg-error/20' : 'bg-white/5');
       
-      // Radial gauge calculations
-      const radius = 36;
+      // Radial gauge calculations - smaller for compact layout
+      const radius = 28;
       const circumference = 2 * Math.PI * radius;
       const progress = score === null ? 0 : score;
       const offset = circumference - (progress / 100) * circumference;
@@ -2371,45 +2687,38 @@
       const gaugeColor = score === null ? '#64748b' : (score >= 90 ? '#10b981' : (score >= 50 ? '#f59e0b' : '#ef4444'));
       
       return `
-        <div class="glass-card p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02]" style="animation: fadeInUp 0.5s ease-out">
-          <div class="flex items-center gap-4">
-            <!-- Radial Gauge -->
-            <div class="relative flex-shrink-0">
-              <svg width="80" height="80" class="score-gauge">
-                <circle class="gauge-bg" cx="40" cy="40" r="${radius}" 
-                        fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6"/>
-                <circle class="gauge-fill" cx="40" cy="40" r="${radius}" 
-                        fill="none" stroke="${gaugeColor}" stroke-width="6"
-                        stroke-linecap="round"
-                        stroke-dasharray="${circumference}"
-                        stroke-dashoffset="${offset}"
-                        style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
-              </svg>
-              <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-xl font-bold ${colorClass}">${score === null ? '-' : score}</span>
-              </div>
-            </div>
-            
-            <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <div class="text-[10px] text-muted font-bold uppercase tracking-[0.15em] mb-1">${title}</div>
-              
-              <!-- Trend (Primary) -->
-              ${trend !== 0 ? `
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-lg font-bold ${trendColor}">${trendIcon} ${Math.abs(trend)}</span>
-                  <span class="text-[10px] ${trendBg} ${trendColor} px-1.5 py-0.5 rounded">${trend > 0 ? 'improved' : 'declined'}</span>
-                </div>
-              ` : '<div class="text-sm text-muted">No change</div>'}
-              
-              <!-- Icon (subtle) -->
-              <div class="opacity-20 text-muted">${icon}</div>
+        <div class="glass-card p-3 sm:p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02] flex flex-col items-center text-center" style="animation: fadeInUp 0.5s ease-out">
+          <!-- Radial Gauge (centered) -->
+          <div class="relative mb-2">
+            <svg width="64" height="64" class="score-gauge">
+              <circle class="gauge-bg" cx="32" cy="32" r="${radius}" 
+                      fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"/>
+              <circle class="gauge-fill" cx="32" cy="32" r="${radius}" 
+                      fill="none" stroke="${gaugeColor}" stroke-width="5"
+                      stroke-linecap="round"
+                      stroke-dasharray="${circumference}"
+                      stroke-dashoffset="${offset}"
+                      style="transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s ease-out"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span class="text-lg font-bold ${colorClass}">${score === null ? '-' : score}</span>
             </div>
           </div>
+          
+          <!-- Label (centered, no wrap) -->
+          <div class="text-[9px] sm:text-[10px] text-muted font-bold uppercase tracking-wider whitespace-nowrap overflow-hidden text-ellipsis max-w-full px-1">${title}</div>
+          
+          <!-- Trend -->
+          ${trend !== 0 ? `
+            <div class="flex items-center gap-1 mt-1">
+              <span class="text-xs font-bold ${trendColor}">${trendIcon}${Math.abs(trend)}</span>
+              <span class="text-[8px] text-muted">vs last</span>
+            </div>
+          ` : '<div class="text-[9px] text-success/80 mt-1">✓ Stable</div>'}
         </div>`;
     }
     
-    // Add fadeInUp animation dynamically
+    // Add premium animations dynamically
     if (!document.getElementById('custom-animations')) {
       const style = document.createElement('style');
       style.id = 'custom-animations';
@@ -2418,6 +2727,26 @@
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes fadeInScale {
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 5px currentColor; }
+          50% { box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; }
+        }
+        .animate-fadeInUp { animation: fadeInUp 0.4s ease-out forwards; }
+        .animate-fadeInScale { animation: fadeInScale 0.3s ease-out forwards; }
+        .animate-slideInRight { animation: slideInRight 0.3s ease-out forwards; }
+        .animate-glow { animation: pulse-glow 2s ease-in-out infinite; }
+        .stagger-1 { animation-delay: 0.05s; }
+        .stagger-2 { animation-delay: 0.1s; }
+        .stagger-3 { animation-delay: 0.15s; }
+        .stagger-4 { animation-delay: 0.2s; }
       `;
       document.head.appendChild(style);
     }
@@ -2531,30 +2860,70 @@
         }
       }
       
-      if (trendChart) trendChart.destroy();
-      
-       trendChart = new Chart(canvas, {
-         type: 'line',
-         data: {
-           labels,
-           datasets: [
-             { label: 'Build', data: buildData, borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: true },
-             { label: 'Render', data: renderData, borderColor: '#f59e0b', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, spanGaps: true },
-           ]
-         },
-         options: {
-           responsive: true,
-           maintainAspectRatio: false,
-           plugins: { 
-             legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 11 } } },
-             title: { display: true, text: `${siteName} - ${period.toUpperCase()}`, color: '#666', font: { size: 12 } }
-           },
-           scales: {
-             x: { 
-               grid: { color: 'rgba(255,255,255,0.03)' }, 
-               ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } } 
-             },
-             y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#666' } }
+       if (trendChart) trendChart.destroy();
+       
+       // Custom plugin for quality zone backgrounds
+       const qualityZonesPlugin = {
+           id: 'qualityZones',
+           beforeDraw: (chart) => {
+               const ctx = chart.ctx;
+               const chartArea = chart.chartArea;
+               const yScale = chart.scales.y;
+               
+               // Zone definitions: good (90-100), warning (50-90), poor (0-50)
+               const zones = [
+                   { min: 90, max: 100, color: 'rgba(16, 185, 129, 0.08)' },  // green
+                   { min: 50, max: 90,  color: 'rgba(245, 158, 11, 0.05)' },  // yellow
+                   { min: 0,  max: 50,  color: 'rgba(239, 68, 68, 0.08)' }    // red
+               ];
+               
+               zones.forEach(zone => {
+                   const yTop = yScale.getPixelForValue(zone.max);
+                   const yBottom = yScale.getPixelForValue(zone.min);
+                   
+                   ctx.save();
+                   ctx.fillStyle = zone.color;
+                   ctx.fillRect(chartArea.left, yTop, chartArea.right - chartArea.left, yBottom - yTop);
+                   ctx.restore();
+               });
+           }
+       };
+       
+        trendChart = new Chart(canvas, {
+          type: 'line',
+          plugins: [qualityZonesPlugin],
+          data: {
+            labels,
+            datasets: [
+              { label: 'Build', data: buildData, borderColor: '#22d3ee', backgroundColor: 'rgba(34, 211, 238, 0.1)', fill: true, tension: 0.3, pointRadius: 3, spanGaps: true },
+              { label: 'Render', data: renderData, borderColor: '#f59e0b', backgroundColor: 'transparent', tension: 0.3, pointRadius: 3, spanGaps: true },
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+              legend: { display: true, position: 'top', labels: { color: '#a3a3a3', font: { size: 11 } } },
+              title: { display: true, text: `${siteName} - ${period.toUpperCase()}`, color: '#666', font: { size: 12 } }
+            },
+            scales: {
+              x: { 
+                grid: { color: 'rgba(255,255,255,0.03)' }, 
+                ticks: { color: '#666', maxRotation: 0, autoSkip: true, maxTicksLimit: 8, font: { size: 10 } } 
+              },
+              y: { 
+                min: 0, 
+                max: 100, 
+                grid: { color: 'rgba(255,255,255,0.05)' }, 
+                ticks: { 
+                    color: '#666',
+                    callback: function(value) {
+                        if (value === 90) return '90 ✓';
+                        if (value === 50) return '50 !';
+                        return value;
+                    }
+                } 
+              }
            }
          }
        });
@@ -2697,13 +3066,13 @@
           <div class="glass-card p-6">
             <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">🚀 GitHub Actions</h3>
             <div id="actions-status">
-              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">Loading...</div>' : '<div class="text-muted text-sm">Configure GitHub token in Settings</div>'}
+              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">' + t('loading') + '</div>' : '<div class="text-muted text-sm">Configure GitHub token in Settings</div>'}
             </div>
           </div>
           <div class="glass-card p-6">
             <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">📝 Recent Commits</h3>
             <div id="commits-list" class="space-y-2 max-h-40 overflow-y-auto">
-              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">Loading...</div>' : '<div class="text-muted text-sm">Configure GitHub token and repo</div>'}
+              ${settings.githubToken && settings.githubRepo ? '<div class="text-muted">' + t('loading') + '</div>' : '<div class="text-muted text-sm">Configure GitHub token and repo</div>'}
             </div>
           </div>
         </div>
@@ -2917,6 +3286,9 @@
         <!-- Current Results -->
         <div id="psi-results"></div>
 
+        <!-- Metrics Cards Container -->
+        <div id="psi-metrics-container"></div>
+
         <!-- History -->
         <h3 class="text-lg font-bold text-white mb-4 mt-8 flex items-center gap-2">📜 ${t('analysisHistory')}</h3>
         <div class="grid grid-cols-1 gap-4" id="psi-history-grid">
@@ -2954,8 +3326,12 @@
             </div>
           `;
           
-          // Render list
-          grid.innerHTML = json.data.map(r => {
+          // Render metrics to dedicated container (prevents duplication)
+          const metricsContainer = document.getElementById('psi-metrics-container');
+          if (metricsContainer) metricsContainer.innerHTML = metricsHtml;
+          
+          // Render list (limit to 10 most recent)
+          grid.innerHTML = json.data.slice(0, 10).map(r => {
              const cats = r.data?.categories || {};
              return `
               <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-primary/30 transition cursor-pointer" onclick="viewLighthouseReport('${r.filename}')">
@@ -2970,10 +3346,7 @@
                   ${renderMiniScore('Perf', (cats.performance?.score || 0) * 100)}
                   ${renderMiniScore('A11y', (cats.accessibility?.score || 0) * 100)}
                 </div>
-              </div>`;
-          }).join('');
-          
-          grid.insertAdjacentHTML('beforebegin', metricsHtml);
+              </div>`;          }).join('');
         }
       } catch (e) {
         document.getElementById('psi-history-grid').innerHTML = `<div class="text-error">${t('noDataFound')}</div>`;
@@ -3012,7 +3385,7 @@
             <div class="px-4 py-2 bg-white/5 border-b border-white/5 flex justify-between items-center">
                <span class="font-mono text-xs text-muted">system.log</span>
                <div class="flex gap-2">
-                   <button onclick="loadLogsView()" class="text-xs hover:text-white transition">Refresh</button>
+                   <button onclick="loadLogsView()" class="text-xs hover:text-white transition">${t('refresh')}</button>
                    <button onclick="document.getElementById('logs-output').innerHTML = ''" class="text-xs hover:text-white transition">Clear</button>
                </div>
             </div>
@@ -3172,7 +3545,7 @@
           </div>
           
           <div class="glass-card p-6">
-            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">Core Web Vitals</h3>
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">${t('coreWebVitals')}</h3>
             <div class="grid grid-cols-3 gap-4">
               <div class="text-center">
                 <div class="text-xl font-mono font-bold text-white">${lhr.audits['largest-contentful-paint']?.displayValue || '-'}</div>
@@ -3259,7 +3632,7 @@
         this.columns = options.columns || [];
         this.actions = options.actions || [];
         this.currentPage = 1;
-        this.pageSize = options.pageSize || 5;
+        this.pageSize = options.pageSize || 10;
         this.sortKey = null;
         this.sortDesc = true;
         this.containerId = options.containerId;
@@ -3969,7 +4342,7 @@
             <h3 class="text-sm font-medium text-muted uppercase tracking-widest">README.md</h3>
             <span class="text-xs text-muted">📄</span>
           </div>
-          <div id="readme-content" class="prose max-w-none text-sm overflow-auto max-h-[40vh]">Loading...</div>
+          <div id="readme-content" class="prose max-w-none text-sm overflow-auto max-h-[40vh]">${t('loading')}</div>
         </div>
       `;
       
@@ -4110,7 +4483,7 @@
           <div class="space-y-6">
              <div class="glass-card p-6" id="git-status-card">
                <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Git Status</h3>
-               <div id="git-status" class="text-muted">Loading...</div>
+               <div id="git-status" class="text-muted">${t('loading')}</div>
              </div>
           </div>
           
