@@ -11,65 +11,26 @@
   <link rel="stylesheet" href="/css/main.css">
   
   <!-- External Dependencies -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  
-  <!-- Tailwind Config with Token System -->
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { 
-            sans: ['Inter', 'sans-serif'], 
-            mono: ['JetBrains Mono', 'monospace'] 
-          },
-          colors: {
-            // Background tokens
-            background: 'var(--background-base)',
-            surface: 'var(--background-surface)',
-            'surface-2': 'var(--background-surface-2)',
-            'surface-hover': 'var(--background-surface-hover)',
-            'surface-active': 'var(--background-surface-active)',
-            
-            // Foreground tokens
-            foreground: 'var(--foreground-base)',
-            muted: 'var(--foreground-muted)',
-            subtle: 'var(--foreground-subtle)',
-            
-            // Border tokens
-            border: 'var(--border-base)',
-            'border-strong': 'var(--border-strong)',
-            'border-subtle': 'var(--border-subtle)',
-            
-            // Brand colors
-            primary: 'var(--color-primary)',
-            'primary-hover': 'var(--color-primary-hover)',
-            'primary-glow': 'var(--color-primary-glow)',
-            secondary: 'var(--color-secondary)',
-            accent: 'var(--color-accent)',
-            
-            // Semantic colors
-            success: 'var(--color-success)',
-            warning: 'var(--color-warning)',
-            error: 'var(--color-error)',
-            info: 'var(--color-info)',
-          },
-          boxShadow: {
-            'glow': '0 0 20px var(--color-primary-glow)',
-            'glow-lg': '0 0 40px var(--color-primary-glow)',
-          },
-          borderRadius: {
-            'lg': 'var(--radius-lg)',
-            'xl': 'var(--radius-xl)',
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Local Tailwind Build (Replaces CDN) -->
+  <link rel="stylesheet" href="/css/tailwind.css">
+
+  <!-- Optimized Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  </noscript>
+
+  <!-- Defer Heavy Libs -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/11.1.1/marked.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   <style>
+    /* CRITICAL CSS - Skeleton Layout */
+    body { display: flex; height: 100vh; overflow: hidden; background: #0f0f0f; color: #fff; margin: 0; }
+    #sidebar { width: 16rem; background: rgba(15,15,15,0.95); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; z-index: 60; }
+    main { flex: 1; overflow: auto; position: relative; display: block; }
+
     /* Legacy variable mappings for backwards compatibility */
     :root {
       /* Map old names to new tokens */
