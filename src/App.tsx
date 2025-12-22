@@ -1,20 +1,19 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react';
 import { 
   Search, 
   RefreshCw, 
-  Filter, 
 } from 'lucide-react';
 import { SystemService } from './services/systemService';
 import { ProcessEntry, FilterState, SavedProject, ViewType } from './types';
 import { PreferencesProvider, usePreferences } from './contexts/PreferencesContext';
 import { useTranslation } from 'react-i18next';
 import StatsOverview from './components/StatsOverview';
-import PortTable from './components/PortTable';
-import SettingsModal from './components/SettingsModal';
-import Sidebar from './components/Sidebar';
-import ProjectManager from './components/ProjectManager';
-import ConsoleModal from './components/ConsoleModal';
-import { AnimatePresence } from 'framer-motion';
+
+// Lazy load heavy components
+const LazyModals = lazy(() => import('./components/LazyModals'));
+const Sidebar = lazy(() => import('./components/Sidebar'));
+const ProjectManager = lazy(() => import('./components/ProjectManager'));
+const DashboardView = lazy(() => import('./components/DashboardView'));
 
 const MainApp = () => {
   const { settings } = usePreferences();
@@ -100,18 +99,24 @@ const MainApp = () => {
       className={`flex h-screen w-full overflow-hidden font-sans selection:bg-indigo-500/30`}
       style={{ color: 'var(--foreground)' }}
     >
-      <AnimatePresence>
-        {isSettingsOpen && <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />}
-        {selectedProjectLogs && <ConsoleModal project={selectedProjectLogs} onClose={() => setSelectedProjectLogs(null)} />}
-      </AnimatePresence>
+      <Suspense fallback={null}>
+        <LazyModals 
+          isSettingsOpen={isSettingsOpen} 
+          onCloseSettings={() => setIsSettingsOpen(false)}
+          selectedProjectLogs={selectedProjectLogs}
+          onCloseConsole={() => setSelectedProjectLogs(null)}
+        />
+      </Suspense>
 
-      <Sidebar 
-        filter={filter} 
-        setFilter={setFilter} 
-        onOpenSettings={() => setIsSettingsOpen(true)} 
-        currentView={currentView}
-        setCurrentView={setCurrentView}
-      />
+      <Suspense fallback={<div className="w-20 md:w-64 h-full bg-black/20 border-r border-white/5" />}>
+        <Sidebar 
+          filter={filter} 
+          setFilter={setFilter} 
+          onOpenSettings={() => setIsSettingsOpen(true)} 
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+        />
+      </Suspense>
 
       <main className="flex-1 flex flex-col min-w-0 bg-transparent transition-colors duration-500 relative z-10">
         <h1 className="sr-only">PortCmd - Process and Port Manager</h1>
@@ -126,7 +131,7 @@ const MainApp = () => {
                   aria-label="Search processes"
                   value={filter.search}
                   onChange={(e) => setFilter(prev => ({ ...prev, search: e.target.value }))}
-                  className={`w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all backdrop-blur-md`}
+                  className={`w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all backdrop-blur-md min-h-[44px]`}
                   style={{ color: 'var(--foreground)' }}
                 />
               </div>
@@ -151,28 +156,23 @@ const MainApp = () => {
               {currentView === 'dashboard' ? (
                 <>
                   <StatsOverview processes={processes} />
-                  <div className="space-y-4">
-                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-semibold flex items-center gap-2">
-                           <Filter className="w-5 h-5 text-indigo-500" />
-                           {t('activeProcesses')}
-                           <span className="ml-2 px-2 py-0.5 rounded-full bg-white/10 text-xs font-mono">
-                              {filteredProcesses.length}
-                           </span>
-                        </h2>
-                     </div>
-                     <PortTable 
-                        processes={filteredProcesses} 
-                        totalProcessesCount={processes.length}
-                        onKill={handleKill}
-                        onRestart={handleRestart}
-                        onToggleFavorite={handleToggleFavorite}
-                        isLoading={loading}
-                     />
-                  </div>
+                  <Suspense fallback={<div className="animate-pulse space-y-8">
+                    <div className="h-96 bg-white/5 rounded-xl"></div>
+                  </div>}>
+                    <DashboardView 
+                      processes={processes}
+                      filteredProcesses={filteredProcesses}
+                      loading={loading}
+                      onKill={handleKill}
+                      onRestart={handleRestart}
+                      onToggleFavorite={handleToggleFavorite}
+                    />
+                  </Suspense>
                 </>
               ) : (
-                <ProjectManager onViewLogs={setSelectedProjectLogs} />
+                <Suspense fallback={<div className="animate-pulse bg-white/5 rounded-xl h-64" />}>
+                  <ProjectManager onViewLogs={setSelectedProjectLogs} />
+                </Suspense>
               )}
            </div>
         </div>

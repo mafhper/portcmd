@@ -36,7 +36,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-lg font-semibold">{t('settings')}</h2>
-          <button onClick={onClose} aria-label="Close settings" className="p-3 rounded-lg hover:bg-surfaceHover transition-colors -mr-2"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} aria-label="Close settings" className="p-3 rounded-lg hover:bg-surfaceHover transition-colors -mr-2 min-w-[44px] min-h-[44px] flex items-center justify-center"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
@@ -47,7 +47,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-3 rounded-lg text-sm font-medium transition-all min-h-[44px]
-                  ${activeTab === tab.id ? 'bg-primary text-primaryFg shadow-lg shadow-primary/20' : 'text-muted hover:bg-surfaceHover'}`}
+                  ${activeTab === tab.id ? 'bg-primary text-primaryFg shadow-lg shadow-primary/20' : 'text-gray-600 dark:text-gray-400 hover:bg-surfaceHover'}`}
                 title={tab.label}
               >
                 <tab.icon className="w-4 h-4 shrink-0" />
@@ -69,7 +69,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                       <button
                         key={lang}
                         onClick={() => updateSettings({ language: lang as 'en' | 'pt-BR' | 'es' })}
-                        className={`px-3 py-2 rounded border text-sm transition-all ${settings.language === lang ? 'border-primary bg-primary/20 text-primary font-bold' : 'border-border bg-surface hover:bg-surfaceHover'}`}
+                        className={`px-3 py-3 rounded border text-sm transition-all min-h-[44px] flex items-center justify-center ${settings.language === lang ? 'border-primary bg-primary/20 text-primary font-bold' : 'border-border bg-surface hover:bg-surfaceHover'}`}
                       >
                         {lang === 'pt-BR' ? 'Português' : lang === 'es' ? 'Español' : 'English'}
                       </button>
@@ -120,7 +120,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                        <button
                          key={mode}
                          onClick={() => updateSettings({ themeMode: mode as 'light' | 'auto' | 'dark' })}
-                          className={`flex-1 flex items-center justify-center py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.themeMode === mode ? 'bg-surface text-primary shadow-sm' : 'text-muted hover:text-fg'}`}
+                          className={`flex-1 flex items-center justify-center py-3 text-xs font-medium rounded-lg capitalize transition-all min-h-[44px] ${settings.themeMode === mode ? 'bg-surface text-primary shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-fg'}`}
                        >
                          {mode}
                        </button>
@@ -135,7 +135,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         <button
                           key={key}
                           onClick={() => updateSettings({ paletteId: key })}
-                          className={`h-10 rounded-xl border-2 transition-all hover:scale-110 flex items-center justify-center ${settings.paletteId === key ? 'border-primary scale-110 shadow-lg shadow-primary/20' : 'border-transparent'}`}
+                          className={`h-11 rounded-xl border-2 transition-all hover:scale-110 flex items-center justify-center ${settings.paletteId === key ? 'border-primary scale-110 shadow-lg shadow-primary/20' : 'border-transparent'}`}
                           style={{ backgroundColor: val.primary }}
                           title={val.name}
                         >
@@ -232,7 +232,7 @@ const SettingsModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                        <button
                          key={type}
                          onClick={() => updateSettings({ bgType: type as BackgroundType })}
-                         className={`py-2 text-xs font-medium rounded-lg capitalize transition-all ${settings.bgType === type ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm dark:shadow-lg' : 'opacity-50 hover:opacity-100'}`}
+                          className={`py-3 text-xs font-medium rounded-lg capitalize transition-all min-h-[44px] ${settings.bgType === type ? 'bg-white dark:bg-indigo-600 text-indigo-600 dark:text-white shadow-sm dark:shadow-lg' : 'opacity-50 hover:opacity-100'}`}
                        >
                          {type}
                        </button>

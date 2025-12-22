@@ -593,19 +593,30 @@ async function handleReportsHistory(req, res, urlObj) {
             // Quality reports are usually generic, but check for matches if needed
             filterFn = f => f.endsWith('.json'); // && f.startsWith('quality-report-'); 
             formatFn = (json, file) => {
+                // Extract target from meta or filename
+                const target = json.meta?.target || (file.includes('app') ? 'app' : 'promo');
+
                 // Aggregated metrics from quality report
+                const detailedScores = json.metrics?.scores || {};
                 const scores = {
-                    score: json.score || 0,
-                    security: json.summary?.security || 0,
-                    maintainability: json.summary?.maintainability || 0,
-                    reliability: json.summary?.reliability || 0
+                    score: json.summary?.score || json.score || 0,
+                    build: detailedScores.build || 0,
+                    lint: detailedScores.lint || 0,
+                    'bundle-size': detailedScores['bundle-size'] || 0,
+                    render: detailedScores.render || 0,
+                    ux: detailedScores.ux || 0,
+                    a11y: detailedScores.a11y || 0,
+                    contrast: detailedScores.contrast || 0,
+                    i18n: detailedScores.i18n || 0,
+                    seo: detailedScores.seo || 0
                 };
                 return {
                     filename: file,
-                    timestamp: json.timestamp || new Date().toISOString(),
-                    target: 'all', // Quality usually covers codebase
+                    timestamp: json.meta?.generatedAt || json.meta?.timestamp || new Date().toISOString(),
+                    target: target,
                     formFactor: 'code',
-                    scores
+                    scores,
+                    violations: json.violations || []
                 };
             };
         } else if (source === 'pagespeed') {

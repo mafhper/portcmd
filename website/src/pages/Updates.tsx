@@ -49,7 +49,7 @@ const Updates = () => {
   return (
     <div className="pt-32 pb-20 px-6 max-w-4xl mx-auto">
       <div className="text-center mb-16">
-        <h1 className="text-4xl font-bold text-white mb-4">{t('updatesDesc')}</h1>
+        <h2 className="text-4xl font-bold text-white mb-4">{t('updatesDesc')}</h2>
         <p className="text-zinc-400">{t('updatesDesc')}</p>
       </div>
 

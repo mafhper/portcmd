@@ -692,10 +692,10 @@
       <div class="glass-card p-3 sm:p-4">
         <h4 class="text-xs font-bold text-muted uppercase mb-3 sidebar-text hidden sm:block" data-i18n="quickActions">Quick Actions</h4>
         <div class="space-y-2 sm:space-y-2 flex sm:block gap-2 sm:gap-0">
-          <button onclick="runCommand('quality:gate')" title="Full Quality Gate" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runQuality">
+          <button onclick="runCommand('quality:gate')" title="Full Quality Gate" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 min-h-[44px] text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runQuality">
             <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="hidden sm:inline sidebar-text">Full Quality Gate</span>
           </button>
-          <button onclick="runCommand('perf:lighthouse')" title="Perf Audit" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runPerf">
+          <button onclick="runCommand('perf:lighthouse')" title="Perf Audit" class="flex-1 sm:w-full text-center sm:text-left px-2 sm:px-3 py-2 min-h-[44px] text-xs font-medium bg-white/5 text-muted border border-white/5 rounded hover:bg-white/10 transition flex items-center justify-center sm:justify-start gap-2" data-i18n="runPerf">
              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="hidden sm:inline sidebar-text">Perf Audit</span>
           </button>
         </div>
@@ -704,7 +704,7 @@
       
       <!-- Settings Button -->
       <button onclick="openSettings()" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-lg relative" data-i18n="settings">
-        <span>⚙️</span><span class="sidebar-text">Settings</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="sidebar-text">Settings</span>
       </button>
     </div>
   </aside>
@@ -719,7 +719,7 @@
             </div>
             <span class="font-bold text-sm bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-green-500">Quality Core</span>
         </div>
-        <button onclick="toggleSidebar()" class="p-2 text-muted hover:text-white rounded-lg hover:bg-white/5 transition">
+        <button onclick="toggleSidebar()" class="p-2 min-h-[44px] min-w-[44px] text-muted hover:text-white rounded-lg hover:bg-white/5 transition flex items-center justify-center">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
     </div>
@@ -779,16 +779,15 @@
   <div id="settings-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-surface border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden">
       <div class="p-6 border-b border-white/10 flex justify-between items-center">
-        <h2 class="text-xl font-bold text-white">⚙️ <span data-i18n="settings">Settings</span></h2>
+        <h2 class="text-xl font-bold text-white flex items-center gap-2"><svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span data-i18n="settings">Settings</span></h2>
         <button onclick="closeSettings()" class="text-muted hover:text-white transition text-xl">✕</button>
       </div>
-      
       <!-- Settings Tabs -->
       <div class="flex border-b border-white/10 px-6">
-        <button onclick="switchSettingsTab('profile')" class="settings-tab active px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="profile" data-i18n="profile">📋 Profile</button>
-        <button onclick="switchSettingsTab('api')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="api" data-i18n="apiKeys">🔑 API Keys</button>
-        <button onclick="switchSettingsTab('appearance')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="appearance">🎨 Appearance</button>
-        <button onclick="switchSettingsTab('data')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent" data-tab="data">📊 Data</button>
+        <button onclick="switchSettingsTab('profile')" class="settings-tab active px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent flex items-center gap-1" data-tab="profile" data-i18n="profile"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Profile</button>
+        <button onclick="switchSettingsTab('api')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent flex items-center gap-1" data-tab="api" data-i18n="apiKeys"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg> API Keys</button>
+        <button onclick="switchSettingsTab('appearance')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent flex items-center gap-1" data-tab="appearance"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.29-.438-.652-.438-1.062a1.5 1.5 0 011.5-1.5h1.77c2.896 0 5.957-2.358 5.957-6.125C22 6.5 17.5 2 12 2z"/></svg> Appearance</button>
+        <button onclick="switchSettingsTab('data')" class="settings-tab px-4 py-3 text-sm font-medium text-muted border-b-2 border-transparent flex items-center gap-1" data-tab="data"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg> Data</button>
       </div>
 
       <div class="p-6 overflow-y-auto flex-1">
@@ -827,30 +826,30 @@
         <!-- Appearance Tab -->
         <div id="settings-appearance-tab" class="space-y-6 hidden">
             <div>
-                <label class="block text-sm font-medium text-muted mb-2">Theme Mode</label>
+                <label class="block text-sm font-medium text-muted mb-2" data-i18n="themeMode">Theme Mode</label>
                 <div class="flex gap-2">
                     <button onclick="setThemeMode('dark')" id="btn-theme-dark" class="flex-1 py-2 px-3 rounded-lg border border-white/10 bg-surfaceHighlight hover:border-primary transition flex items-center justify-center gap-2">
-                        <span>🌙</span> Dark
+                        <span>🌙</span> <span data-i18n="dark">Dark</span>
                     </button>
                     <button onclick="setThemeMode('light')" id="btn-theme-light" class="flex-1 py-2 px-3 rounded-lg border border-white/10 bg-surfaceHighlight hover:border-primary transition flex items-center justify-center gap-2">
-                        <span>☀️</span> Light
+                        <span>☀️</span> <span data-i18n="light">Light</span>
                     </button>
                 </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-muted mb-2">Primary Color</label>
+                <label class="block text-sm font-medium text-muted mb-2" data-i18n="primaryColor">Primary Color</label>
                 <div class="flex items-center gap-3">
                     <input type="color" id="theme-primary-color" value="#22d3ee" class="w-10 h-10 rounded cursor-pointer bg-transparent border-0 p-0" onchange="previewTheme()">
-                    <span class="text-xs text-muted">Click to pick a custom accent color</span>
-                    <button onclick="resetThemeColor()" class="text-xs text-primary hover:underline ml-auto">Reset Default</button>
+                    <span class="text-xs text-muted" data-i18n="pickAccentColor">Click to pick a custom accent color</span>
+                    <button onclick="resetThemeColor()" class="text-xs text-primary hover:underline ml-auto" data-i18n="resetDefault">Reset Default</button>
                 </div>
             </div>
 
             <div class="space-y-4 border-t border-white/5 pt-4">
                 <div>
                    <div class="flex justify-between mb-1">
-                      <label class="text-sm font-medium text-muted">Glass Opacity</label>
+                      <label class="text-sm font-medium text-muted" data-i18n="glassOpacity">Glass Opacity</label>
                       <span id="val-glass-opacity" class="text-xs font-mono text-white">0.9</span>
                    </div>
                    <input type="range" id="theme-glass-opacity" min="0.5" max="1" step="0.05" value="0.92" class="w-full accent-primary" oninput="previewTheme()">
@@ -858,22 +857,22 @@
                 
                 <div>
                    <div class="flex justify-between mb-1">
-                      <label class="text-sm font-medium text-muted">Blur Strength</label>
+                      <label class="text-sm font-medium text-muted" data-i18n="blurStrength">Blur Strength</label>
                       <span id="val-glass-blur" class="text-xs font-mono text-white">12px</span>
                    </div>
                    <input type="range" id="theme-glass-blur" min="0" max="20" step="1" value="12" class="w-full accent-primary" oninput="previewTheme()">
                 </div>
                 
                 <div>
-                   <label class="block text-sm font-medium text-muted mb-2">Background Style</label>
+                   <label class="block text-sm font-medium text-muted mb-2" data-i18n="backgroundStyle">Background Style</label>
                    <select id="theme-bg-style" class="w-full px-4 py-3 bg-surfaceHighlight border border-white/10 rounded-lg text-white focus:border-primary focus:outline-none" onchange="toggleBgColorPicker(); previewTheme()">
-                        <option value="default">Default (Subtle Gradient)</option>
-                        <option value="solid">Solid Color (Flat)</option>
-                        <option value="animated">Animated (Flowing)</option>
+                        <option value="default" data-i18n="defaultGradient">Default (Subtle Gradient)</option>
+                        <option value="solid" data-i18n="solidFlat">Solid Color (Flat)</option>
+                        <option value="animated" data-i18n="animatedFlowing">Animated (Flowing)</option>
                    </select>
                 </div>
                 <div id="solid-color-picker-container" class="hidden">
-                   <label class="block text-sm font-medium text-muted mb-2">Background Color</label>
+                   <label class="block text-sm font-medium text-muted mb-2" data-i18n="backgroundColor">Background Color</label>
                    <div class="flex items-center gap-3">
                       <input type="color" id="theme-bg-color" value="#0a0a0a" class="w-12 h-10 cursor-pointer rounded border border-white/10" oninput="previewTheme()">
                       <span id="val-bg-color" class="text-xs font-mono text-white">#0a0a0a</span>
@@ -1158,6 +1157,14 @@
         passed: 'Passed',
         failed: 'Failed',
         other: 'Other',
+        // Dashboard Score Cards
+        accessibility: 'Accessibility',
+        bestPractices: 'Best Practices',
+        build: 'Build',
+        render: 'Render',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Other Metrics',
+        targetLabel: 'target',
         logFile: 'Log File',
         noDataFound: 'No data found',
         refresh: 'Refresh',
@@ -1224,6 +1231,48 @@
         history: 'History',
         historySubtitle: 'Analyze metrics evolution over time',
         evolutionChart: 'Evolution Chart',
+        // Comparison Table
+        qualityGateComparison: 'Quality Gate Comparison',
+        metric: 'Metric',
+        overallScore: 'Overall Score',
+        violations: 'Violations',
+        comparisonLegend: '↑ Improved from previous | ↓ Decreased from previous',
+        latest: 'Latest',
+        build: 'Build',
+        lint: 'Lint',
+        bundleSize: 'Bundle Size',
+        render: 'Render',
+        ux: 'UX',
+        a11y: 'A11y',
+        contrast: 'Contrast',
+        i18n: 'i18n',
+        seo: 'SEO',
+        view: 'View',
+        target: 'Target',
+        actions: 'Actions',
+        score: 'Score',
+        // Appearance settings
+        appearance: 'Appearance',
+        themeMode: 'Theme Mode',
+        dark: 'Dark',
+        light: 'Light',
+        primaryColor: 'Primary Color',
+        pickAccentColor: 'Click to pick a custom accent color',
+        resetDefault: 'Reset Default',
+        glassOpacity: 'Glass Opacity',
+        blurStrength: 'Blur Strength',
+        backgroundStyle: 'Background Style',
+        defaultGradient: 'Default (Subtle Gradient)',
+        solidFlat: 'Solid Color (Flat)',
+        animatedFlowing: 'Animated (Flowing)',
+        backgroundColor: 'Background Color',
+        data: 'Data',
+        clearAllData: 'Clear All Data',
+        report: 'Report',
+        // Loading messages
+        loadingDashboard: 'Loading dashboard data...',
+        loadingHistory: 'Loading history...',
+        loadingReports: 'Loading reports...',
       },
       'pt-BR': {
         dashboard: 'Painel',
@@ -1267,6 +1316,14 @@
         passed: 'Aprovados',
         failed: 'Falhou',
         other: 'Outros',
+        // Dashboard Score Cards
+        accessibility: 'Acessibilidade',
+        bestPractices: 'Boas Práticas',
+        build: 'Build',
+        render: 'Renderização',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Outras Métricas',
+        targetLabel: 'alvo',
         logFile: 'Arquivo de Log',
         noDataFound: 'Nenhum dado encontrado',
         refresh: 'Atualizar',
@@ -1333,6 +1390,44 @@
         history: 'Histórico',
         historySubtitle: 'Analise a evolução das métricas ao longo do tempo',
         evolutionChart: 'Gráfico de Evolução',
+        // Comparison Table
+        qualityGateComparison: 'Comparação de Qualidade',
+        metric: 'Métrica',
+        overallScore: 'Pontuação Geral',
+        violations: 'Violações',
+        comparisonLegend: '↑ Melhorou do anterior | ↓ Piorou do anterior',
+        latest: 'Mais Recente',
+        build: 'Build',
+        lint: 'Lint',
+        bundleSize: 'Tamanho do Bundle',
+        render: 'Render',
+        ux: 'UX',
+        a11y: 'Acessibilidade',
+        contrast: 'Contraste',
+        i18n: 'Internacionalização',
+        seo: 'SEO',
+        view: 'Ver',
+        target: 'Alvo',
+        actions: 'Ações',
+        score: 'Pontuação',
+        // Appearance settings
+        appearance: 'Aparência',
+        themeMode: 'Modo do Tema',
+        dark: 'Escuro',
+        light: 'Claro',
+        primaryColor: 'Cor Primária',
+        pickAccentColor: 'Clique para escolher uma cor de destaque',
+        resetDefault: 'Restaurar Padrão',
+        glassOpacity: 'Opacidade do Vidro',
+        blurStrength: 'Intensidade do Desfoque',
+        backgroundStyle: 'Estilo de Fundo',
+        defaultGradient: 'Padrão (Gradiente Suave)',
+        solidFlat: 'Cor Sólida (Plano)',
+        animatedFlowing: 'Animado (Fluido)',
+        backgroundColor: 'Cor de Fundo',
+        data: 'Dados',
+        clearAllData: 'Limpar Todos os Dados',
+        report: 'Relatório',
       },
       es: {
         dashboard: 'Panel',
@@ -1376,6 +1471,14 @@
         passed: 'Aprobados',
         failed: 'Fallidos',
         other: 'Otros',
+        // Dashboard Score Cards
+        accessibility: 'Accesibilidad',
+        bestPractices: 'Buenas Prácticas',
+        build: 'Build',
+        render: 'Renderizado',
+        coreWebVitals: 'Core Web Vitals',
+        otherMetrics: 'Otras Métricas',
+        targetLabel: 'objetivo',
         logFile: 'Archivo de Log',
         noDataFound: 'Sin datos',
         refresh: 'Actualizar',
@@ -1421,6 +1524,22 @@
         history: 'Historial',
         historySubtitle: 'Analizar la evolución de las métricas a lo largo del tiempo',
         evolutionChart: 'Gráfico de Evolución',
+        // Comparison Table
+        qualityGateComparison: 'Comparación de Calidad',
+        metric: 'Métrica',
+        overallScore: 'Puntuación General',
+        violations: 'Violaciones',
+        comparisonLegend: '↑ Mejoró del anterior | ↓ Empeoró del anterior',
+        latest: 'Más Reciente',
+        build: 'Build',
+        lint: 'Lint',
+        bundleSize: 'Tamaño del Bundle',
+        render: 'Render',
+        ux: 'UX',
+        a11y: 'Accesibilidad',
+        contrast: 'Contraste',
+        i18n: 'Internacionalización',
+        seo: 'SEO',
         whatsThis: '¿Qué es esto?',
         healthGateTooltip: 'Clic para más información sobre Health Gate',
         clickToViewReports: 'Clic para ver informes detallados',
@@ -1441,7 +1560,29 @@
         current: 'Actual',
         minMax: 'Mín / Máx',
         vsAvg: 'vs Prom.',
-        avg: 'Prom.'
+        avg: 'Prom.',
+        view: 'Ver',
+        target: 'Objetivo',
+        actions: 'Acciones',
+        score: 'Puntuación',
+        // Appearance settings
+        appearance: 'Apariencia',
+        themeMode: 'Modo de Tema',
+        dark: 'Oscuro',
+        light: 'Claro',
+        primaryColor: 'Color Primario',
+        pickAccentColor: 'Clic para elegir un color de acento',
+        resetDefault: 'Restaurar Predeterminado',
+        glassOpacity: 'Opacidad del Vidrio',
+        blurStrength: 'Intensidad del Desenfoque',
+        backgroundStyle: 'Estilo de Fondo',
+        defaultGradient: 'Predeterminado (Gradiente Suave)',
+        solidFlat: 'Color Sólido (Plano)',
+        animatedFlowing: 'Animado (Fluido)',
+        backgroundColor: 'Color de Fondo',
+        data: 'Datos',
+        clearAllData: 'Borrar Todos los Datos',
+        report: 'Informe',
       }
     };
 
@@ -2343,7 +2484,7 @@
         default: 'bg-white/10 text-white hover:bg-white/20'
       };
       const style = variants[variant] || variants.default;
-      return `<button onclick="${onclick}" class="min-w-[90px] px-4 py-2.5 text-xs font-bold rounded-lg transition-all ${style} flex items-center justify-center gap-2">
+      return `<button onclick="${onclick}" class="min-w-[90px] min-h-[44px] px-4 py-2.5 text-xs font-bold rounded-lg transition-all ${style} flex items-center justify-center gap-2">
         ${icon ? `<span>${icon}</span>` : ''}
         <span>${label}</span>
       </button>`;
@@ -2361,6 +2502,10 @@
               </div>
             </header>
         `;
+    }
+
+    function isStaticHost() {
+       return window.location.hostname.includes('github.io') || window.location.hostname.includes('vercel.app') || window.location.hostname.includes('netlify.app');
     }
 
     // --- Views ---
@@ -2829,9 +2974,9 @@
                    
                    <!-- SECONDARY: Other Scores -->
                    <!-- SECONDARY: Other Scores -->
-                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y), avgScores.a11y, history.a11y)}
-                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux), avgScores.ux, history.ux)}
-                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo), avgScores.seo, history.seo)}
+                   ${renderScoreCard(t('accessibility'), scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y), avgScores.a11y, history.a11y)}
+                   ${renderScoreCard(t('bestPractices'), scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux), avgScores.ux, history.ux)}
+                   ${renderScoreCard(t('seo'), scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo), avgScores.seo, history.seo)}
                </div>
                </div>
 
@@ -2842,7 +2987,7 @@
                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 lg:mb-6 border-b border-white/5 pb-4">
                           <div>
                               <h3 class="text-xs sm:text-sm font-bold text-white mb-1">${t('performanceTrajectory')}</h3>
-                              <p class="text-[10px] text-muted">${t('qualityScoresOverTime')} • <span class="text-cyan-400">Build</span> vs <span class="text-amber-400">Render</span></p>
+                              <p class="text-[10px] text-muted">${t('qualityScoresOverTime')} • <span class="text-cyan-400">${t('build')}</span> vs <span class="text-amber-400">${t('render')}</span></p>
                           </div>
                           <div class="flex gap-1 sm:gap-2 flex-wrap">
                              ${['1h','24h','7d','30d','all'].map(p => `
@@ -3549,7 +3694,7 @@
       
       // Target selector
       const targetSelector = `
-        <select id="psi-target-filter" onchange="setTarget(this.value); loadPageSpeedView()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+        <select id="psi-target-filter" onchange="setTarget(this.value); loadPageSpeedView()" title="Filter by target" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2 min-h-[44px]">
           <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All</option>
           <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
           <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
@@ -3580,17 +3725,37 @@
 
       // Load History
       try {
-        const res = await fetch(`${API_BASE}/reports/history?source=pagespeed&limit=20`);
-        const json = await res.json();
+        let json;
+        if(isStaticHost()) {
+             json = { success: true, data: [
+                 { filename: 'mock-1', timestamp: Date.now(), scores: { performance: 0.95, accessibility: 0.9, seo: 0.85 }, data: { finalUrl: 'https://demo.com' } },
+                 { filename: 'mock-2', timestamp: Date.now() - 86400000, scores: { performance: 0.88, accessibility: 0.85, seo: 0.80 }, data: { finalUrl: 'https://demo.com' } }
+             ]};
+             // Normalize scores for mock (0-1 to 0-100 if needed, usually lighthouse is 0-1)
+             // But dashboard expectations might be 0-100? 
+             // Existing code does Math.round(r.scores.performance). If 0.95 -> 1. 
+             // Wait, previous code: Math.round(latest.performance). 
+             // Lighthouse JSON usually 0-1. Dashboard `renderDashboard` normalizes 0-100.
+             // BUT `loadPageSpeedView` accesses `r.scores` DIRECTLY from `/reports/history`.
+             // If `/reports/history` returns saved JSONs, they are usually raw (0-1) OR normalized?
+             // `quality-latest.json` had 100. So stored reports are 0-100.
+             // So mocks should be 0-100.
+             json.data = json.data.map(d => ({...d, scores: { performance: d.scores.performance*100, accessibility: d.scores.accessibility*100, seo: d.scores.seo*100 }}));
+        } else {
+             const res = await fetch(`${API_BASE}/reports/history?source=pagespeed&limit=20`);
+             json = await res.json();
+        }
+        
         const grid = document.getElementById('psi-history-grid');
         
         if(!json.success || !json.data || json.data.length === 0) {
           grid.innerHTML = `<div class="p-8 text-center text-muted border border-dashed border-white/10 rounded-xl">${t('noDataFound')}</div>`;
         } else {
           // Calculate average scores from normalized data
+          // Calculate average scores from normalized data
           const scores = json.data.reduce((acc, r) => {
-            acc.perf += r.scores.performance || 0;
-            acc.a11y += r.scores.accessibility || 0;
+            acc.perf += r.scores.performance || r.scores.perf || 0;
+            acc.a11y += r.scores.accessibility || r.scores.a11y || 0;
             acc.seo += r.scores.seo || 0;
             return acc;
           }, { perf: 0, a11y: 0, seo: 0 });
@@ -3602,9 +3767,9 @@
           // Use Math.round for display
           const metricsHtml = `
             <div class="grid grid-cols-3 gap-4 mb-8">
-              ${renderMetricCardWithAvg(t('performance'), Math.round(latest.performance), Math.round(scores.perf / count))}
-              ${renderMetricCardWithAvg(t('avgAccessibility'), Math.round(latest.accessibility), Math.round(scores.a11y / count))}
-              ${renderMetricCardWithAvg(t('avgSeo'), Math.round(latest.seo), Math.round(scores.seo / count))}
+              ${renderMetricCardWithAvg(t('performance'), Math.round(latest.performance || latest.perf || 0), Math.round(scores.perf / count))}
+              ${renderMetricCardWithAvg(t('avgAccessibility'), Math.round(latest.accessibility || latest.a11y || 0), Math.round(scores.a11y / count))}
+              ${renderMetricCardWithAvg(t('avgSeo'), Math.round(latest.seo || 0), Math.round(scores.seo / count))}
             </div>
           `;
           
@@ -4079,11 +4244,11 @@
                 <div class="flex items-center justify-between p-4 border-t border-white/10 bg-white/5">
                   <div class="text-xs text-muted">Showing ${start+1}-${Math.min(start+this.pageSize, sorted.length)} of ${sorted.length}</div>
                   <div class="flex gap-2">
-                    <button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage-1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">←</button>
+                    <button ${this.currentPage === 1 ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage-1})" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">←</button>
                     ${Array.from({length: totalPages}, (_, i) => i + 1).slice(Math.max(0, this.currentPage-3), this.currentPage+2).map(p => `
-                      <button onclick="window['dt_${this.id}'].setPage(${p})" class="px-2 py-1 rounded text-xs ${p === this.currentPage ? 'bg-primary text-black font-bold' : 'bg-white/5 hover:bg-white/10'}">${p}</button>
+                      <button onclick="window['dt_${this.id}'].setPage(${p})" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded text-xs ${p === this.currentPage ? 'bg-primary text-black font-bold' : 'bg-white/5 hover:bg-white/10'}">${p}</button>
                     `).join('')}
-                    <button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage+1})" class="px-2 py-1 rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">→</button>
+                    <button ${this.currentPage === totalPages ? 'disabled' : ''} onclick="window['dt_${this.id}'].setPage(${this.currentPage+1})" class="min-w-[44px] min-h-[44px] flex items-center justify-center rounded bg-white/5 hover:bg-white/10 disabled:opacity-30 transition">→</button>
                   </div>
                 </div>
               ` : ''}
@@ -4371,6 +4536,11 @@
         
         if (!data) throw new Error('Report data is undefined or invalid');
 
+        // Get status and scores
+        const status = data.summary?.status || data.status || 'UNKNOWN';
+        const scores = data.metrics?.scores || data.scores || {};
+        const violations = data.violations || [];
+
         // Render simple view
         let html = `
           <div class="mb-6 p-6 bg-surfaceHighlight/20 rounded-xl border border-white/5 flex justify-between items-center bg-gradient-to-r from-surfaceHighlight/0 via-surfaceHighlight/10 to-surfaceHighlight/0">
@@ -4379,13 +4549,13 @@
                <div class="text-xs text-muted font-mono">${filename}</div>
              </div>
              <div class="text-right">
-                <div class="text-3xl font-bold ${data.status === 'pass' ? 'text-success' : (data.status === 'fail' ? 'text-error' : 'text-warning')} uppercase tracking-widest">${data.status || 'UNKNOWN'}</div>
+                <div class="text-3xl font-bold ${status === 'pass' ? 'text-success' : (status === 'fail' ? 'text-error' : 'text-warning')} uppercase tracking-widest">${status.toUpperCase()}</div>
                 <div class="text-[10px] text-muted uppercase tracking-wider">Status</div>
              </div>
           </div>
           
           <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-             ${Object.entries(data.scores || {}).map(([k,v]) => `
+             ${Object.entries(scores).map(([k,v]) => `
                 <div class="glass-card p-4 text-center group hover:bg-white/5 transition-colors">
                    <div class="text-2xl font-bold font-mono group-hover:scale-110 transition-transform duration-300 ${v >= 90 ? 'text-success' : (v>=50?'text-warning':'text-error')}">${Math.round(v)}</div>
                    <div class="text-[10px] text-muted uppercase tracking-wider mt-1">${k}</div>
@@ -4394,12 +4564,12 @@
           </div>
 
           <h3 class="text-sm font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
-            ⚠️ Violations <span class="px-1.5 py-0.5 bg-white/10 rounded-full text-xs text-white">${(data.violations || []).length}</span>
+            ⚠️ Violations <span class="px-1.5 py-0.5 bg-white/10 rounded-full text-xs text-white">${violations.length}</span>
           </h3>
-          ${(data.violations || []).length === 0 ? 
+          ${violations.length === 0 ? 
             '<div class="p-8 text-center border border-dashed border-success/30 rounded-xl bg-success/5 text-success">✓ No violations found. Great job!</div>' : 
             `<div class="space-y-2">
-               ${data.violations.map(v => `
+               ${violations.map(v => `
                  <div class="p-3 bg-error/5 border-l-2 border-error rounded-r-lg text-sm text-white/90 flex gap-3 items-start group hover:bg-error/10 transition">
                    <span class="text-error mt-0.5">✖</span>
                    <span class="font-mono text-xs leading-relaxed">${typeof v === 'object' ? `[${v.area || 'unknown'}] ${v.metric || 'violation'}: ${v.value} (threshold: ${v.threshold})` : v}</span>
@@ -4408,13 +4578,41 @@
           }
         `;
         
-        showViewer(`Quality: ${filename}`, html, 'html');
+        // Generate Markdown for copy
+        let markdown = `# Quality Gate Report\n\n`;
+        markdown += `**File:** ${filename}\n`;
+        markdown += `**Status:** ${status.toUpperCase()}\n\n`;
+        
+        if (Object.keys(scores).length > 0) {
+          markdown += `## Scores\n\n`;
+          markdown += `| Metric | Score |\n`;
+          markdown += `|--------|-------|\n`;
+          Object.entries(scores).forEach(([k, v]) => {
+            markdown += `| ${k} | ${Math.round(v)} |\n`;
+          });
+          markdown += `\n`;
+        }
+        
+        markdown += `## Violations (${violations.length})\n\n`;
+        if (violations.length === 0) {
+          markdown += `✅ No violations found. Great job!\n`;
+        } else {
+          violations.forEach(v => {
+            if (typeof v === 'object') {
+              markdown += `- **[${v.area || 'unknown'}]** ${v.metric || 'violation'}: ${v.value} (threshold: ${v.threshold})\n`;
+            } else {
+              markdown += `- ${v}\n`;
+            }
+          });
+        }
+        
+        showViewer(`Quality: ${filename}`, html, 'html', markdown);
       } catch (e) { showToast('Error loading quality report: ' + e.message, 'error'); }
     }
 
     // --- History View ---
     let currentHistorySource = 'lighthouse';
-    let currentHistoryLimit = 10;
+    let currentHistoryLimit = 50;
 
     async function loadHistoryView() {
       const container = document.getElementById('content-area');
@@ -4437,9 +4635,9 @@
 
       const limitSelector = `
         <select onchange="currentHistoryLimit = this.value; loadHistoryView()" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
-           <option value="5" ${currentHistoryLimit == 5 ? 'selected' : ''}>Last 5</option>
            <option value="10" ${currentHistoryLimit == 10 ? 'selected' : ''}>Last 10</option>
-           <option value="30" ${currentHistoryLimit == 30 ? 'selected' : ''}>Last 30</option>
+           <option value="50" ${currentHistoryLimit == 50 ? 'selected' : ''}>Last 50</option>
+           <option value="100" ${currentHistoryLimit == 100 ? 'selected' : ''}>Last 100</option>
         </select>
       `;
 
@@ -4459,6 +4657,9 @@
                 Loading chart...
             </div>
         </div>
+        
+        <!-- Comparison Table (Quality Gate) -->
+        <div id="history-comparison-container" class="mb-8"></div>
 
         <!-- Table Container -->
         <div id="history-table-container"></div>
@@ -4473,6 +4674,13 @@
         
         const historyData = json.data || [];
 
+        // Render Comparison Table (Quality Gate only)
+        if (currentHistorySource === 'quality' && historyData.length > 0) {
+             renderComparisonTable(historyData.slice(0, 5), 'history-comparison-container');
+        } else {
+             document.getElementById('history-comparison-container').innerHTML = '';
+        }
+
         // Render Chart
         if (historyData.length > 1) {
              renderHistoryChart(historyData.reverse(), 'history-chart-container');
@@ -4483,9 +4691,11 @@
         }
 
         // Render Table based on Source
+        const viewFn = currentHistorySource === 'quality' ? 'viewQualityReport' : 'viewLighthouseReport';
         const columns = [
-            { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted font-mono">${new Date(r.timestamp).toLocaleString()}</span>` },
-            { key: 'target', label: 'Target', render: r => {
+            { key: 'filename', label: t('report') || 'Report', render: r => `<span class="font-mono text-xs text-primary cursor-pointer hover:underline" onclick="${viewFn}('${r.filename}')">${r.filename?.replace('.json','').slice(-15) || '-'}</span>` },
+            { key: 'timestamp', label: t('date') || 'Date', render: r => `<span class="text-xs text-muted font-mono">${new Date(r.timestamp).toLocaleString()}</span>` },
+            { key: 'target', label: t('target') || 'Target', render: r => {
                 const color = r.target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
                 return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${color}">${r.target.toUpperCase()}</span>`;
             }}
@@ -4494,11 +4704,11 @@
         // Dynamic Columns based on Source
         if (currentHistorySource === 'quality') {
             columns.push(
-                { key: 'scores.score', label: 'Score', render: r => `<span class="font-bold ${r.scores.score >= 90 ? 'text-success' : 'text-warning'}">${r.scores.score}</span>` },
-                { key: 'scores', label: 'Metrics', render: r => `
+                { key: 'scores.score', label: t('overallScore') || 'Score', render: r => `<span class="font-bold ${r.scores.score >= 90 ? 'text-success' : 'text-warning'}">${r.scores.score}</span>` },
+                { key: 'scores', label: t('metric') || 'Metrics', render: r => `
                     <div class="flex gap-2 text-[10px] font-mono">
-                        <span title="Security">Sec: ${r.scores.security}</span>
-                        <span title="Maintainability">Main: ${r.scores.maintainability}</span>
+                        <span title="UX" class="${(r.scores.ux || 0) >= 90 ? 'text-success' : 'text-warning'}">UX: ${r.scores.ux || '-'}</span>
+                        <span title="A11y" class="${(r.scores.a11y || 0) >= 90 ? 'text-success' : 'text-warning'}">A11y: ${r.scores.a11y || '-'}</span>
                     </div>` 
                 }
             );
@@ -4520,8 +4730,9 @@
             containerId: 'history-table-container',
             data: historyData,
             columns: columns,
+            pageSize: 10,
             actions: [
-                { icon: '👁️', title: 'View', onClick: currentHistorySource === 'quality' ? 'viewQualityReport' : 'viewLighthouseReport', class: 'p-2 hover:bg-white/10 rounded transition', getArgs: r => `'${r.filename}'` }
+                { icon: '👁️', title: t('view') || 'View', onClick: currentHistorySource === 'quality' ? 'viewQualityReport' : 'viewLighthouseReport', class: 'p-2 hover:bg-white/10 rounded transition', getArgs: r => `'${r.filename}'` }
             ]
         });
 
@@ -4544,8 +4755,10 @@
         const datasets = [];
         
         if (currentHistorySource === 'quality') {
-            datasets.push({ label: 'Score', data: data.map(d => d.scores.score), borderColor: '#10b981', tension: 0.3 });
-            datasets.push({ label: 'Maintainability', data: data.map(d => d.scores.maintainability), borderColor: '#3b82f6', tension: 0.3 });
+            datasets.push({ label: t('overallScore') || 'Score', data: data.map(d => d.scores.score || 0), borderColor: '#10b981', tension: 0.3 });
+            datasets.push({ label: t('ux') || 'UX', data: data.map(d => d.scores.ux || 0), borderColor: '#3b82f6', tension: 0.3 });
+            datasets.push({ label: t('a11y') || 'A11y', data: data.map(d => d.scores.a11y || 0), borderColor: '#f59e0b', tension: 0.3 });
+            datasets.push({ label: t('contrast') || 'Contrast', data: data.map(d => d.scores.contrast || 0), borderColor: '#8b5cf6', tension: 0.3 });
         } else {
             datasets.push({ label: 'Performance', data: data.map(d => d.scores.performance), borderColor: '#10b981', tension: 0.3 });
             datasets.push({ label: 'Accessibility', data: data.map(d => d.scores.accessibility), borderColor: '#f59e0b', tension: 0.3 });
@@ -4567,6 +4780,147 @@
                 }
             }
         });
+    }
+
+    function renderComparisonTable(reports, containerId) {
+        const container = document.getElementById(containerId);
+        if (!reports || reports.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        // Metrics to display with i18n
+        const metrics = [
+            { key: 'build', label: t('build') || 'Build' },
+            { key: 'lint', label: t('lint') || 'Lint' },
+            { key: 'bundle-size', label: t('bundleSize') || 'Bundle Size' },
+            { key: 'render', label: t('render') || 'Render' },
+            { key: 'ux', label: t('ux') || 'UX' },
+            { key: 'a11y', label: t('a11y') || 'A11y' },
+            { key: 'contrast', label: t('contrast') || 'Contrast' },
+            { key: 'i18n', label: t('i18n') || 'i18n' },
+            { key: 'seo', label: t('seo') || 'SEO' }
+        ];
+
+        // Helper to get score with color
+        const scoreCell = (score, prevScore) => {
+            if (score === undefined || score === null || score === 0) return '<td class="px-3 py-2 text-center text-muted">-</td>';
+            const color = score >= 100 ? 'text-success' : score >= 90 ? 'text-success' : score >= 70 ? 'text-warning' : 'text-error';
+            let trend = '';
+            if (prevScore !== undefined && prevScore !== null && prevScore !== 0) {
+                if (score > prevScore) trend = ' <span class="text-success text-[10px]">↑</span>';
+                else if (score < prevScore) trend = ' <span class="text-error text-[10px]">↓</span>';
+            }
+            return `<td class="px-3 py-2 text-center font-mono text-sm ${color}">${score}${trend}</td>`;
+        };
+
+        // Build header
+        let headerHtml = `<th class="px-3 py-2 text-left text-xs font-medium text-muted uppercase tracking-wider">${t('metric') || 'Metric'}</th>`;
+        reports.forEach((r, i) => {
+            const date = new Date(r.timestamp);
+            const isLatest = i === 0;
+            const targetBadge = r.target === 'promo' 
+                ? '<span class="text-[8px] font-bold px-1 py-0.5 rounded bg-purple-500/20 text-purple-300 ml-1">PROMO</span>'
+                : '<span class="text-[8px] font-bold px-1 py-0.5 rounded bg-blue-500/20 text-blue-300 ml-1">APP</span>';
+            headerHtml += `<th class="px-3 py-2 text-center text-xs font-medium ${isLatest ? 'text-primary' : 'text-muted'} uppercase tracking-wider">
+                ${date.getDate()}/${date.getMonth()+1} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}
+                ${targetBadge}
+                ${isLatest ? `<br><span class="text-[10px] text-success">${t('latest') || 'Latest'}</span>` : ''}
+            </th>`;
+        });
+
+        // Build Overall Score row
+        let overallRow = `<tr class="border-b border-white/5 bg-surfaceHighlight"><td class="px-3 py-2 font-semibold text-white">${t('overallScore') || 'Overall Score'}</td>`;
+        reports.forEach((r, i) => {
+            const score = r.scores?.score;
+            const prevScore = reports[i+1]?.scores?.score;
+            overallRow += scoreCell(score, prevScore);
+        });
+        overallRow += '</tr>';
+
+        // Build metric rows
+        let metricsHtml = '';
+        metrics.forEach(m => {
+            metricsHtml += '<tr class="border-b border-white/5 hover:bg-white/5">';
+            metricsHtml += `<td class="px-3 py-2 text-sm text-muted">${m.label}</td>`;
+            reports.forEach((r, i) => {
+                const score = r.scores?.[m.key];
+                const prevReport = reports[i+1];
+                const prevScore = prevReport?.scores?.[m.key];
+                metricsHtml += scoreCell(score, prevScore);
+            });
+            metricsHtml += '</tr>';
+        });
+
+        // Store reports in global variable for modal access
+        window.comparisonReports = reports;
+
+        // Violations summary (clickable)
+        let violationsRow = `<tr class="border-b border-white/5"><td class="px-3 py-2 text-sm text-muted">${t('violations') || 'Violations'}</td>`;
+        reports.forEach((r, idx) => {
+            const count = r.violations?.length || 0;
+            const color = count === 0 ? 'text-success' : count <= 3 ? 'text-warning' : 'text-error';
+            const clickable = count > 0 ? `cursor-pointer hover:underline` : '';
+            const onclick = count > 0 ? `onclick="viewComparisonViolations(${idx})"` : '';
+            violationsRow += `<td class="px-3 py-2 text-center font-mono text-sm ${color} ${clickable}" ${onclick}>${count}</td>`;
+        });
+        violationsRow += '</tr>';
+
+        container.innerHTML = `
+            <div class="glass-card p-6">
+                <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">${t('qualityGateComparison') || 'Quality Gate Comparison'}</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="border-b border-white/10">
+                            <tr>${headerHtml}</tr>
+                        </thead>
+                        <tbody>
+                            ${overallRow}
+                            ${metricsHtml}
+                            ${violationsRow}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-muted mt-4 italic">${t('comparisonLegend') || '↑ Improved from previous | ↓ Decreased from previous'}</p>
+            </div>
+        `;
+    }
+
+    // View violations from comparison table
+    function viewComparisonViolations(reportIndex) {
+        const report = window.comparisonReports?.[reportIndex];
+        if (!report || !report.violations?.length) return;
+
+        const date = new Date(report.timestamp);
+        const dateStr = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+        
+        let violationsHtml = report.violations.map(v => `
+            <div class="p-3 bg-surfaceHighlight rounded-lg border-l-2 ${v.severity === 'warn' ? 'border-warning' : 'border-error'} mb-2">
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-xs font-bold ${v.severity === 'warn' ? 'text-warning' : 'text-error'}">${v.area?.toUpperCase() || 'UNKNOWN'}</span>
+                    <span class="text-xs text-muted">•</span>
+                    <span class="text-xs text-muted">${v.metric || 'Unknown metric'}</span>
+                </div>
+                <div class="text-sm text-white">
+                    ${v.message || `${v.value} (threshold: ${v.threshold})`}
+                </div>
+                ${v.selector ? `<div class="text-xs text-muted mt-1 font-mono break-all">${v.selector}</div>` : ''}
+            </div>
+        `).join('');
+
+        // Use the viewer modal
+        const modalContent = document.getElementById('viewer-markdown');
+        const modalTitle = document.getElementById('viewer-title');
+        const viewerModal = document.getElementById('viewer-modal');
+        
+        if (modalContent && modalTitle && viewerModal) {
+            modalTitle.textContent = `${t('violations') || 'Violations'} - ${report.target?.toUpperCase()} (${dateStr})`;
+            modalContent.innerHTML = `
+                <div class="text-sm text-muted mb-4">${report.violations.length} ${t('violations') || 'violation(s)'} found in ${report.filename || 'report'}</div>
+                ${violationsHtml}
+            `;
+            viewerModal.classList.remove('hidden');
+        }
     }
 
     async function loadReportsView() {
@@ -4727,6 +5081,17 @@
         const cats = lhr.categories || (lhr.data && lhr.data.categories) || {};
         const finalUrl = lhr.finalUrl || (lhr.data && lhr.data.finalUrl) || 'Unknown URL';
         
+        // Get scores
+        const perfScore = Math.round((cats['performance']?.score || 0) * 100);
+        const a11yScore = Math.round((cats['accessibility']?.score || 0) * 100);
+        const bpScore = Math.round((cats['best-practices']?.score || 0) * 100);
+        const seoScore = Math.round((cats['seo']?.score || 0) * 100);
+        
+        // Get failed audits
+        const failedAudits = Object.values(lhr.audits || (lhr.data && lhr.data.audits) || {})
+          .filter(a => a.score !== null && a.score < 0.5);
+        
+        // Generate HTML for display
         let html = `
           <div class="mb-8 flex justify-between items-center bg-white/5 p-6 rounded-2xl border border-white/5">
             <div>
@@ -4744,7 +5109,7 @@
           </div>
           <h3>Failed Audits</h3>
           <ul class="space-y-2">
-            ${Object.values(lhr.audits || (lhr.data && lhr.data.audits) || {}).filter(a => a.score !== null && a.score < 0.5).map(a => `
+            ${failedAudits.map(a => `
               <li class="p-3 bg-error/5 border-l-2 border-error rounded text-xs list-none">
                 <strong>${a.title}:</strong> ${a.description}
               </li>
@@ -4752,8 +5117,29 @@
           </ul>
         `;
         
+        // Generate Markdown for copy
+        let markdown = `# Lighthouse Analysis\n\n`;
+        markdown += `**URL:** ${finalUrl}\n\n`;
+        markdown += `## Scores\n\n`;
+        markdown += `| Metric | Score |\n`;
+        markdown += `|--------|-------|\n`;
+        markdown += `| Performance | ${perfScore}% |\n`;
+        markdown += `| Accessibility | ${a11yScore}% |\n`;
+        markdown += `| Best Practices | ${bpScore}% |\n`;
+        markdown += `| SEO | ${seoScore}% |\n\n`;
+        
+        if (failedAudits.length > 0) {
+          markdown += `## Failed Audits\n\n`;
+          failedAudits.forEach(a => {
+            markdown += `### ${a.title}\n`;
+            markdown += `${a.description}\n\n`;
+          });
+        } else {
+          markdown += `## ✅ All Audits Passed\n`;
+        }
+        
         console.log('[viewLighthouseReport] Calling showViewer');
-        showViewer(`Performance: ${filename}`, html, 'html');
+        showViewer(`Performance: ${filename}`, html, 'html', markdown);
         console.log('[viewLighthouseReport] showViewer completed');
       } catch (e) { 
         console.error('[viewLighthouseReport] Error:', e);

@@ -122,7 +122,11 @@ const App = () => {
             >
               <Github size={20} aria-hidden="true" />
             </a>
-            <a href={appUrl} className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
+            <a 
+              href={appUrl} 
+              className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all"
+              aria-label={t('launchApp')}
+            >
               <span className="hidden sm:inline">{t('launchApp')}</span>
               <span className="sm:hidden">{t('launch')}</span>
             </a>

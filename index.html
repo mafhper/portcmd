@@ -27,11 +27,33 @@
       /* Skeleton loader for initial state */
       .skeleton{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+      /* LCP Skeleton */
+      .lcp-wrapper { display: flex; height: 100vh; width: 100%; color: #333; overflow: hidden; }
+      .lcp-sidebar { width: 256px; background: #111; border-right: 1px solid #222; display: none; }
+      @media(min-width: 768px) { .lcp-sidebar { display: block; } }
+      .lcp-main { flex: 1; background: #0a0a0f; display: flex; flex-direction: column; }
+      .lcp-header { height: 64px; border-bottom: 1px solid #222; }
+      .lcp-content { padding: 32px; flex: 1; }
+      .lcp-card { background: rgba(255,255,255,0.05); border-radius: 12px; }
     </style>
   </head>
   <body>
     <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">PortCmd - Dashboard</h1>
-    <div id="root"></div>
+    <div id="root">
+       <div class="lcp-wrapper">
+         <div class="lcp-sidebar"></div>
+         <div class="lcp-main">
+            <div class="lcp-header" style="display:flex;align-items:center;padding:0 24px;gap:12px">
+               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#6366f1"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="8" y1="6" x2="16" y2="6"/></svg>
+               <span style="font-weight:600;font-size:18px;color:#fff">PortCmd</span>
+            </div>
+            <div class="lcp-content">
+               <div class="skeleton lcp-card" style="height:128px;margin-bottom:16px"></div>
+               <div class="skeleton lcp-card" style="height:300px"></div>
+            </div>
+         </div>
+       </div>
+    </div>
     <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

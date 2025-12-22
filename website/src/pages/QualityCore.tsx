@@ -11,9 +11,9 @@ const QualityCore = () => {
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-medium mb-6">
           <span>{t('qcTag')}</span>
         </div>
-        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 mb-6">
+        <h2 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-zinc-500 mb-6">
           {t('qcTitle')}
-        </h1>
+        </h2>
         <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
           {t('qcSubtitle')}
         </p>
@@ -29,8 +29,8 @@ const QualityCore = () => {
           { icon: GitCommit, title: t('qcCommits'), desc: t('qcCommitsDesc') },
           { icon: Lock, title: t('qcSecurity'), desc: t('qcSecurityDesc') }
         ].map((feature, i) => (
-          <div key={i} className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors group">
-            <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-zinc-800">
+          <div key={i} className="glass p-8 rounded-2xl border border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+            <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-zinc-800 transition-colors border border-zinc-800">
               <feature.icon className="text-cyan-500" />
             </div>
             <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>

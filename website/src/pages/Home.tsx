@@ -37,7 +37,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
               </button>
               <a 
                 href={appUrl} 
-                className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black"
+                className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:shadow-cyan-500/40 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black cursor-pointer"
                 aria-label="Try the demo application"
               >
                 <Zap size={20} aria-hidden="true" />
@@ -133,7 +133,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                     { icon: Layers, title: t('appFunc2'), desc: t('appFunc2Desc'), color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
                     { icon: FolderGit2, title: t('appFunc3'), desc: t('appFunc3Desc'), color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' }
                 ].map((func, i) => (
-                    <div key={i} className={`p-8 rounded-3xl border ${func.border} ${func.bg} hover:scale-105 transition-transform duration-300`}>
+                    <div key={i} className={`p-8 rounded-3xl border ${func.border} ${func.bg} hover:bg-opacity-80 hover:shadow-lg transition-all duration-300 cursor-pointer`}>
                         <func.icon className={`w-12 h-12 ${func.color} mb-6`} />
                         <h3 className="text-xl font-bold text-white mb-3">{func.title}</h3>
                         <p className="text-zinc-400">{func.desc}</p>
@@ -151,8 +151,8 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
             { icon: Layout, title: t('featureModern'), desc: t('featureModernDesc') },
             { icon: Command, title: t('featureDev'), desc: t('featureDevDesc') }
           ].map((feature, i) => (
-            <div key={i} className="glass p-8 rounded-2xl hover:bg-white/5 transition-colors group">
-              <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform border border-zinc-800">
+            <div key={i} className="glass p-8 rounded-2xl hover:bg-white/5 transition-colors group cursor-pointer">
+              <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 group-hover:bg-zinc-800 transition-colors border border-zinc-800">
                 <feature.icon className="text-brand-500" />
               </div>
               <h3 className="text-xl font-bold mb-3">{feature.title}</h3>

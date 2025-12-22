@@ -20,19 +20,19 @@ const Author = () => {
                 />
             </div>
             
-            <h1 className="text-4xl font-bold text-white mb-2">mafhper</h1>
+            <h2 className="text-4xl font-bold text-white mb-2">mafhper</h2>
             <p className="text-zinc-400 text-lg mb-8 max-w-md">
                 {t('authorRole')}
             </p>
 
             <div className="flex items-center gap-4">
-                <a href="https://github.com/mafhper" target="_blank" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-white">
+                <a href="https://github.com/mafhper" target="_blank" className="p-3 min-w-[44px] min-h-[44px] bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-white cursor-pointer flex items-center justify-center">
                     <Github size={24} />
                 </a>
-                <a href="#" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white">
+                <a href="#" className="p-3 min-w-[44px] min-h-[44px] bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white cursor-pointer flex items-center justify-center">
                     <Twitter size={24} />
                 </a>
-                <a href="https://mafhper.github.io/personal-news" target="_blank" className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white">
+                <a href="https://mafhper.github.io/personal-news" target="_blank" className="p-3 min-w-[44px] min-h-[44px] bg-white/5 hover:bg-white/10 rounded-xl transition-colors text-zinc-400 hover:text-white cursor-pointer flex items-center justify-center">
                     <Globe size={24} />
                 </a>
             </div>

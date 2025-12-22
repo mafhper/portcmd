@@ -95,7 +95,7 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
                 <X className="w-3 h-3" />
                 <span>Clear</span>
               </button>
-              <button onClick={onClose} aria-label="Close console" className="p-1 text-muted hover:text-fg transition-colors"><X className="w-5 h-5" /></button>
+              <button onClick={onClose} aria-label="Close console" className="p-1 text-gray-600 dark:text-gray-400 hover:text-fg transition-colors"><X className="w-5 h-5" /></button>
            </div>
          </div>
 

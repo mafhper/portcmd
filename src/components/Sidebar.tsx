@@ -73,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const categories = [
     { type: ProcessType.DEVELOPMENT, icon: Code, color: 'text-success' },
     { type: ProcessType.DATABASE, icon: Database, color: 'text-info' },
-    { type: ProcessType.SYSTEM, icon: Server, color: 'text-muted' },
+    { type: ProcessType.SYSTEM, icon: Server, color: 'text-gray-600 dark:text-gray-400' },
     { type: ProcessType.OTHER, icon: Cpu, color: 'text-warning' },
   ];
 
@@ -165,7 +165,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
                 ${currentView === item.view 
                   ? 'bg-primary/10 text-primary shadow-sm' 
-                  : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
+                  : 'hover:bg-surfaceHover text-gray-600 dark:text-gray-400 hover:text-fg'}`}
               style={{ color: currentView === item.view ? '' : 'var(--sidebar-text)' }}
               title={showIconsOnly ? item.label : ''}
               aria-label={item.label}
@@ -205,7 +205,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             <div className="space-y-1">
               <button
                  onClick={() => setFilter((prev) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
-                 className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[44px]`}
+                 className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-gray-600 dark:text-gray-400 hover:text-fg min-h-[44px]`}
                  style={{ color: 'var(--sidebar-text)' }}
                  aria-label="Show all processes"
               >
@@ -224,7 +224,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 <button
                   key={cat.type}
                   onClick={() => setFilter((prev) => ({ ...prev, type: cat.type, onlyFavorites: false, onlyManaged: false }))}
-                  className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} ${showIconsOnly ? 'px-3' : 'pl-6 pr-3'} py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[40px] 
+                  className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} ${showIconsOnly ? 'px-3' : 'pl-6 pr-3'} py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-gray-600 dark:text-gray-400 hover:text-fg min-h-[44px] 
                     ${filter.type === cat.type ? 'bg-surfaceHover text-fg' : ''}`}
                   style={{ color: 'var(--sidebar-text)' }}
                   title={showIconsOnly ? cat.type : ''}
@@ -252,7 +252,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               <button 
                 onClick={() => setFilter((prev) => ({ ...prev, onlyManaged: true, onlyFavorites: false, type: 'All' }))}
                 className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
-                  ${filter.onlyManaged ? 'bg-success/10 text-success shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
+                  ${filter.onlyManaged ? 'bg-success/10 text-success shadow-sm' : 'hover:bg-surfaceHover text-gray-600 dark:text-gray-400 hover:text-fg'}`}
                 style={{ color: filter.onlyManaged ? '' : 'var(--sidebar-text)' }}
                 title={showIconsOnly ? "My Projects" : ''}
                 aria-label="Show my projects only"
@@ -270,7 +270,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
               <button 
                 onClick={() => setFilter((prev) => ({ ...prev, onlyFavorites: true, onlyManaged: false, type: 'All' }))}
                 className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
-                  ${filter.onlyFavorites ? 'bg-warning/10 text-warning shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
+                  ${filter.onlyFavorites ? 'bg-warning/10 text-warning shadow-sm' : 'hover:bg-surfaceHover text-gray-600 dark:text-gray-400 hover:text-fg'}`}
                 style={{ color: filter.onlyFavorites ? '' : 'var(--sidebar-text)' }}
                   title={showIconsOnly ? t('favorites') : ''}
                 aria-label="Show favorites only"
@@ -297,7 +297,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
          )}
         <button 
           onClick={onOpenSettings}
-          className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} p-3 rounded-lg text-muted hover:text-fg hover:bg-surfaceHover transition-all min-h-[44px]`}
+          className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} p-3 rounded-lg text-gray-600 dark:text-gray-400 hover:text-fg hover:bg-surfaceHover transition-all min-h-[44px]`}
           style={{ color: 'var(--sidebar-text)' }}
           title={t('settings')}
           aria-label="Open settings"
