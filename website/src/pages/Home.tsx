@@ -12,8 +12,8 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
       {/* Hero */}
       <section className="relative pt-32 pb-20 px-6 hero-gradient overflow-hidden">
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-medium mb-6 animate-fade-in-up">
-            <span className="relative flex h-2 w-2">
+          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-xs font-medium mb-6" role="status">
+            <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
             </span>
@@ -35,17 +35,21 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                 <Download size={20} />
                 <span>{t('download')}</span>
               </button>
-              <a href={appUrl} className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center">
-                <Zap size={20} />
+              <a 
+                href={appUrl} 
+                className="px-8 py-4 bg-cyan-500 hover:bg-cyan-400 text-black shadow-lg shadow-cyan-500/20 rounded-xl font-semibold flex items-center space-x-2 transition-all hover:scale-105 w-full sm:w-auto justify-center focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-black"
+                aria-label="Try the demo application"
+              >
+                <Zap size={20} aria-hidden="true" />
                 <span>{t('tryDemo')}</span>
               </a>
             </div>
-            <span className="text-xs text-zinc-500 mt-3">{t('platformsComingSoon')}</span>
+            <span className="text-xs text-zinc-400 mt-3">{t('platformsComingSoon')}</span>
           </div>
         </div>
 
         {/* Mockup */}
-        <div className="mt-20 max-w-5xl mx-auto glass rounded-xl p-2 shadow-2xl animate-fade-in-up delay-200">
+        <div className="mt-20 max-w-5xl mx-auto glass rounded-xl p-2 shadow-2xl animate-fade-in-up">
           <div className="bg-[#09090b] rounded-lg overflow-hidden border border-white/5 font-sans">
              
              {/* Mock App Header */}
@@ -55,7 +59,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                    <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50"></div>
                    <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50"></div>
                 </div>
-                <div className="text-xs text-zinc-500 font-mono">localhost: dashboard</div>
+                <div className="text-xs text-zinc-400 font-mono">localhost: dashboard</div>
                 <div className="w-16"></div>
              </div>
 
@@ -73,7 +77,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                      <div key={i} className={`relative overflow-hidden rounded-xl border ${stat.border} bg-zinc-900/50 p-4`}>
                         <div className={`absolute inset-0 bg-gradient-to-br ${stat.bg} to-transparent opacity-50`} />
                         <div className="relative z-10">
-                           <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider mb-1">{stat.label}</div>
+                           <div className="text-zinc-400 text-[10px] font-bold uppercase tracking-wider mb-1">{stat.label}</div>
                            <div className={`text-xl font-bold ${stat.color}`}>{stat.value}</div>
                         </div>
                      </div>
@@ -100,7 +104,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                         <div key={i} className="flex items-center px-6 py-4 text-sm hover:bg-white/5 transition-colors cursor-default">
                            <div className="w-24 font-mono font-bold text-brand-400">{row.port}</div>
                            <div className="flex-1 font-medium text-zinc-300">{row.name}</div>
-                           <div className="w-20 font-mono text-zinc-500 hidden sm:block">{row.pid}</div>
+                           <div className="w-20 font-mono text-zinc-400 hidden sm:block">{row.pid}</div>
                            <div className="w-32 hidden sm:block"><span className={`text-xs px-2 py-1 rounded-full bg-white/5 border border-white/5 ${row.color}`}>{row.type}</span></div>
                            <div className="w-24 flex items-center space-x-2 text-zinc-400">
                               <span className={`w-1.5 h-1.5 rounded-full ${row.status === 'Running' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
@@ -211,7 +215,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
         </div>
       </section>
 
-      <footer className="border-t border-white/5 py-12 text-center text-zinc-500 text-sm">
+      <footer className="border-t border-white/5 py-12 text-center text-zinc-400 text-sm">
         <p>&copy; {new Date().getFullYear()} {t('footerRights')}</p>
       </footer>
     </>

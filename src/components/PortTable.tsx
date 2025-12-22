@@ -470,15 +470,15 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
       }}
     >
       <div className="overflow-x-auto custom-scrollbar">
-        <table className="w-full min-w-[900px] border-collapse text-left table-fixed">
+        <table className="w-full min-w-[900px] border-collapse text-left">
           <thead className="border-b border-border bg-surface2 text-xs font-semibold uppercase tracking-wider sticky top-0 z-10 text-muted">
             <tr>
-              {renderHeader(t('port'), 'port', 'w-[8%]')}
-              {renderHeader(t('process'), 'name', 'w-[32%]')}
-              {renderHeader(t('pid'), 'pid', 'w-[10%]')}
-              {renderHeader(t('type'), 'type', 'w-[15%]')}
-              {renderHeader(t('status'), 'status', 'w-[15%]')}
-              <th className="px-4 py-3 w-[20%] text-right text-muted">{t('actions')}</th>
+              {renderHeader(t('port'), 'port', 'px-6')}
+              {renderHeader(t('process'), 'name', 'px-6')}
+              {renderHeader(t('pid'), 'pid', 'px-6')}
+              {renderHeader(t('type'), 'type', 'px-6')}
+              {renderHeader(t('status'), 'status', 'px-6')}
+              <th className="px-6 py-3 text-right text-muted">{t('actions')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border text-sm">

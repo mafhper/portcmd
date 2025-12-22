@@ -14,7 +14,10 @@ export function createApp() {
   app.use('/api/system', systemRoutes);
   app.use('/api/projects', projectRoutes);
   app.use('/api/reports', reportsRoutes);
-  // app.use('/api/reports', reportRoutes);
+
+  app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', uptime: process.uptime() });
+  });
 
   app.get('/', (req, res) => {
     res.send('Port Cmd API is running. Visit the frontend application to interact.');

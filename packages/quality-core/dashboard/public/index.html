@@ -258,6 +258,18 @@
       0%, 100% { opacity: 1; transform: translateY(-50%) scale(1); }
       50% { opacity: 0.7; transform: translateY(-50%) scale(1.2); }
     }
+    
+    /* Heartbeat animation for logo */
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+      60% { transform: scale(1); }
+    }
+    .logo-heart:hover svg {
+      animation: heartbeat 1s ease-in-out infinite;
+    }
 
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -618,13 +630,14 @@
     <!-- Header -->
     <div class="p-6 sidebar-header flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <a id="promo-link" href="/portcmd/" class="group" title="Back to PortCmd">
-          <div class="relative w-10 h-10 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-primary group-hover:to-purple-500 transition-all duration-300">
-            <svg class="w-6 h-6 text-primary group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        <a id="promo-link" href="/portcmd/" class="group logo-heart" title="Back to PortCmd">
+          <div class="relative w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-emerald-500 group-hover:to-green-500 transition-all duration-300">
+            <!-- Heart icon representing health/core -->
+            <svg class="w-6 h-6 text-emerald-400 group-hover:text-white transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
           </div>
         </a>
         <div class="sidebar-text">
-          <button onclick="window.scrollTo(0,0); window.location.reload()" class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500 hover:opacity-80 transition-opacity text-left">Quality Core</button>
+          <button onclick="window.scrollTo(0,0); window.location.reload()" class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-green-500 hover:opacity-80 transition-opacity text-left">Quality Core</button>
         </div>
       </div>
       <script>
@@ -640,31 +653,34 @@
     <!-- Nav Items -->
     <nav class="flex-1 px-4 space-y-2 mt-2 overflow-y-auto" id="nav-links">
       <button onclick="switchTab('dashboard')" class="w-full sidebar-link active flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="dashboard">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg><span class="sidebar-text">Dashboard</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg><span class="sidebar-text">Painel</span>
       </button>
-      <button onclick="switchTab('profile')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="siteProfile">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><span class="sidebar-text">Site Profile</span>
-      </button>
-      <button onclick="switchTab('quality')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="qualityScans">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span class="sidebar-text">Quality Scans</span>
+      <button onclick="switchTab('profile')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="profile">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg><span class="sidebar-text">Perfil</span>
       </button>
       <button onclick="switchTab('monitor')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="siteMonitor">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="sidebar-text">Site Monitor</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><span class="sidebar-text">Monitor</span>
+      </button>
+      <button onclick="switchTab('quality')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="qualityScans">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg><span class="sidebar-text">Qualidade</span>
       </button>
       <button onclick="switchTab('pagespeed')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="pageSpeed">
-         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">PageSpeed</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg><span class="sidebar-text">PageSpeed</span>
       </button>
-      <button onclick="switchTab('git')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="gitDeploy">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 21V9a9 9 0 009 9"/></svg><span class="sidebar-text">Git &amp; Deploy</span>
-      </button>
-      <button onclick="switchTab('reports')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="lighthouse">
+      <button onclick="switchTab('lighthouse')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="lighthouse">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span class="sidebar-text">Lighthouse</span>
+      </button>
+      <button onclick="switchTab('history')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="history">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="sidebar-text">Histórico</span>
       </button>
       <button onclick="switchTab('logs')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="logs">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><span class="sidebar-text">Logs</span>
       </button>
+      <button onclick="switchTab('git')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="gitDeploy">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 21V9a9 9 0 009 9"/></svg><span class="sidebar-text">Git & Deploy</span>
+      </button>
       <button onclick="switchTab('insights')" class="w-full sidebar-link flex items-center gap-3 px-4 py-3 text-sm font-medium text-muted rounded-r-lg relative" data-i18n="aiInsights">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg><span class="sidebar-text">AI Insights</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 00-1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg><span class="sidebar-text">Insights IA</span>
       </button>
     </nav>
 
@@ -985,6 +1001,44 @@
       return container;
     }
 
+    // Health Gate Help Modal
+    function showHealthGateHelp() {
+      const html = `
+        <div class="space-y-4">
+          <div class="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+            <span class="text-2xl">✅</span>
+            <div>
+              <div class="font-bold text-emerald-400">PASS</div>
+              <div class="text-sm text-muted">All Core Web Vitals OK and Performance ≥ 80</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+            <span class="text-2xl">⚠️</span>
+            <div>
+              <div class="font-bold text-amber-400">WARN</div>
+              <div class="text-sm text-muted">Minor issues with non-critical metrics</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <span class="text-2xl">❌</span>
+            <div>
+              <div class="font-bold text-red-400">FAIL</div>
+              <div class="text-sm text-muted">Core Web Vitals exceeded or Performance < 60</div>
+            </div>
+          </div>
+          <div class="mt-4 p-3 bg-white/5 rounded-lg text-xs text-muted">
+            <b>Core Web Vitals:</b> LCP ≤ 2.5s, CLS ≤ 0.1, FID/INP ≤ 100ms
+          </div>
+        </div>
+      `;
+      showViewer('Health Gate - ' + t('whatsThis'), html, 'html');
+    }
+
+    // Navigate to reports when clicking score cards
+    function navigateToReports(category = 'performance') {
+      switchTab('reports');
+    }
+
 
     // --- Settings (localStorage + env config) ---
     // Env vars from .env.local have priority over localStorage
@@ -1099,9 +1153,14 @@
         commitChanges: 'Commit Changes',
         commitPush: 'Commit & Push',
         runTest: 'Run Test',
+        runGate: 'Run Gate',
+        runAll: 'Run All',
+        pingNow: 'Ping Now',
+        aiAnalysis: 'AI Analysis',
         newAnalysis: 'New Analysis',
         analysisHistory: 'Analysis History',
         qualityGateSubtitle: 'Managed quality control and thresholds',
+        pageSpeedSubtitle: 'Remote Lighthouse test via Google API',
         lighthouseReportsSubtitle: 'Archive of performance and quality reports',
         logsSubtitle: 'System logs and execution history',
         aiInsightsSubtitle: 'Deep analysis powered by Gemini 1.5 Flash',
@@ -1125,6 +1184,9 @@
         allSystemsNormal: 'All systems operating normally',
         allMetricsWithinTarget: 'All metrics within target',
         allSystemsHealthy: 'All systems healthy',
+        whatsThis: "What's this?",
+        healthGateTooltip: 'Click for more info about Health Gate',
+        clickToViewReports: 'Click to view detailed reports',
         minorIssuesDetected: 'Minor issues detected',
         criticalIssuesFound: 'Critical issues found',
         vsLast: 'vs last',
@@ -1142,13 +1204,16 @@
         current: 'Current',
         minMax: 'Min / Max',
         vsAvg: 'vs Avg',
-        avg: 'Avg'
+        avg: 'Avg',
+        history: 'History',
+        historySubtitle: 'Analyze metrics evolution over time',
+        evolutionChart: 'Evolution Chart',
       },
       'pt-BR': {
         dashboard: 'Painel',
-        siteProfile: 'Perfil do Site',
-        qualityScans: 'Testes de Qualidade',
-        siteMonitor: 'Monitor de Site',
+        profile: 'Perfil',
+        qualityScans: 'Qualidade',
+        siteMonitor: 'Monitor',
         pageSpeed: 'PageSpeed',
         gitDeploy: 'Git & Deploy',
         lighthouse: 'Lighthouse',
@@ -1197,9 +1262,14 @@
         commitChanges: 'Alterações do Commit',
         commitPush: 'Commit & Push',
         runTest: 'Executar Teste',
+        runGate: 'Executar Gate',
+        runAll: 'Executar Todos',
+        pingNow: 'Ping Agora',
+        aiAnalysis: 'Análise IA',
         newAnalysis: 'Nova Análise',
         analysisHistory: 'Histórico de Análises',
         qualityGateSubtitle: 'Controle de qualidade e limites gerenciados',
+        pageSpeedSubtitle: 'Teste Lighthouse remoto via Google API',
         lighthouseReportsSubtitle: 'Arquivo de relatórios de desempenho e qualidade',
         logsSubtitle: 'Logs do sistema e histórico de execução',
         aiInsightsSubtitle: 'Análise profunda com Gemini 1.5 Flash',
@@ -1223,6 +1293,9 @@
         allSystemsNormal: 'Todos os sistemas operando normalmente',
         allMetricsWithinTarget: 'Todas as métricas dentro do alvo',
         allSystemsHealthy: 'Todos os sistemas saudáveis',
+        whatsThis: 'O que é isso?',
+        healthGateTooltip: 'Clique para mais informações sobre o Health Gate',
+        clickToViewReports: 'Clique para ver relatórios detalhados',
         minorIssuesDetected: 'Problemas menores detectados',
         criticalIssuesFound: 'Problemas críticos encontrados',
         vsLast: 'vs anterior',
@@ -1240,13 +1313,16 @@
         current: 'Atual',
         minMax: 'Mín / Máx',
         vsAvg: 'vs Média',
-        avg: 'Média'
+        avg: 'Média',
+        history: 'Histórico',
+        historySubtitle: 'Analise a evolução das métricas ao longo do tempo',
+        evolutionChart: 'Gráfico de Evolução',
       },
       es: {
         dashboard: 'Panel',
-        siteProfile: 'Perfil del Sitio',
-        qualityScans: 'Escaneos de Calidad',
-        siteMonitor: 'Monitor de Sitio',
+        profile: 'Perfil',
+        qualityScans: 'Calidad',
+        siteMonitor: 'Monitor',
         pageSpeed: 'PageSpeed',
         gitDeploy: 'Git & Deploy',
         lighthouse: 'Lighthouse',
@@ -1295,9 +1371,14 @@
         commitChanges: 'Cambios del Commit',
         commitPush: 'Commit & Push',
         runTest: 'Ejecutar Prueba',
+        runGate: 'Ejecutar Gate',
+        runAll: 'Ejecutar Todos',
+        pingNow: 'Ping Ahora',
+        aiAnalysis: 'Análisis IA',
         newAnalysis: 'Nuevo Análisis',
         analysisHistory: 'Historial de Análisis',
         qualityGateSubtitle: 'Control de calidad y umbrales gestionados',
+        pageSpeedSubtitle: 'Prueba Lighthouse remota via Google API',
         lighthouseReportsSubtitle: 'Archivo de informes de rendimiento y calidad',
         logsSubtitle: 'Registros del sistema e historial de ejecución',
         aiInsightsSubtitle: 'Análisis profundo con Gemini 1.5 Flash',
@@ -1321,6 +1402,12 @@
         allSystemsNormal: 'Todos los sistemas operando normalmente',
         allMetricsWithinTarget: 'Todas las métricas dentro del objetivo',
         allSystemsHealthy: 'Todos los sistemas saludables',
+        history: 'Historial',
+        historySubtitle: 'Analizar la evolución de las métricas a lo largo del tiempo',
+        evolutionChart: 'Gráfico de Evolución',
+        whatsThis: '¿Qué es esto?',
+        healthGateTooltip: 'Clic para más información sobre Health Gate',
+        clickToViewReports: 'Clic para ver informes detallados',
         minorIssuesDetected: 'Problemas menores detectados',
         criticalIssuesFound: 'Problemas críticos encontrados',
         vsLast: 'vs anterior',
@@ -1351,9 +1438,22 @@
     function filterByTarget(reports, target = currentTarget) {
         if (target === 'all') return reports;
         return reports.filter(r => {
-            const reportTarget = r.data?.meta?.target || r.meta?.target || 
-                                 (r.data?.url?.includes('github.io') ? 'promo' : 'app') ||
-                                 (r.filename?.toLowerCase().includes('promo') ? 'promo' : 'app');
+            if (r.data?.target) return r.data.target === target;
+
+            // Priority 2: Explicit meta target
+            if (r.data?.meta?.target) return r.data.meta.target === target;
+            if (r.meta?.target) return r.meta.target === target;
+
+            // Priority 3: Fallback derived logic
+            const url = r.data?.finalUrl || r.data?.url || '';
+            const filename = r.filename?.toLowerCase() || '';
+            
+            // APP detection: /app/ in URL or _app_ in filename takes priority
+            const isApp = url.includes('/app/') || url.includes('/app') || filename.includes('_app_');
+            // PROMO detection: only if NOT app
+            const isPromo = !isApp && (url.includes('promo') || url.includes('github.io') || filename.includes('_promo_'));
+                            
+            const reportTarget = isPromo ? 'promo' : 'app';
             return reportTarget === target;
         });
     }
@@ -1751,13 +1851,16 @@
     let viewerCurrentIndex = 0;
     let viewerType = 'quality'; // 'quality' or 'lighthouse'
 
-    function showViewer(title, content, format = 'html') {
+    function showViewer(title, content, format = 'html', rawContent = null) {
       const modal = document.getElementById('viewer-modal');
       const container = document.getElementById('viewer-container');
       const titleEl = document.getElementById('viewer-title');
       const contentEl = document.getElementById('viewer-content');
 
       titleEl.innerText = title;
+      
+      // Store raw content for copy functionality
+      window.viewerRawContent = rawContent || content;
       
       if (format === 'json') {
         contentEl.innerHTML = `<pre class="text-xs text-blue-300 font-mono leading-relaxed bg-black/20 p-6 rounded-xl border border-white/5">${JSON.stringify(content, null, 2)}</pre>`;
@@ -1857,7 +1960,7 @@
             return;
           }
           const formattedContent = formatQualityReport(data, title);
-          showViewer(title, formattedContent, 'html');
+          showViewer(title, formattedContent, 'html', data);
         } else if (title.endsWith('.md')) {
           // Markdown report
           const content = report.content || report.data || 'No content available';
@@ -2199,20 +2302,37 @@
       if (tab === 'pagespeed') loadPageSpeedView();
       if (tab === 'git') loadGitView();
       if (tab === 'reports') loadReportsView();
+      if (tab === 'lighthouse') loadReportsView();
       if (tab === 'logs') loadLogsView();
       if (tab === 'insights') loadInsightsView();
     }
 
     // --- Views Helpers ---
 
+    // Helper for creating consistent header action buttons
+    function headerBtn(label, onclick, variant = 'default', icon = '') {
+      const variants = {
+        primary: 'bg-primary text-black hover:bg-primary/90',
+        purple: 'bg-purple-600/80 text-white hover:bg-purple-500',
+        orange: 'bg-orange-500 text-black hover:bg-orange-400',
+        success: 'bg-emerald-500 text-black hover:bg-emerald-400',
+        default: 'bg-white/10 text-white hover:bg-white/20'
+      };
+      const style = variants[variant] || variants.default;
+      return `<button onclick="${onclick}" class="min-w-[90px] px-4 py-2.5 text-xs font-bold rounded-lg transition-all ${style} flex items-center justify-center gap-2">
+        ${icon ? `<span>${icon}</span>` : ''}
+        <span>${label}</span>
+      </button>`;
+    }
+
     function renderHeader(title, subtitle, actions = '') {
         return `
-            <header class="flex justify-between items-end mb-8 bg-surfaceHighlight/20 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
-              <div>
-                <h1 class="text-3xl font-bold text-white mb-2 flex items-center gap-3">${title}</h1>
+            <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-surfaceHighlight/20 p-6 rounded-xl border border-white/5 backdrop-blur-sm">
+              <div class="flex-shrink-0">
+                <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1">${title}</h1>
                 <p class="text-muted text-sm">${subtitle}</p>
               </div>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2 items-center">
                 ${actions}
               </div>
             </header>
@@ -2243,10 +2363,10 @@
         const lighthouseReports = (lhJson.data || []).map(r => {
              const cats = r.data?.categories || {};
              const audits = r.data?.audits || {};
-             const perf = (cats.performance?.score || 0) * 100;
-             const a11y = (cats.accessibility?.score || 0) * 100;
-             const bp = (cats['best-practices']?.score || 0) * 100;
-             const seo = (cats.seo?.score || 0) * 100;
+             const perf = Math.round((cats.performance?.score || 0) * 100);
+             const a11y = Math.round((cats.accessibility?.score || 0) * 100);
+             const bp = Math.round((cats['best-practices']?.score || 0) * 100);
+             const seo = Math.round((cats.seo?.score || 0) * 100);
              const url = r.data?.finalUrl || r.data?.requestedUrl || '';
              
              // Extract Core Web Vitals from audits (convert ms to seconds where needed)
@@ -2257,8 +2377,13 @@
              const tti = (audits['interactive']?.numericValue || 0) / 1000; // ms to s
              const inp = audits['experimental-interaction-to-next-paint']?.numericValue || 0; // ms
              
-             // Determine target from URL
-             const target = (url.includes(':5174') || url.includes('github.io') || url.includes('promo')) ? 'promo' : 'app';
+             // Determine target from URL or Filename
+             const filename = r.filename?.toLowerCase() || '';
+             // APP detection: /app/ in URL or _app_ in filename takes priority
+             const isApp = url.includes('/app/') || url.includes('/app') || filename.includes('_app_');
+             // PROMO detection: only if NOT app
+             const isPromo = !isApp && (url.includes('promo') || url.includes('github.io') || filename.includes('_promo_'));
+             const target = isPromo ? 'promo' : 'app';
              
              return {
                  ...r,
@@ -2400,6 +2525,22 @@
          scores.build = bestScore; // Fallback
       }
 
+      // History Extraction (Last 5 runs)
+      const extractHistory = (metric) => {
+          return filteredReports.slice(0, 5).map(r => {
+             const m = r.data?.metrics?.scores || r.data?.scores || {};
+             return Math.round(m[metric] || 0);
+          }).reverse();
+      };
+
+      const history = {
+          build: extractHistory('build'),
+          render: extractHistory('render'),
+          ux: extractHistory('ux'),
+          a11y: extractHistory('a11y'),
+          seo: extractHistory('seo')
+      };
+
       // Average Score
       const allValues = validScores.map(v => v[1]);
       const avgScore = allValues.length ? Math.round(allValues.reduce((a, b) => a + b, 0) / allValues.length) : (latest?.summary?.score || 0);
@@ -2450,8 +2591,9 @@
           }
           
           // --- Health Gate Card (RFC-0001 implementation) ---
-          const score = latest?.summary?.score || 0;
-          const perfTrend = getTrend(score, previous?.summary?.score);
+           const score = Math.round(latest?.summary?.score || 0);
+           const prevScore = Math.round(previous?.summary?.score || 0);
+           const perfTrend = getTrend(score, prevScore);
           const evaluateHealthGate = () => {
               const perf = score || 0;
               const lcp = parseFloat(latest?.metrics?.lcp || 0);
@@ -2512,16 +2654,19 @@
                           </div>
                           <div class="text-right">
                               <span class="text-xs text-muted uppercase tracking-wider block">${t('healthGate')}</span>
-                              <span class="text-[9px] text-muted/50" title="PASS: All Core Web Vitals OK and Performance ≥ 80&#10;WARN: Minor issues with non-critical metrics&#10;FAIL: Core Web Vitals exceeded or Performance < 60">ⓘ What's this?</span>
+                              <span class="text-[9px] text-muted/50 cursor-pointer hover:text-primary transition" onclick="showHealthGateHelp()" title="${t('healthGateTooltip')}">ⓘ ${t('whatsThis')}</span>
                           </div>
                       </div>
                       <p class="text-sm text-white/90 mb-3 font-medium">${gate.summary}</p>
                       ${gate.reasons.length > 0 ? `
                           <ul class="space-y-1.5">
                               ${gate.reasons.slice(0, 3).map(r => `
-                                  <li class="text-xs ${r.severity === 'critical' ? 'text-red-400 bg-red-500/10' : 'text-amber-400 bg-amber-500/10'} flex items-center gap-2 px-2 py-1 rounded">
+                                  <li class="text-xs ${r.severity === 'critical' ? 'text-red-400 bg-red-500/10 hover:bg-red-500/20' : 'text-amber-400 bg-amber-500/10 hover:bg-amber-500/20'} flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer transition-colors" 
+                                      onclick="switchTab('reports')" 
+                                      title="${r.severity === 'critical' ? 'Critical issue - Click to view reports' : 'Warning - Click to view reports'}">
                                       <span class="text-sm">${r.severity === 'critical' ? '✗' : '!'}</span>
-                                      <span>${r.text}</span>
+                                      <span class="flex-1">${r.text}</span>
+                                      <span class="text-muted/50">→</span>
                                   </li>
                               `).join('')}
                           </ul>
@@ -2633,7 +2778,7 @@
                <!-- TOP SCORE ROW -->
                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 lg:mb-8">
                    <!-- PRIMARY: Performance Score -->
-                   <div class="p-4 sm:p-6 glass-card border ${score >= 90 ? 'border-emerald-500/30' : (score >= 50 ? 'border-amber-500/30' : 'border-red-500/30')} flex flex-col justify-center items-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+                   <div class="p-4 sm:p-6 glass-card border ${score >= 90 ? 'border-emerald-500/30' : (score >= 50 ? 'border-amber-500/30' : 'border-red-500/30')} flex flex-col justify-center items-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 cursor-pointer" onclick="switchTab('lighthouse')" title="${t('clickToViewReports')}">
                         <div class="text-[10px] sm:text-xs text-muted uppercase tracking-widest mb-2 flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full ${score >= 90 ? 'bg-emerald-500' : (score >= 50 ? 'bg-amber-500' : 'bg-red-500')} animate-pulse"></span>
                             ${t('performance')}
@@ -2660,9 +2805,9 @@
                    
                    <!-- SECONDARY: Other Scores -->
                    <!-- SECONDARY: Other Scores -->
-                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y), avgScores.a11y)}
-                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux), avgScores.ux)}
-                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo), avgScores.seo)}
+                   ${renderScoreCard('Accessibility', scores.a11y, '', getColor(scores.a11y), '', getTrend(scores.a11y, prevScores?.a11y), avgScores.a11y, history.a11y)}
+                   ${renderScoreCard('Best Practices', scores.ux, '', getColor(scores.ux), '', getTrend(scores.ux, prevScores?.ux), avgScores.ux, history.ux)}
+                   ${renderScoreCard('SEO', scores.seo, '', getColor(scores.seo), '', getTrend(scores.seo, prevScores?.seo), avgScores.seo, history.seo)}
                </div>
                </div>
 
@@ -2677,7 +2822,7 @@
                           </div>
                           <div class="flex gap-1 sm:gap-2 flex-wrap">
                              ${['1h','24h','7d','30d','all'].map(p => `
-                                <button onclick="setPeriodFilter('${p}')" class="px-2 py-1 text-[10px] uppercase font-bold rounded transition-all ${currentPeriod===p ? 'bg-primary text-black shadow-[0_0_10px_rgba(34,211,238,0.4)]' : 'text-muted hover:text-white bg-white/5 hover:bg-white/10'}">${p}</button>
+                                <button onclick="setPeriodFilter('${p}')" data-period="${p}" class="period-btn px-2 py-1 text-[10px] uppercase font-bold rounded transition-all ${currentPeriod===p ? 'bg-primary text-black shadow-[0_0_10px_rgba(34,211,238,0.4)]' : 'text-muted hover:text-white bg-white/5 hover:bg-white/10'}">${p}</button>
                              `).join('')}
                           </div>
                        </div>
@@ -2753,9 +2898,33 @@
       renderTrendChart(filteredReports, currentPeriod); // Should work if chart.js loaded
     }
 
-    function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0, avg = 0) {
+    function renderScoreCard(title, score, icon, colorClass, bgClass, trend = 0, avg = 0, history = []) {
       const trendIcon = trend > 0 ? '↑' : (trend < 0 ? '↓' : '');
       const trendColor = trend > 0 ? 'text-success' : (trend < 0 ? 'text-error' : 'text-muted');
+      
+      // History Chart Generation
+      const hasHistory = history && history.length > 0;
+      const historyBars = hasHistory ? history.map(val => {
+          const height = Math.max(10, val); // Min height for visibility
+          const color = val >= 90 ? 'bg-emerald-500' : (val >= 50 ? 'bg-amber-500' : 'bg-red-500');
+          return `<div class="flex-1 mx-0.5 rounded-t-sm ${color} transition-all hover:opacity-80" style="height: ${height}%" title="${val}"></div>`;
+      }).join('') : '';
+
+      const historyOverlay = hasHistory ? `
+        <div class="absolute inset-0 bg-surface/95 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 flex flex-col items-center justify-center p-3 pointer-events-none group-hover:pointer-events-auto">
+            <div class="text-[9px] text-muted uppercase tracking-widest mb-2 font-bold">Recent History</div>
+            <div class="flex items-end justify-between w-full h-12 gap-1 mb-1">
+                ${historyBars}
+            </div>
+            <div class="flex justify-between w-full text-[8px] text-muted font-mono opacity-60">
+                <span>OLD</span>
+                <span>NEW</span>
+            </div>
+            <div class="mt-2 text-[10px] font-mono font-bold text-white flex gap-2">
+                Last: <span class="${score >= 90 ? 'text-success' : 'text-warning'}">${score}</span>
+            </div>
+        </div>
+      ` : '';
       
       // Radial gauge calculations
       const radius = 28;
@@ -2773,6 +2942,7 @@
 
       return `
         <div class="glass-card p-3 sm:p-4 relative group overflow-hidden border border-white/5 hover:border-white/10 transition-all duration-300 hover:scale-[1.02] flex flex-col items-center text-center">
+          ${historyOverlay}
           <!-- Radial Gauge (centered) -->
           <div class="relative mb-2">
             <svg width="64" height="64" viewBox="0 0 64 64" class="score-gauge">
@@ -2876,12 +3046,21 @@
     function updatePeriodUI(period) {
       currentPeriod = period;
       document.querySelectorAll('.period-btn').forEach(btn => {
+        // Reset all classes first
+        btn.classList.remove('bg-primary', 'text-black', 'text-muted', 'bg-white/5', 'shadow-[0_0_10px_rgba(34,211,238,0.4)]');
+        
         if (btn.dataset.period === period) {
+          // Selected state
           btn.classList.add('bg-primary', 'text-black');
-          btn.classList.remove('text-muted');
+          btn.style.boxShadow = '0 0 10px rgba(34,211,238,0.4)';
+          btn.style.backgroundColor = 'rgb(34, 211, 238)'; // primary/cyan
+          btn.style.color = '#000';
         } else {
-          btn.classList.remove('bg-primary', 'text-black');
+          // Unselected state
           btn.classList.add('text-muted');
+          btn.style.boxShadow = 'none';
+          btn.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          btn.style.color = '';
         }
       });
       // Re-fetch and re-render chart
@@ -3095,16 +3274,8 @@
         ${renderHeader(
             t('siteMonitor'),
             `<span class="font-mono text-xs bg-white/10 px-2 py-0.5 rounded">${settings.monitorUrl}</span>`,
-            `<button onclick="analyzeMonitorWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
-                 <span>✨</span> AI Analysis
-             </button>
-             <button onclick="pingMonitoredSite()" class="px-3 py-1 bg-primary/10 text-primary border border-primary/50 rounded text-xs font-bold hover:bg-primary hover:text-black transition flex items-center gap-2">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span> 
-                Ping Now
-            </button>`
+            `${headerBtn(t('aiAnalysis'), 'analyzeMonitorWithAI()', 'purple', '✨')}
+             ${headerBtn(t('pingNow'), 'pingMonitoredSite()', 'primary', '●')}`
         )}
 
         <!-- Stats Cards -->
@@ -3364,14 +3535,10 @@
       container.innerHTML = `
          ${renderHeader(
              t('pageSpeed'),
-             'Remote Lighthouse test via Google API',
+             t('pageSpeedSubtitle'),
              `${targetSelector}
-              <button onclick="analyzePageSpeedWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
-                 <span>✨</span> AI Analysis
-              </button>
-              <button onclick="runPageSpeed()" id="run-psi-btn" class="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-400 hover:to-amber-400 text-black font-bold rounded-lg transition flex items-center gap-2">
-                <span>🚀</span> ${t('runTest')}
-             </button>`
+              ${headerBtn(t('aiAnalysis'), 'analyzePageSpeedWithAI()', 'purple', '✨')}
+              ${headerBtn(t('runTest'), 'runPageSpeed()', 'primary', '🚀')}`
          )}
 
         <!-- Current Results -->
@@ -3389,58 +3556,55 @@
 
       // Load History
       try {
-        const res = await fetch(`${API_BASE}/reports/lighthouse`);
+        const res = await fetch(`${API_BASE}/reports/history?source=pagespeed&limit=20`);
         const json = await res.json();
         const grid = document.getElementById('psi-history-grid');
         
-        if(!json.data || json.data.length === 0) {
+        if(!json.success || !json.data || json.data.length === 0) {
           grid.innerHTML = `<div class="p-8 text-center text-muted border border-dashed border-white/10 rounded-xl">${t('noDataFound')}</div>`;
         } else {
-          // Calculate average scores
+          // Calculate average scores from normalized data
           const scores = json.data.reduce((acc, r) => {
-            const tempCats = r.data?.categories || {};
-            acc.perf += tempCats.performance?.score || 0;
-            acc.a11y += tempCats.accessibility?.score || 0;
-            acc.seo += tempCats.seo?.score || 0;
+            acc.perf += r.scores.performance || 0;
+            acc.a11y += r.scores.accessibility || 0;
+            acc.seo += r.scores.seo || 0;
             return acc;
           }, { perf: 0, a11y: 0, seo: 0 });
           
           const count = json.data.length;
-          const latest = json.data[0]?.data?.categories || {};
+          const latest = json.data[0].scores; // It's already sorted by newest first
           
-          // Add metric cards above history - Latest as primary, Avg as secondary
+          // Add metric cards above history
+          // Use Math.round for display
           const metricsHtml = `
             <div class="grid grid-cols-3 gap-4 mb-8">
-              ${renderMetricCardWithAvg(t('performance'), Math.round((latest.performance?.score || 0) * 100), Math.round((scores.perf / count) * 100))}
-              ${renderMetricCardWithAvg(t('avgAccessibility'), Math.round((latest.accessibility?.score || 0) * 100), Math.round((scores.a11y / count) * 100))}
-              ${renderMetricCardWithAvg(t('avgSeo'), Math.round((latest.seo?.score || 0) * 100), Math.round((scores.seo / count) * 100))}
+              ${renderMetricCardWithAvg(t('performance'), Math.round(latest.performance), Math.round(scores.perf / count))}
+              ${renderMetricCardWithAvg(t('avgAccessibility'), Math.round(latest.accessibility), Math.round(scores.a11y / count))}
+              ${renderMetricCardWithAvg(t('avgSeo'), Math.round(latest.seo), Math.round(scores.seo / count))}
             </div>
           `;
           
-          // Render metrics to dedicated container (prevents duplication)
           const metricsContainer = document.getElementById('psi-metrics-container');
           if (metricsContainer) metricsContainer.innerHTML = metricsHtml;
           
-          // Render list (limit to 10 most recent)
-          grid.innerHTML = json.data.slice(0, 10).map(r => {
-             const cats = r.data?.categories || {};
-             return `
-              <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-primary/30 transition cursor-pointer" onclick="viewLighthouseReport('${r.filename}')">
+          // Render list
+          grid.innerHTML = json.data.map(r => `
+              <div class="glass-card p-4 flex flex-col md:flex-row justify-between items-center gap-4 hover:border-primary/30 transition cursor-pointer" onclick="viewLighthouseReport('${r.filename}', 'pagespeed')">
                 <div class="flex items-center gap-4">
                   <div class="p-2 bg-surfaceHighlight rounded text-xl">📱</div>
                   <div>
-                    <div class="font-mono text-sm text-white">${r.filename}</div>
+                    <div class="font-mono text-sm text-white">${r.target.toUpperCase()}</div>
                     <div class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</div>
                   </div>
                 </div>
                 <div class="flex gap-4">
-                  ${renderMiniScore('Perf', (cats.performance?.score || 0) * 100)}
-                  ${renderMiniScore('A11y', (cats.accessibility?.score || 0) * 100)}
+                  ${renderMiniScore('Perf', r.scores.performance)}
+                  ${renderMiniScore('A11y', r.scores.accessibility)}
                 </div>
-              </div>`;          }).join('');
+              </div>`).join('');
         }
       } catch (e) {
-        document.getElementById('psi-history-grid').innerHTML = `<div class="text-error">${t('noDataFound')}</div>`;
+        document.getElementById('psi-history-grid').innerHTML = `<div class="text-error">Error loading history: ${e.message}</div>`;
       }
     }
 
@@ -3531,6 +3695,7 @@
     }
 
     function renderMetricCard(title, value) {
+      value = Math.round(value);
       const color = value >= 90 ? 'text-success' : (value >= 50 ? 'text-warning' : 'text-error');
       const gaugeColor = value >= 90 ? '#10b981' : (value >= 50 ? '#f59e0b' : '#ef4444');
       const radius = 32;
@@ -3559,6 +3724,8 @@
 
     // Metric Card with Latest (primary) and Average (secondary)
     function renderMetricCardWithAvg(title, latestValue, avgValue) {
+      latestValue = Math.round(latestValue);
+      avgValue = Math.round(avgValue);
       const color = latestValue >= 90 ? 'text-success' : (latestValue >= 50 ? 'text-warning' : 'text-error');
       const gaugeColor = latestValue >= 90 ? '#10b981' : (latestValue >= 50 ? '#f59e0b' : '#ef4444'); // emerald, amber, rose
       const radius = 32;
@@ -3594,67 +3761,120 @@
       `;
     }
 
+    // Run Lighthouse for selected target (app, promo, or both)
+    async function runLighthouseForTarget() {
+      const target = currentTarget;
+      
+      if (target === 'all') {
+        // Run both app and promo
+        showToast('Running Lighthouse for both App and Promo...', 'info');
+        runCommand('perf:lighthouse');
+      } else if (target === 'promo') {
+        showToast('Running Lighthouse for Promo site...', 'info');
+        runCommand('audit:promo');
+      } else {
+        showToast('Running Lighthouse for App...', 'info');
+        runCommand('audit:app');
+      }
+    }
+
     async function runPageSpeed() {
       const settings = getSettings();
-      if (!settings.monitorUrl) {
-        showToast('Please configure a Monitor URL in Site Monitor first', 'warning');
-        switchTab('monitor');
-        return;
+      const target = currentTarget;
+      
+      // Define URLs based on target
+      const urls = [];
+      const promoUrl = 'https://mafhper.github.io/portcmd/';
+      const appUrl = 'https://mafhper.github.io/portcmd/app/';
+      
+      if (target === 'all') {
+        urls.push({ url: promoUrl, name: 'Promo' });
+        urls.push({ url: appUrl, name: 'App' });
+      } else if (target === 'promo') {
+        urls.push({ url: promoUrl, name: 'Promo' });
+      } else {
+        urls.push({ url: appUrl, name: 'App' });
       }
 
       const btn = document.getElementById('run-psi-btn');
       const resultsEl = document.getElementById('psi-results');
       
       btn.disabled = true;
-      btn.innerHTML = `<span class="animate-spin">⏳</span> ${t('runTest')}...`;
-      resultsEl.innerHTML = '<div class="glass-card p-8 text-center animate-pulse text-muted">Running remote Lighthouse audit... this may take 15-30s</div>';
+      btn.innerHTML = `<span class="animate-spin">⏳</span> Testing ${urls.length} site(s)...`;
+      resultsEl.innerHTML = `<div class="glass-card p-8 text-center animate-pulse text-muted">Running PageSpeed for ${urls.map(u => u.name).join(' & ')}... this may take 15-60s</div>`;
 
       try {
-        const res = await fetch(`${API_BASE}/pagespeed?url=${encodeURIComponent(settings.monitorUrl)}&key=${settings.pagespeedKey || ''}`);
-        const data = await res.json();
+        const results = [];
         
-        if (data.error) throw new Error(data.error.message || data.error);
+        for (const { url, name } of urls) {
+          resultsEl.innerHTML = `<div class="glass-card p-8 text-center animate-pulse text-muted">Testing ${name}...</div>`;
+          
+          const res = await fetch(`${API_BASE}/pagespeed?url=${encodeURIComponent(url)}&key=${settings.pagespeedKey || ''}`);
+          const data = await res.json();
+          
+          if (data.error) {
+            results.push({ name, error: data.error.message || data.error });
+          } else {
+            results.push({ name, data: data.lighthouseResult });
+          }
+        }
         
-        const lhr = data.lighthouseResult;
-        const cats = lhr.categories;
+        // Render results
         const getColor = (s) => s >= 90 ? 'text-success' : (s >= 50 ? 'text-warning' : 'text-error');
         const getBg = (s) => s >= 90 ? 'bg-success' : (s >= 50 ? 'bg-warning' : 'bg-error');
         
-        resultsEl.innerHTML = `
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            ${['performance', 'accessibility', 'best-practices', 'seo'].map(cat => {
-              const score = Math.round((cats[cat]?.score || 0) * 100);
-              return `
-                <div class="glass-card p-4 text-center">
-                  <div class="text-3xl font-bold font-mono ${getColor(score)}">${score}</div>
-                  <div class="text-xs text-muted uppercase mt-1">${cat.replace('-', ' ')}</div>
-                  <div class="w-full bg-white/5 h-1 mt-3 rounded-full overflow-hidden">
-                    <div class="h-full ${getBg(score)}" style="width: ${score}%"></div>
-                  </div>
-                </div>`;
-            }).join('')}
-          </div>
+        let html = '';
+        for (const result of results) {
+          if (result.error) {
+            html += `<div class="glass-card p-6 text-error mb-4"><strong>${result.name}:</strong> ${result.error}</div>`;
+            continue;
+          }
           
-          <div class="glass-card p-6">
-            <h3 class="text-sm font-medium text-muted uppercase tracking-widest">${t('coreWebVitals')}</h3>
-            <div class="grid grid-cols-3 gap-4">
-              <div class="text-center">
-                <div class="text-xl font-mono font-bold text-white">${lhr.audits['largest-contentful-paint']?.displayValue || '-'}</div>
-                <div class="text-xs text-muted">LCP</div>
+          const lhr = result.data;
+          const cats = lhr.categories;
+          
+          html += `
+            <div class="mb-8">
+              <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span class="px-2 py-1 text-xs rounded ${result.name === 'Promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300'}">${result.name.toUpperCase()}</span>
+                ${lhr.finalDisplayedUrl || lhr.finalUrl || ''}
+              </h4>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                ${['performance', 'accessibility', 'best-practices', 'seo'].map(cat => {
+                  const score = Math.round((cats[cat]?.score || 0) * 100);
+                  return `
+                    <div class="glass-card p-4 text-center">
+                      <div class="text-3xl font-bold font-mono ${getColor(score)}">${score}</div>
+                      <div class="text-xs text-muted uppercase mt-1">${cat.replace('-', ' ')}</div>
+                      <div class="w-full bg-white/5 h-1 mt-3 rounded-full overflow-hidden">
+                        <div class="h-full ${getBg(score)}" style="width: ${score}%"></div>
+                      </div>
+                    </div>`;
+                }).join('')}
               </div>
-              <div class="text-center">
-                <div class="text-xl font-mono font-bold text-white">${lhr.audits['cumulative-layout-shift']?.displayValue || '-'}</div>
-                <div class="text-xs text-muted">CLS</div>
-              </div>
-              <div class="text-center">
-                <div class="text-xl font-mono font-bold text-white">${lhr.audits['total-blocking-time']?.displayValue || '-'}</div>
-                <div class="text-xs text-muted">TBT</div>
+              <div class="glass-card p-6">
+                <h5 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">${t('coreWebVitals')}</h5>
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="text-center">
+                    <div class="text-xl font-mono font-bold text-white">${lhr.audits['largest-contentful-paint']?.displayValue || '-'}</div>
+                    <div class="text-xs text-muted">LCP</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-xl font-mono font-bold text-white">${lhr.audits['cumulative-layout-shift']?.displayValue || '-'}</div>
+                    <div class="text-xs text-muted">CLS</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-xl font-mono font-bold text-white">${lhr.audits['total-blocking-time']?.displayValue || '-'}</div>
+                    <div class="text-xs text-muted">TBT</div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        `;
+          `;
+        }
         
-        showToast('PageSpeed analysis complete!', 'success');
+        resultsEl.innerHTML = html;
+        showToast(`PageSpeed analysis complete for ${results.length} site(s)!`, 'success');
         
       } catch (e) {
         resultsEl.innerHTML = `<div class="glass-card p-6 text-error">Test failed: ${e.message}</div>`;
@@ -3938,12 +4158,13 @@
 
       if (tab === 'dashboard') loadDashboard();
       if (tab === 'profile') loadProfileView();
-      if (tab === 'quality') loadQualityView();
       if (tab === 'monitor') loadMonitorView();
+      if (tab === 'quality') loadQualityView();
       if (tab === 'pagespeed') loadPageSpeedView();
-      if (tab === 'git') loadGitView();
-      if (tab === 'reports') loadReportsView();
+      if (tab === 'lighthouse') loadReportsView();
+      if (tab === 'history') loadHistoryView();
       if (tab === 'logs') loadLogsView();
+      if (tab === 'git') loadGitView();
       if (tab === 'insights') loadInsightsView();
     }
 
@@ -3963,10 +4184,8 @@
           t('qualityScans'), 
           t('qualityGateSubtitle'), 
           `${targetSelector}
-           <button onclick="analyzeQualityWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
-              <span>✨</span> AI Analysis
-           </button>
-           <button onclick="runCommand('quality:gate')" class="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary/90 transition text-sm">Run Gate</button>`
+           ${headerBtn(t('aiAnalysis'), 'analyzeQualityWithAI()', 'purple', '✨')}
+           ${headerBtn(t('runGate'), "runCommand('quality:gate')", 'primary', '✔')}`
       );
 
       container.innerHTML = `
@@ -4004,7 +4223,13 @@
       try {
         const res = await fetch(`${API_BASE}/reports/quality`);
         const json = await res.json();
-        const latest = json.data?.[0]?.data;
+        
+        // Filter reports based on current target selection
+        const allReports = json.data || [];
+        const filteredReports = filterByTarget(allReports);
+        
+        // Use the latest filtered report for status
+        const latest = filteredReports[0]?.data;
         const statusContainer = document.getElementById('gate-status-container');
         
         if (latest) {
@@ -4041,8 +4266,9 @@
         }
 
         // Load Table with target filtering
-        const allReports = json.data || [];
-        const filteredReports = filterByTarget(allReports);
+        // Load Table with target filtering
+        // const allReports = json.data || []; // Already declared above
+        // const filteredReports = filterByTarget(allReports); // Already declared above
         new DataTable({
             id: 'quality',
             containerId: 'quality-table-container',
@@ -4152,7 +4378,7 @@
                ${data.violations.map(v => `
                  <div class="p-3 bg-error/5 border-l-2 border-error rounded-r-lg text-sm text-white/90 flex gap-3 items-start group hover:bg-error/10 transition">
                    <span class="text-error mt-0.5">✖</span>
-                   <span class="font-mono text-xs leading-relaxed">${v.message || v}</span>
+                   <span class="font-mono text-xs leading-relaxed">${typeof v === 'object' ? `[${v.area || 'unknown'}] ${v.metric || 'violation'}: ${v.value} (threshold: ${v.threshold})` : v}</span>
                  </div>`).join('')}
              </div>`
           }
@@ -4160,6 +4386,163 @@
         
         showViewer(`Quality: ${filename}`, html, 'html');
       } catch (e) { showToast('Error loading quality report: ' + e.message, 'error'); }
+    }
+
+    // --- History View ---
+    let currentHistorySource = 'lighthouse';
+    let currentHistoryLimit = 10;
+
+    async function loadHistoryView() {
+      const container = document.getElementById('content-area');
+      
+      const sourceSelector = `
+        <select onchange="currentHistorySource = this.value; loadHistoryView()" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+            <option value="lighthouse" ${currentHistorySource === 'lighthouse' ? 'selected' : ''}>Lighthouse</option>
+            <option value="quality" ${currentHistorySource === 'quality' ? 'selected' : ''}>Quality Gate</option>
+            <option value="pagespeed" ${currentHistorySource === 'pagespeed' ? 'selected' : ''}>PageSpeed</option>
+        </select>
+      `;
+
+      const targetSelector = `
+        <select onchange="setTarget(this.value); loadHistoryView()" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+           <option value="all" ${currentTarget === 'all' ? 'selected' : ''}>All Targets</option>
+           <option value="app" ${currentTarget === 'app' ? 'selected' : ''}>App</option>
+           <option value="promo" ${currentTarget === 'promo' ? 'selected' : ''}>Promo</option>
+        </select>
+      `;
+
+      const limitSelector = `
+        <select onchange="currentHistoryLimit = this.value; loadHistoryView()" class="px-3 py-1.5 bg-surfaceHighlight border border-white/10 rounded text-xs text-white focus:outline-none focus:border-primary mr-2">
+           <option value="5" ${currentHistoryLimit == 5 ? 'selected' : ''}>Last 5</option>
+           <option value="10" ${currentHistoryLimit == 10 ? 'selected' : ''}>Last 10</option>
+           <option value="30" ${currentHistoryLimit == 30 ? 'selected' : ''}>Last 30</option>
+        </select>
+      `;
+
+      const headerHtml = renderHeader(
+          'Performance History',
+          'Analyze metrics evolution over time',
+          `${sourceSelector} ${targetSelector} ${limitSelector} ${headerBtn(t('refresh'), 'loadHistoryView()', 'default', '🔄')}`
+      );
+
+      container.innerHTML = `
+        ${headerHtml}
+        
+        <!-- Chart Container -->
+        <div class="glass-card p-6 mb-8">
+            <h3 class="text-sm font-medium text-muted uppercase tracking-widest mb-4">Evolution Chart</h3>
+            <div id="history-chart-container" class="h-64 flex items-center justify-center text-muted">
+                Loading chart...
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div id="history-table-container"></div>
+      `;
+
+      try {
+        const query = `?source=${currentHistorySource}&target=${currentTarget === 'all' ? '' : currentTarget}&limit=${currentHistoryLimit}`;
+        const res = await fetch(`${API_BASE}/reports/history${query}`);
+        const json = await res.json();
+        
+        if (!json.success) throw new Error(json.error);
+        
+        const historyData = json.data || [];
+
+        // Render Chart
+        if (historyData.length > 1) {
+             renderHistoryChart(historyData.reverse(), 'history-chart-container');
+             // Reverse back for table (newest first)
+             historyData.reverse(); 
+        } else {
+             document.getElementById('history-chart-container').innerHTML = '<div class="text-muted italic">Not enough data points to chart</div>';
+        }
+
+        // Render Table based on Source
+        const columns = [
+            { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted font-mono">${new Date(r.timestamp).toLocaleString()}</span>` },
+            { key: 'target', label: 'Target', render: r => {
+                const color = r.target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
+                return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${color}">${r.target.toUpperCase()}</span>`;
+            }}
+        ];
+
+        // Dynamic Columns based on Source
+        if (currentHistorySource === 'quality') {
+            columns.push(
+                { key: 'scores.score', label: 'Score', render: r => `<span class="font-bold ${r.scores.score >= 90 ? 'text-success' : 'text-warning'}">${r.scores.score}</span>` },
+                { key: 'scores', label: 'Metrics', render: r => `
+                    <div class="flex gap-2 text-[10px] font-mono">
+                        <span title="Security">Sec: ${r.scores.security}</span>
+                        <span title="Maintainability">Main: ${r.scores.maintainability}</span>
+                    </div>` 
+                }
+            );
+        } else {
+            // Lighthouse / PageSpeed
+            columns.push(
+                 { key: 'scores', label: 'Scores', render: r => `
+                     <div class="flex gap-4 text-xs font-mono">
+                        <span class="${r.scores.performance >= 90 ? 'text-success' : 'text-warning'}" title="Perf">P: ${r.scores.performance}</span>
+                        <span class="${r.scores.accessibility >= 90 ? 'text-success' : 'text-warning'}" title="A11y">A: ${r.scores.accessibility}</span>
+                        <span class="${r.scores.seo >= 90 ? 'text-success' : 'text-warning'}" title="SEO">S: ${r.scores.seo}</span>
+                     </div>`
+                 }
+            );
+        }
+
+        new DataTable({
+            id: 'history',
+            containerId: 'history-table-container',
+            data: historyData,
+            columns: columns,
+            actions: [
+                { icon: '👁️', title: 'View', onClick: currentHistorySource === 'quality' ? 'viewQualityReport' : 'viewLighthouseReport', class: 'p-2 hover:bg-white/10 rounded transition', getArgs: r => `'${r.filename}'` }
+            ]
+        });
+
+      } catch (e) {
+          document.getElementById('history-table-container').innerHTML = `<div class="text-error p-4">Failed to load history: ${e.message}</div>`;
+      }
+    }
+
+    function renderHistoryChart(data, containerId) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        const canvas = document.createElement('canvas');
+        container.appendChild(canvas);
+        
+        const labels = data.map(d => {
+            const date = new Date(d.timestamp);
+            return `${date.getDate()}/${date.getMonth()+1} ${date.getHours()}:${date.getMinutes()}`;
+        });
+
+        const datasets = [];
+        
+        if (currentHistorySource === 'quality') {
+            datasets.push({ label: 'Score', data: data.map(d => d.scores.score), borderColor: '#10b981', tension: 0.3 });
+            datasets.push({ label: 'Maintainability', data: data.map(d => d.scores.maintainability), borderColor: '#3b82f6', tension: 0.3 });
+        } else {
+            datasets.push({ label: 'Performance', data: data.map(d => d.scores.performance), borderColor: '#10b981', tension: 0.3 });
+            datasets.push({ label: 'Accessibility', data: data.map(d => d.scores.accessibility), borderColor: '#f59e0b', tension: 0.3 });
+            datasets.push({ label: 'SEO', data: data.map(d => d.scores.seo), borderColor: '#8b5cf6', tension: 0.3 });
+        }
+
+        new Chart(canvas, {
+            type: 'line',
+            data: { labels, datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#a3a3a3' } }
+                },
+                scales: {
+                    x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
+                    y: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } }
+                }
+            }
+        });
     }
 
     async function loadReportsView() {
@@ -4178,10 +4561,9 @@
           t('lighthouse'), 
           t('lighthouseReportsSubtitle'),
           `${targetSelector}
-           <button onclick="analyzeLighthouseWithAI()" class="px-3 py-2 bg-purple-500/20 text-purple-300 border border-purple-500/50 rounded-lg hover:bg-purple-500/30 transition text-sm font-bold flex items-center gap-2 mr-2">
-              <span>✨</span> AI Analysis
-           </button>
-           <button onclick="loadReportsView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+           ${headerBtn(t('runAll'), 'runLighthouseForTarget()', 'primary', '▶')}
+           ${headerBtn(t('aiAnalysis'), 'analyzeLighthouseWithAI()', 'purple', '✨')}
+           ${headerBtn(t('refresh'), 'loadReportsView()', 'default', '🔄')}`
       );
 
       container.innerHTML = `
@@ -4198,19 +4580,30 @@
         
         // Filter by target
         const allReports = json.data || [];
-        const filteredReports = filterByTarget(allReports.map(r => ({
-          ...r,
-          data: {
-            ...r.data,
-            meta: {
-              target: (r.data?.finalUrl || r.data?.requestedUrl || '').includes('promo') || 
-                      (r.data?.finalUrl || '').includes('github.io') ? 'promo' : 'app'
+        const filteredReports = filterByTarget(allReports.map(r => {
+          const url = r.data?.finalUrl || r.data?.requestedUrl || '';
+          const filename = r.filename?.toLowerCase() || '';
+          
+          // APP detection: /app/ in URL or _app_ in filename takes priority
+          const isApp = url.includes('/app/') || url.includes('/app') || filename.includes('_app_');
+          // PROMO detection: only if NOT app, and matches promo indicators
+          const isPromo = !isApp && (url.includes('promo') || url.includes('github.io') || filename.includes('_promo_'));
+          
+          const target = isPromo ? 'promo' : 'app';
+          return {
+            ...r,
+            data: {
+              ...r.data,
+              target
             }
-          }
-        })));
+          };
+        }));
 
         // Calculate and Render Stats
         if (filteredReports.length > 0) {
+            // Sort by date desc (if not already)
+            filteredReports.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
             const stats = filteredReports.reduce((acc, r) => {
                 const cats = r.data?.categories || {};
                 acc.perf += (cats.performance?.score || 0) * 100;
@@ -4226,15 +4619,23 @@
                 seo: Math.round(stats.seo / count)
             };
             
+            // Latest Scores
+            const latest = filteredReports[0]?.data?.categories || {};
+            const latestScores = {
+                perf: Math.round((latest.performance?.score || 0) * 100),
+                a11y: Math.round((latest.accessibility?.score || 0) * 100),
+                seo: Math.round((latest.seo?.score || 0) * 100)
+            };
+            
             document.getElementById('reports-stats').innerHTML = `
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="glass-card p-4 text-center">
                         <div class="text-2xl font-bold font-mono text-white">${count}</div>
                         <div class="text-xs text-muted">Total Reports</div>
                     </div>
-                    ${renderMetricCard(t('avgPerformance'), avg.perf).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
-                    ${renderMetricCard(t('avgAccessibility'), avg.a11y).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
-                    ${renderMetricCard(t('avgSeo'), avg.seo).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                    ${renderMetricCardWithAvg(t('avgPerformance'), latestScores.perf, avg.perf).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                    ${renderMetricCardWithAvg(t('avgAccessibility'), latestScores.a11y, avg.a11y).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
+                    ${renderMetricCardWithAvg(t('avgSeo'), latestScores.seo, avg.seo).replace('stat-card', 'glass-card p-2 flex flex-col items-center justify-center')}
                 </div>
             `;
         } else {
@@ -4247,8 +4648,8 @@
              data: filteredReports,
              columns: [
                 { key: 'target', label: 'Target', render: r => {
-                    const url = r.data?.finalUrl || r.data?.requestedUrl || '';
-                    const target = url.includes('promo') || url.includes('github.io') || r.filename?.includes('promo') ? 'promo' : 'app';
+                    // Use pre-calculated target from loadReportsView mapping
+                    const target = r.data?.target || 'app';
                     const color = target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300';
                     return `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded ${color}">${target.toUpperCase()}</span>`;
                 }},
@@ -4285,10 +4686,10 @@
       }
     }
 
-    async function viewLighthouseReport(filename) {
-      console.log('[viewLighthouseReport] Starting with:', filename);
+    async function viewLighthouseReport(filename, type = 'lighthouse') {
+      console.log('[viewLighthouseReport] Starting with:', filename, type);
       try {
-        const res = await fetch(`${API_BASE}/report/lighthouse/${filename}`);
+        const res = await fetch(`${API_BASE}/report/${type}/${filename}`);
         console.log('[viewLighthouseReport] Fetch response status:', res.status);
         
         if (!res.ok) {
@@ -4596,7 +4997,7 @@
       const headerHtml = renderHeader(
           t('gitDeploy'),
           t('gitDeploySubtitle'),
-          `<button onclick="loadGitView()" class="px-3 py-1 bg-white/5 text-muted hover:text-white rounded text-sm transition">${t('refresh')}</button>`
+          headerBtn(t('refresh'), 'loadGitView()', 'default', '🔄')
       );
 
       container.innerHTML = `
@@ -4713,6 +5114,9 @@
             pageSize: 5,
             columns: [
                 { key: 'filename', label: 'ID', render: r => `<span class="font-mono text-xs text-purple-400 cursor-pointer hover:underline" onclick="viewInsight('${r.filename}')">${r.filename.replace('insight-','').replace('.json','')}</span>` },
+                { key: 'data.pageSource', label: 'Source', render: r => `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-white/10 text-muted">${r.data?.pageSource || 'Unknown'}</span>` },
+                { key: 'data.target', label: 'Target', render: r => `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded ${r.data?.target === 'promo' ? 'bg-purple-500/20 text-purple-300' : 'bg-blue-500/20 text-blue-300'}">${r.data?.target || 'All'}</span>` },
+                { key: 'data.reportType', label: 'Type', render: r => `<span class="text-[10px] uppercase font-bold px-2 py-0.5 rounded ${r.data?.reportType === 'technical' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}">${r.data?.reportType || 'Technical'}</span>` },
                 { key: 'timestamp', label: 'Date', render: r => `<span class="text-xs text-muted">${new Date(r.timestamp).toLocaleString()}</span>` },
                 { key: 'data.prompt', label: 'Context', render: r => `<span class="text-xs text-white/50 truncate max-w-[200px] block">${r.data?.prompt || 'System Analysis'}</span>` }
             ],
@@ -4775,7 +5179,8 @@ Provide specific, actionable recommendations.`;
                     prompt,
                     reportType: aiReportType,
                     language: currentLang,
-                    pageSource // New field for history tracking
+                    pageSource, // New field for history tracking
+                    target: currentTarget
                 })
             });
             
@@ -4987,7 +5392,9 @@ Provide actionable recommendations to improve both quality gate compliance and p
                     key: settings.geminiKey, 
                     prompt,
                     reportType: aiReportType,
-                    language: currentLang
+                    language: currentLang,
+                    pageSource: 'Dashboard',
+                    target: 'all'
                 })
             });
             const json = await res.json();
@@ -5182,11 +5589,22 @@ Provide actionable recommendations to improve both quality gate compliance and p
     }
 
     function copyViewerContent() {
+        if (window.viewerRawContent) {
+            let text = window.viewerRawContent;
+            if (typeof text === 'object') {
+                text = JSON.stringify(text, null, 2);
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Full content copied to clipboard!', 'success');
+            }).catch(() => showToast('Failed to copy', 'error'));
+            return;
+        }
+
         const content = document.getElementById('viewer-content');
         if (content) {
             const text = content.innerText;
             navigator.clipboard.writeText(text).then(() => {
-                showToast('Logs copied to clipboard', 'success');
+                showToast('Content copied', 'success');
             }).catch(() => {
                 showToast('Failed to copy', 'error');
             });
@@ -5429,6 +5847,7 @@ Rules:
                  <span id="viewer-counter" class="text-[10px] font-mono text-muted min-w-[40px] text-center"></span>
                  <button id="viewer-next-btn" class="text-gray-400 hover:text-white transition disabled:opacity-30">►</button>
              </div>
+             <button onclick="copyViewerContent()" class="text-gray-500 hover:text-white transition text-xs" title="Copy Full Content">📋</button>
              <button onclick="closeViewer()" class="text-gray-500 hover:text-white transition text-xs">✕</button>
          </div>
       </div>

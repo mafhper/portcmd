@@ -4,7 +4,17 @@
  * Orchestrates quality audits, lighthouse reports, and git operations.
  */
 
+const { z } = require('zod'); // Implements Security Skill: Input Validation
 const http = require('http');
+
+// ============================================================================ 
+// VALIDATION SCHEMAS
+// ============================================================================ 
+
+
+// Schemas moved after CONFIG to avoid ReferenceError
+
+
 const https = require('https');
 const fs = require('fs').promises;
 const path = require('path');
@@ -55,6 +65,43 @@ const CONFIG = {
 const execPromise = util.promisify(require('child_process').exec);
 
 // ============================================================================ 
+// VALIDATION SCHEMAS
+// ============================================================================ 
+
+const ApiVerifyGeminiSchema = z.object({
+    key: z.string().min(1)
+});
+
+const ApiAiAnalyzeSchema = z.object({
+    key: z.string().min(1),
+    prompt: z.string().min(1),
+    reportType: z.enum(['technical', 'educational', 'executive']).optional().default('technical'),
+    language: z.enum(['en', 'pt-BR', 'es']).optional().default('en'),
+    pageSource: z.string().optional(),
+    target: z.string().optional()
+});
+
+const ApiVerifyGithubSchema = z.object({
+    token: z.string().min(1)
+});
+
+const ApiRunCommandSchema = z.object({
+    command: z.enum(Object.keys(CONFIG.allowedCommands))
+});
+
+const ApiGitCommitSchema = z.object({
+    message: z.string().min(1).max(500)
+});
+
+const ApiSettingsSchema = z.object({
+    theme: z.string().optional(),
+    language: z.string().optional(),
+    notifications: z.boolean().optional(),
+    apiKeys: z.record(z.string()).optional()
+}).passthrough();
+
+
+// ============================================================================ 
 // UTILITIES
 // ============================================================================ 
 
@@ -79,11 +126,17 @@ async function ensureDirectory(dirPath) {
     try { await fs.access(dirPath); } catch { await fs.mkdir(dirPath, { recursive: true }); }
 }
 
-async function readJsonFiles(dirPath) {
+async function readJsonFiles(dirPath, limit = 100) {
     try {
         await ensureDirectory(dirPath);
         const files = await fs.readdir(dirPath);
-        const jsonFiles = files.filter(f => f.endsWith('.json'));
+        // Optimize: Sort filenames desc (assuming timestamp/chronological naming) and slice
+        const jsonFiles = files
+            .filter(f => f.endsWith('.json'))
+            .sort()
+            .reverse() // Newest first
+            .slice(0, limit);
+
         const data = await Promise.all(
             jsonFiles.map(async (file) => {
                 try {
@@ -168,8 +221,9 @@ async function handleVerifyGemini(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
         try {
-            const { key } = JSON.parse(body);
-            if (!key) throw new Error('Key required');
+            const json = JSON.parse(body);
+            const { key } = ApiVerifyGeminiSchema.parse(json);
+
             const url = `https://generativelanguage.googleapis.com/v1/models?key=${key}`;
             https.get(url, (apiRes) => {
                 let apiBody = '';
@@ -207,8 +261,9 @@ async function handleAiAnalyze(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', async () => {
         try {
-            const { key, prompt, reportType = 'technical', language = 'en' } = JSON.parse(body);
-            if (!key || !prompt) throw new Error('Key and prompt required');
+            const json = JSON.parse(body);
+            const { key, prompt, reportType, language, pageSource, target } = ApiAiAnalyzeSchema.parse(json);
+
 
             // Rate limit check
             if (!rateLimit(req, res, key)) return;
@@ -349,7 +404,9 @@ For each issue, explain:
                 ...result,
                 promptPreview: prompt.substring(0, 100) + '...',
                 reportType,
-                language
+                language,
+                pageSource,
+                target
             });
 
             // Also save as insight file (legacy compatibility)
@@ -382,8 +439,9 @@ async function handleVerifyGitHub(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
         try {
-            const { token } = JSON.parse(body);
-            if (!token) throw new Error('Token required');
+            const json = JSON.parse(body);
+            const { token } = ApiVerifyGithubSchema.parse(json);
+
             const options = {
                 hostname: 'api.github.com', path: '/user', method: 'GET',
                 headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'PortCmd-Dashboard' }
@@ -414,71 +472,7 @@ async function handleVerifyGitHub(req, res) {
     });
 }
 
-async function handlePageSpeed(req, res, urlObj) {
-    const targetUrl = urlObj.searchParams.get('url');
-    const apiKey = urlObj.searchParams.get('key') || '';
-    const strategy = urlObj.searchParams.get('strategy') || 'mobile';
 
-    // Switch to SSE for Console-like experience
-    res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*'
-    });
-
-    const sendLog = (msg) => res.write(`data: ${JSON.stringify({ type: 'stdout', data: msg })}\n\n`);
-    const sendDone = (data) => res.write(`data: ${JSON.stringify({ type: 'result', data })}\n\n`);
-    const sendError = (err) => res.write(`data: ${JSON.stringify({ type: 'error', error: err })}\n\n`);
-
-    if (!targetUrl) {
-        sendError('URL required');
-        return res.end();
-    }
-
-    try {
-        sendLog(`🚀 Initializing PageSpeed Insights for ${targetUrl} (${strategy})...`);
-        sendLog(`⏳ Contacting Google API...`);
-
-        const psiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo${apiKey ? `&key=${apiKey}` : ''}`;
-
-        https.get(psiUrl, (psiRes) => {
-            let data = '';
-            psiRes.on('data', chunk => data += chunk);
-            psiRes.on('end', async () => {
-                if (psiRes.statusCode !== 200) {
-                    sendError(`API returned status ${psiRes.statusCode}: ${data}`);
-                    res.end();
-                    return;
-                }
-
-                sendLog('✅ Analysis complete. Processing results...');
-                try {
-                    const json = JSON.parse(data);
-
-                    // Save Result
-                    const filename = `pagespeed-${strategy}-${Date.now()}.json`;
-                    await ensureDirectory(CONFIG.pagespeedDir);
-                    await fs.writeFile(path.join(CONFIG.pagespeedDir, filename), JSON.stringify(json, null, 2));
-                    sendLog(`💾 Report saved to ${filename}`);
-
-                    sendDone(json);
-                    res.end();
-                } catch (e) {
-                    sendError(`Failed to process result: ${e.message}`);
-                    res.end();
-                }
-            });
-        }).on('error', (err) => {
-            sendError(`Network error: ${err.message}`);
-            res.end();
-        });
-
-    } catch (e) {
-        sendError(`Handler error: ${e.message}`);
-        res.end();
-    }
-}
 
 function execGit(args) {
     try {
@@ -505,8 +499,9 @@ async function handleGitCommit(req, res) {
     req.on('data', chunk => body += chunk);
     req.on('end', () => {
         try {
-            const { message } = JSON.parse(body);
-            if (!message) throw new Error('Message required');
+            const json = JSON.parse(body);
+            const { message } = ApiGitCommitSchema.parse(json);
+
             execGit('add .');
             const sanitizedMessage = message.replace(/"/g, '\\"').replace(/\n/g, ' ');
             const result = execGit(`commit -m "${sanitizedMessage}"`);
@@ -568,11 +563,122 @@ async function handleEnvConfig(req, res) {
 // API ROUTES
 // ============================================================================ 
 
+async function handleReportsHistory(req, res, urlObj) {
+    const target = urlObj.searchParams.get('target'); // 'app' or 'promo'
+    const limit = parseInt(urlObj.searchParams.get('limit') || '10');
+    const source = urlObj.searchParams.get('source') || 'lighthouse'; // 'lighthouse' | 'quality' | 'pagespeed'
+
+    try {
+        let dir;
+        let filterFn;
+        let formatFn;
+
+        if (source === 'lighthouse') {
+            dir = CONFIG.lighthouseDir;
+            filterFn = f => f.endsWith('.json') && (!target || f.includes(`lighthouse_${target}_`));
+            formatFn = (json, file) => {
+                const categories = json.categories || {};
+                const scores = {
+                    performance: Math.round((categories.performance?.score || 0) * 100),
+                    accessibility: Math.round((categories.accessibility?.score || 0) * 100),
+                    bestPractices: Math.round((categories['best-practices']?.score || 0) * 100),
+                    seo: Math.round((categories.seo?.score || 0) * 100),
+                };
+                return {
+                    filename: file,
+                    timestamp: json.fetchTime || new Date().toISOString(),
+                    target: json.metadata?.target || (file.includes('_app_') ? 'app' : 'promo'),
+                    formFactor: json.metadata?.formFactor || (file.includes('_mobile_') ? 'mobile' : 'desktop'),
+                    scores
+                };
+            };
+        } else if (source === 'quality') {
+            dir = CONFIG.qualityDir;
+            // Quality reports are usually generic, but check for matches if needed
+            filterFn = f => f.endsWith('.json'); // && f.startsWith('quality-report-'); 
+            formatFn = (json, file) => {
+                // Aggregated metrics from quality report
+                const scores = {
+                    score: json.score || 0,
+                    security: json.summary?.security || 0,
+                    maintainability: json.summary?.maintainability || 0,
+                    reliability: json.summary?.reliability || 0
+                };
+                return {
+                    filename: file,
+                    timestamp: json.timestamp || new Date().toISOString(),
+                    target: 'all', // Quality usually covers codebase
+                    formFactor: 'code',
+                    scores
+                };
+            };
+        } else if (source === 'pagespeed') {
+            dir = CONFIG.pagespeedDir;
+            filterFn = f => f.endsWith('.json'); // && f.startsWith('pagespeed-');
+            formatFn = (json, file) => {
+                // Support both legacy raw JSON and new wrapped format
+                const lhResult = json.lighthouseResult || json.data?.lighthouseResult || {};
+                const categories = lhResult.categories || {};
+                const scores = {
+                    performance: Math.round((categories.performance?.score || 0) * 100),
+                    accessibility: Math.round((categories.accessibility?.score || 0) * 100),
+                    bestPractices: Math.round((categories['best-practices']?.score || 0) * 100),
+                    seo: Math.round((categories.seo?.score || 0) * 100),
+                };
+
+                // Extract metadata from either root (legacy) or wrapped data
+                const target = json.id || json.data?.id || (json.url ? new URL(json.url).hostname : 'unknown');
+                const timestamp = json.timestamp || json.analysisUTCTimestamp || json.data?.analysisUTCTimestamp || new Date().toISOString();
+
+                return {
+                    filename: file,
+                    timestamp: timestamp,
+                    target: target,
+                    formFactor: json.strategy || json.data?.configSettings?.formFactor || 'mobile',
+                    scores
+                };
+            };
+        } else {
+            throw new Error('Invalid source');
+        }
+
+        const files = await fs.readdir(dir);
+        // Optimize: Filter, Sort (Desc) and Limit BEFORE reading content
+        const relevantFiles = files
+            .filter(filterFn)
+            .sort()
+            .reverse()
+            .slice(0, limit);
+
+        const history = await Promise.all(
+            relevantFiles.map(async (file) => {
+                try {
+                    const content = await fs.readFile(path.join(dir, file), 'utf-8');
+                    const json = JSON.parse(content);
+                    return formatFn(json, file);
+                } catch (e) { return null; }
+            })
+        );
+
+        // Sort by date desc
+        const sortedHistory = history
+            .filter(Boolean)
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+            .slice(0, limit);
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, data: sortedHistory }));
+    } catch (e) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: e.message }));
+    }
+}
+
 async function handleApiReports(req, res) {
     try {
         const [quality, lighthouse, manual] = await Promise.all([
-            readJsonFiles(CONFIG.qualityDir),
-            readJsonFiles(CONFIG.lighthouseDir),
+            readJsonFiles(CONFIG.qualityDir, 50),
+            readJsonFiles(CONFIG.lighthouseDir, 50),
             readMarkdownFiles(CONFIG.manualDir)
         ]);
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -656,6 +762,20 @@ async function handleRequest(req, res) {
         }
     }
 
+    // Individual pagespeed report file by name
+    if (url.pathname.startsWith('/api/report/pagespeed/')) {
+        const filename = url.pathname.replace('/api/report/pagespeed/', '');
+        const filePath = path.join(CONFIG.pagespeedDir, filename);
+        try {
+            const content = await fs.readFile(filePath, 'utf-8');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            return res.end(content);
+        } catch {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'PageSpeed report not found' }));
+        }
+    }
+
     // Logs endpoint - returns markdown files from quality dir
     if (url.pathname === '/api/logs') {
         const data = await readMarkdownFiles(CONFIG.qualityDir);
@@ -673,6 +793,7 @@ async function handleRequest(req, res) {
     if (url.pathname === '/api/delete' && req.method === 'POST') return handleDelete(req, res);
 
     // --- History Lists ---
+    if (url.pathname === '/api/reports/history') return handleReportsHistory(req, res, url); // New History Endpoint
     if (url.pathname === '/api/reports/pagespeed') return handleListReports(req, res, CONFIG.pagespeedDir); // New
     if (url.pathname === '/api/reports/insights') return handleListReports(req, res, CONFIG.insightsDir);   // New
 
@@ -726,7 +847,7 @@ async function handlePageSpeed(req, res, urlObj) {
         return res.end(JSON.stringify({ error: 'URL parameter is required' }));
     }
 
-    const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=${strategy}${key ? `&key=${key}` : ''}`;
+    const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(targetUrl)}&strategy=${strategy}&category=performance&category=accessibility&category=best-practices&category=seo${key ? `&key=${key}` : ''}`;
 
     try {
         // Use Node's built-in https module if global fetch is not guaranteed
@@ -852,6 +973,8 @@ async function handleUpdateSettings(req, res) {
     req.on('end', async () => {
         try {
             const updates = JSON.parse(body);
+            ApiSettingsSchema.parse(updates);
+
             const current = await loadSettings();
             const newSettings = { ...current, ...updates };
             await saveSettings(newSettings);
@@ -917,7 +1040,13 @@ async function handleRunCommandByCwd(req, res, cmdTypeOverride = null) {
             let cmdType = cmdTypeOverride;
             if (!cmdType) {
                 const parsed = body ? JSON.parse(body) : {};
-                cmdType = parsed.command || 'quality';
+                // If parsing body, validate it
+                if (body) {
+                    const validated = ApiRunCommandSchema.parse(parsed);
+                    cmdType = validated.command;
+                } else {
+                    cmdType = 'quality'; // Default fallthrough if no body? Original code didn't fail on empty body for default
+                }
             }
 
             // Use CONFIG.allowedCommands for all supported commands

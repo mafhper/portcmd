@@ -12,10 +12,11 @@
  * @version 2.0.0
  */
 
-const { spawn, execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const readline = require('readline');
 const http = require('http');
+const path = require('path');
+const fs = require('fs');
+const { spawn, execSync } = require('child_process');
 
 // ========================================
 // CONFIGURAÇÃO
@@ -289,7 +290,18 @@ async function runLighthouse(url, targetName, formFactor, attempt = 1) {
     }
 
     return new Promise((resolve) => {
-        const lighthouseCmd = process.platform === 'win32' ? 'lighthouse.cmd' : 'lighthouse';
+        let lighthouseCmd;
+        const localBin = process.platform === 'win32'
+            ? path.resolve('node_modules/.bin/lighthouse.cmd')
+            : path.resolve('node_modules/.bin/lighthouse');
+
+        if (fs.existsSync(localBin)) {
+            lighthouseCmd = localBin;
+            // log('Using local lighthouse binary', 'debug');
+        } else {
+            lighthouseCmd = process.platform === 'win32' ? 'lighthouse.cmd' : 'lighthouse';
+        }
+
         let stderr = '';
 
         const child = spawn(lighthouseCmd, args, {
@@ -307,8 +319,11 @@ async function runLighthouse(url, targetName, formFactor, attempt = 1) {
         const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
         let i = 0;
         const spinner = setInterval(() => {
-            process.stdout.write(`\r   ${frames[i++ % frames.length]} Analisando performance...`);
-        }, 100);
+            if (process.stdout.isTTY) {
+                readline.cursorTo(process.stdout, 0);
+                process.stdout.write(`   ${frames[i++ % frames.length]} Analisando performance...`);
+            }
+        }, 150);
 
         child.stderr?.on('data', (data) => {
             stderr += data.toString();
@@ -317,7 +332,10 @@ async function runLighthouse(url, targetName, formFactor, attempt = 1) {
         const cleanup = () => {
             clearInterval(spinner);
             clearTimeout(processTimeout);
-            process.stdout.write('\r                                   \r');
+            if (process.stdout.isTTY) {
+                readline.cursorTo(process.stdout, 0);
+                readline.clearLine(process.stdout, 0);
+            }
         };
 
         child.on('close', (code) => {

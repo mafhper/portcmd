@@ -15,7 +15,8 @@ module.exports = {
     async run() {
         const errors = [];
 
-        if (!run('npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0')) {
+        // Use the project's standard lint script
+        if (!run('npm run lint')) {
             errors.push('eslint');
         }
 

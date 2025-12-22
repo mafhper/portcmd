@@ -1,20 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
     <meta name="description" content="PortCmd is a premium process manager for developers. Control ports, kill hanging processes, and manage dev servers with a beautiful UI." />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:title" content="PortCmd - The Developer's Process Manager" />
+    <meta property="og:description" content="Control ports, kill hanging processes, and manage dev servers with a beautiful UI." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://mafhper.github.io/portcmd/" />
+    <meta property="og:image" content="https://mafhper.github.io/portcmd/og-image.png" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PortCmd - The Developer's Process Manager" />
+    <meta name="twitter:description" content="Control ports, kill hanging processes, and manage dev servers with a beautiful UI." />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://mafhper.github.io/portcmd/" />
+    
     <title>PortCmd - The Developer's Process Manager</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- DNS Prefetch for performance -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    
+    <!-- Preconnect for Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Load fonts asynchronously to prevent render blocking -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" /></noscript>
+    
     <style>
-      body { background-color: #050507; color: #fff; }
-      .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-      .hero-gradient { background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, rgba(0, 0, 0, 0) 50%); }
+      /* Critical CSS for fastest first paint */
+      *,*::before,*::after{box-sizing:border-box}
+      body{margin:0;background-color:#050507;color:#fff;font-family:'Inter',system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+      .glass{background:rgba(255,255,255,0.03);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.05)}
+      .hero-gradient{background:radial-gradient(circle at 50% 0%,rgba(99,102,241,0.15) 0%,transparent 50%)}
+      #app{min-height:100vh}
     </style>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" role="main"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

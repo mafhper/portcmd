@@ -29,7 +29,7 @@
     "audit:links": "node scripts/audit/links.js",
     "audit:summary": "node scripts/audit/generate-summary.js",
     "// --- QUALITY CORE ---": "",
-    "quality": "node quality-core/cli/quality.cjs",
+    "quality": "node packages/quality-core/cli/quality.cjs",
     "quality:quick": "node quality-core/cli/quality.cjs --quick",
     "quality:gate": "node packages/quality-core/cli/run.cjs",
     "quality:startup": "node packages/quality-core/src/validators/startup.cjs",
@@ -39,6 +39,7 @@
     "test:structure": "node scripts/test/structure.js",
     "test:i18n": "node scripts/test/i18n.js",
     "test:perf": "node scripts/test/perf.js",
+    "test:e2e": "playwright test",
     "// --- OPS ---": "",
     "ops:optimize": "node scripts/ops/optimize-images.js",
     "ops:changelog": "node scripts/ops/fetch-changelog.js"

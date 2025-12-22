@@ -2,8 +2,10 @@ import { Terminal, Github, ArrowLeft, Globe, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useState, Suspense, lazy } from 'react';
 
-// Lazy load pages to reduce initial bundle size
-const Home = lazy(() => import('./pages/Home'));
+// Eagerly load Home since it's the first page shown
+import Home from './pages/Home';
+
+// Lazy load other pages to reduce initial bundle size
 const QualityCore = lazy(() => import('./pages/QualityCore'));
 const Updates = lazy(() => import('./pages/Updates'));
 const Author = lazy(() => import('./pages/Author'));
@@ -58,7 +60,7 @@ const App = () => {
           {/* Logo */}
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2 font-bold text-xl tracking-tight group">
-              <button onClick={() => setCurrentView('home')} className="relative bg-brand-500/20 p-1.5 rounded-lg text-brand-500 overflow-hidden group-hover:bg-brand-500 group-hover:text-white transition-colors cursor-pointer" title={t('launchApp')}>
+              <button onClick={() => setCurrentView('home')} className="relative bg-brand-500/20 p-1.5 rounded-lg text-brand-500 overflow-hidden group-hover:bg-brand-500 group-hover:text-white transition-colors cursor-pointer" title={t('launchApp')} aria-label={t('launchApp')}>
                 <Terminal size={20} className="transition-transform duration-300 group-hover:translate-x-full group-hover:opacity-0" />
                 <ArrowLeft size={20} className="absolute top-1.5 left-1.5 -translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" />
               </button>
@@ -82,10 +84,12 @@ const App = () => {
             <div className="relative">
               <button 
                 onClick={() => setIsLangOpen(!isLangOpen)}
-                className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 aria-label="Change Language"
+                aria-expanded={isLangOpen}
+                aria-haspopup="listbox"
               >
-                <Globe size={20} />
+                <Globe size={20} aria-hidden="true" />
               </button>
               
               {isLangOpen && (
@@ -109,8 +113,14 @@ const App = () => {
                 </>
               )}
             </div>
-            <a href="https://github.com/mafhper/portcmd" target="_blank" className="text-zinc-400 hover:text-white transition-colors">
-              <Github size={20} />
+            <a 
+              href="https://github.com/mafhper/portcmd" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-zinc-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded-lg p-1"
+              aria-label="View project on GitHub"
+            >
+              <Github size={20} aria-hidden="true" />
             </a>
             <a href={appUrl} className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-sm font-medium transition-all">
               <span className="hidden sm:inline">{t('launchApp')}</span>

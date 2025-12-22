@@ -66,7 +66,8 @@ const A11yAudit = {
                     metric: issue.rule,
                     value: 'fail',
                     threshold: 'pass',
-                    severity: 'error' // A11y usually error
+                    severity: 'error',
+                    message: issue.element
                 });
             }
 
