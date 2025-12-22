@@ -19,7 +19,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'i18next', 'react-i18next'],
-          'ui-vendor': ['framer-motion', 'lucide-react'],
+          'motion': ['framer-motion'],
         }
       }
     }
