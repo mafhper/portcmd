@@ -97,7 +97,7 @@ const MainApp = () => {
 
   return (
     <div 
-      className={`flex h-screen overflow-hidden font-sans selection:bg-indigo-500/30 transition-colors duration-500`}
+      className={`flex h-screen w-full overflow-hidden font-sans selection:bg-indigo-500/30`}
       style={{ color: 'var(--foreground)' }}
     >
       <AnimatePresence>
@@ -116,7 +116,7 @@ const MainApp = () => {
       <main className="flex-1 flex flex-col min-w-0 bg-transparent transition-colors duration-500 relative z-10">
         <h1 className="sr-only">PortCmd - Process and Port Manager</h1>
         <header className="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-transparent backdrop-blur-sm sticky top-0 z-30">
-          <div className="flex-1 max-w-xl">
+          <div className="flex-1">
              {currentView === 'dashboard' && (
               <div className="relative group">
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors`} style={{ color: 'var(--muted-foreground)' }} />
@@ -147,7 +147,7 @@ const MainApp = () => {
       </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-8">
-           <div className={`max-w-7xl mx-auto space-y-8`}>
+           <div className={`w-full space-y-8`}>
               {currentView === 'dashboard' ? (
                 <>
                   <StatsOverview processes={processes} />

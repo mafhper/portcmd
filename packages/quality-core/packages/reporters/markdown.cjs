@@ -37,7 +37,10 @@ function generateMarkdown(result) {
         if (errors.length > 0) {
             md += `### Errors (${errors.length})\n`;
             for (const v of errors) {
-                md += `- 🔴 **[${v.area}]** ${v.metric}: \`${v.value}\` (Threshold: \`${v.threshold}\`)\n`;
+                const val = typeof v.value === 'object' ? JSON.stringify(v.value) : v.value;
+                md += `- 🔴 **[${v.area}]** ${v.metric}: \`${val}\` (Threshold: \`${v.threshold}\`)\n`;
+                if (v.message) md += `  - *${v.message}*\n`;
+                if (v.selector) md += `  - Element: \`${v.selector}\`\n`;
             }
             md += `\n`;
         }
@@ -45,7 +48,10 @@ function generateMarkdown(result) {
         if (warnings.length > 0) {
             md += `### Warnings (${warnings.length})\n`;
             for (const v of warnings) {
-                md += `- 🟡 **[${v.area}]** ${v.metric}: \`${v.value}\` (Threshold: \`${v.threshold}\`)\n`;
+                const val = typeof v.value === 'object' ? JSON.stringify(v.value) : v.value;
+                md += `- 🟡 **[${v.area}]** ${v.metric}: \`${val}\` (Threshold: \`${v.threshold}\`)\n`;
+                if (v.message) md += `  - *${v.message}*\n`;
+                if (v.selector) md += `  - Element: \`${v.selector}\`\n`;
             }
         }
     }

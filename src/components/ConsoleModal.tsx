@@ -102,15 +102,15 @@ const ConsoleModal: React.FC<ConsoleModalProps> = ({ project, onClose }) => {
          <div 
            ref={scrollRef}
            onScroll={handleScroll}
-           className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-[#0d1117] text-zinc-300"
+           className="flex-1 overflow-auto p-4 font-mono text-xs space-y-1 custom-scrollbar bg-[#0d1117] text-subtle"
          >
            {currentProject.logs.length === 0 ? (
-             <div className="text-zinc-600 italic text-center mt-10">No output generated yet.</div>
+             <div className="text-subtle italic text-center mt-10">No output generated yet.</div>
            ) : (
              currentProject.logs.map((log: LogEntry, i: number) => (
                <div key={i} className="flex space-x-2 border-b border-white/5 pb-0.5 mb-0.5">
-                 <span className="text-zinc-500 shrink-0">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
-                 <span className={log.level === 'error' ? 'text-red-400' : log.level === 'warn' ? 'text-yellow-400' : 'text-zinc-300'}>
+                 <span className="text-subtle shrink-0">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+                 <span className={log.level === 'error' ? 'text-red-400' : log.level === 'warn' ? 'text-yellow-400' : 'text-fg'}>
                    {stripAnsi(log.message)}
                  </span>
                </div>

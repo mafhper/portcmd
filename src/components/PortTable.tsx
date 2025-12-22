@@ -445,7 +445,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-zinc-500 space-y-4">
+      <div className="flex flex-col items-center justify-center h-64 text-subtle space-y-4">
         <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
         <p className="font-mono text-sm animate-pulse">{t('scanning')}</p>
       </div>
@@ -454,7 +454,7 @@ const PortTable: React.FC<PortTableProps> = ({ processes, totalProcessesCount, o
 
   if (processes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 text-zinc-500 border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
+      <div className="flex flex-col items-center justify-center h-64 text-subtle border border-dashed border-zinc-800 rounded-xl bg-zinc-900/20">
         <Server className="w-12 h-12 mb-3 opacity-20" />
         <p>{totalProcessesCount > 0 ? "No processes match your filter. Try switching to 'All'." : t('noActiveProcesses')}</p>
       </div>

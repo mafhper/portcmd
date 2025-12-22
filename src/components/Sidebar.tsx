@@ -31,19 +31,29 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   const { t } = useTranslation();
   
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (!mobile) setMobileOpen(false); // Reset on desktop
+    };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const toggleMobileSidebar = () => setMobileOpen(!mobileOpen);
+
   const promoUrl = typeof window !== 'undefined' && window.location.port === '5173'
     ? 'http://localhost:5174/portcmd/'
     : '/portcmd/';
 
-  const collapsed = isMobile || settings.sidebarCollapsed;
+  const desktopCollapsed = settings.sidebarCollapsed;
+  // Mobile: sidebar always uses mobileOpen for visibility
+  // Desktop: sidebar uses desktopCollapsed for width
+  const showIconsOnly = isMobile ? !mobileOpen : desktopCollapsed;
 
   const glassStyle = {
     backgroundColor: isDark 
@@ -73,11 +83,40 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
   };
 
   return (
+    <>
+    {/* Mobile Overlay */}
+    <AnimatePresence>
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={() => setMobileOpen(false)}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] md:hidden"
+        />
+      )}
+    </AnimatePresence>
+
+    {/* Mobile Toggle Button (Floating) - Explicit colors and high Z-index */}
+    <button
+      onClick={toggleMobileSidebar}
+      className={`fixed bottom-6 right-6 z-[110] p-4 bg-blue-600 text-white rounded-full shadow-lg md:hidden hover:bg-blue-700 transition-colors ${mobileOpen ? 'hidden' : 'block'}`}
+      aria-label="Open Menu"
+    >
+      <ChevronRight size={24} />
+    </button>
+
     <motion.aside 
       initial={false}
-      animate={{ width: collapsed ? 80 : 260 }}
+      animate={{ 
+        width: isMobile ? 280 : (desktopCollapsed ? 80 : 260),
+        x: isMobile ? (mobileOpen ? 0 : -280) : 0
+      }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex-shrink-0 flex flex-col h-full border-r relative z-20 overflow-hidden"
+      className={`
+        flex-col h-full border-r overflow-hidden
+        ${isMobile ? 'fixed inset-y-0 left-0 z-[100] shadow-2xl' : 'flex flex-shrink-0 relative z-[70]'}
+      `}
       style={{ ...glassStyle, borderColor: 'var(--border-color)' }}
     >
       {/* Header */}
@@ -91,7 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         </a>
         
         <AnimatePresence>
-          {!collapsed && (
+          {!showIconsOnly && (
             <motion.button 
               onClick={() => { window.scrollTo(0, 0); window.location.reload(); }}
               variants={textVariants}
@@ -107,11 +146,11 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         </AnimatePresence>
         
         <button 
-          onClick={() => updateSettings({ sidebarCollapsed: !collapsed })}
+          onClick={isMobile ? toggleMobileSidebar : () => updateSettings({ sidebarCollapsed: !showIconsOnly })}
           className="absolute -right-3 top-6 bg-primary rounded-full p-1 text-primaryFg shadow-lg hover:bg-primaryHover transition-colors z-50"
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isMobile ? 'Close sidebar' : (showIconsOnly ? 'Expand sidebar' : 'Collapse sidebar')}
         >
-          {collapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
+          {isMobile || showIconsOnly ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
         </button>
       </div>
 
@@ -123,17 +162,17 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             <button
               key={item.id}
               onClick={() => setCurrentView(item.view as ViewType)}
-              className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+              className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
                 ${currentView === item.view 
                   ? 'bg-primary/10 text-primary shadow-sm' 
                   : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
               style={{ color: currentView === item.view ? '' : 'var(--sidebar-text)' }}
-              title={collapsed ? item.label : ''}
+              title={showIconsOnly ? item.label : ''}
               aria-label={item.label}
             >
               <item.icon className="w-5 h-5 shrink-0" />
               <AnimatePresence>
-                {!collapsed && (
+                {!showIconsOnly && (
                   <motion.span 
                     variants={textVariants}
                     initial="hidden"
@@ -153,7 +192,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         {currentView === 'dashboard' && (
           <>
             <AnimatePresence>
-              {!collapsed && (
+              {!showIconsOnly && (
                 <motion.div 
                   initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} exit={{ opacity: 0 }}
                   className="px-3 text-[10px] font-bold uppercase tracking-widest opacity-50 mt-4 mb-2"
@@ -166,14 +205,14 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             <div className="space-y-1">
               <button
                  onClick={() => setFilter((prev) => ({ ...prev, type: 'All', onlyFavorites: false, onlyManaged: false }))}
-                 className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[44px]`}
+                 className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} px-3 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[44px]`}
                  style={{ color: 'var(--sidebar-text)' }}
                  aria-label="Show all processes"
               >
                  <div className="flex items-center">
                     <Globe className="w-4 h-4 shrink-0 opacity-50" />
                     <AnimatePresence>
-                      {!collapsed && (
+                      {!showIconsOnly && (
                         <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
                           All
                         </motion.span>
@@ -185,23 +224,23 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
                 <button
                   key={cat.type}
                   onClick={() => setFilter((prev) => ({ ...prev, type: cat.type, onlyFavorites: false, onlyManaged: false }))}
-                  className={`w-full flex items-center ${collapsed ? 'justify-center' : 'justify-between'} ${collapsed ? 'px-3' : 'pl-6 pr-3'} py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[40px] 
+                  className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : 'justify-between'} ${showIconsOnly ? 'px-3' : 'pl-6 pr-3'} py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-surfaceHover text-muted hover:text-fg min-h-[40px] 
                     ${filter.type === cat.type ? 'bg-surfaceHover text-fg' : ''}`}
                   style={{ color: 'var(--sidebar-text)' }}
-                  title={collapsed ? cat.type : ''}
+                  title={showIconsOnly ? cat.type : ''}
                   aria-label={`Filter by ${cat.type}`}
                 >
                   <div className="flex items-center min-w-0">
                     <cat.icon className={`w-4 h-4 shrink-0 ${cat.color}`} />
                     <AnimatePresence>
-                      {!collapsed && (
+                      {!showIconsOnly && (
                         <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap truncate">
                           {cat.type}
                         </motion.span>
                       )}
                     </AnimatePresence>
                   </div>
-                  {!collapsed && filter.type === cat.type && (
+                  {!showIconsOnly && filter.type === cat.type && (
                     <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 ml-2 shadow-sm"></div>
                   )}
                 </button>
@@ -212,15 +251,15 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
             <div className="pt-2 space-y-1">
               <button 
                 onClick={() => setFilter((prev) => ({ ...prev, onlyManaged: true, onlyFavorites: false, type: 'All' }))}
-                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+                className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
                   ${filter.onlyManaged ? 'bg-success/10 text-success shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
                 style={{ color: filter.onlyManaged ? '' : 'var(--sidebar-text)' }}
-                title={collapsed ? "My Projects" : ''}
+                title={showIconsOnly ? "My Projects" : ''}
                 aria-label="Show my projects only"
               >
                 <FolderKanban className={`w-4 h-4 shrink-0`} />
                 <AnimatePresence>
-                  {!collapsed && (
+                  {!showIconsOnly && (
                     <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
                       {t('managed')}
                     </motion.span>
@@ -230,15 +269,15 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
 
               <button 
                 onClick={() => setFilter((prev) => ({ ...prev, onlyFavorites: true, onlyManaged: false, type: 'All' }))}
-                className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
+                className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} px-3 py-3 rounded-lg text-sm font-medium transition-colors min-h-[44px]
                   ${filter.onlyFavorites ? 'bg-warning/10 text-warning shadow-sm' : 'hover:bg-surfaceHover text-muted hover:text-fg'}`}
                 style={{ color: filter.onlyFavorites ? '' : 'var(--sidebar-text)' }}
-                  title={collapsed ? t('favorites') : ''}
+                  title={showIconsOnly ? t('favorites') : ''}
                 aria-label="Show favorites only"
               >
                 <Star className={`w-4 h-4 shrink-0 ${filter.onlyFavorites ? 'fill-current' : ''}`} />
                 <AnimatePresence>
-                  {!collapsed && (
+                  {!showIconsOnly && (
                     <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
                       {t('favorites')}
                     </motion.span>
@@ -251,21 +290,21 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
       </nav>
 
       <div className="p-4 border-t shrink-0 space-y-2" style={{ borderColor: 'var(--border-color)' }}>
-         {!collapsed && (
+         {!showIconsOnly && (
             <div className="space-y-1 mb-2">
                {/* Shortcuts removed as requested - they belong in Dashboard */}
             </div>
          )}
         <button 
           onClick={onOpenSettings}
-          className={`w-full flex items-center ${collapsed ? 'justify-center' : ''} p-3 rounded-lg text-muted hover:text-fg hover:bg-surfaceHover transition-all min-h-[44px]`}
+          className={`w-full flex items-center ${showIconsOnly ? 'justify-center' : ''} p-3 rounded-lg text-muted hover:text-fg hover:bg-surfaceHover transition-all min-h-[44px]`}
           style={{ color: 'var(--sidebar-text)' }}
           title={t('settings')}
           aria-label="Open settings"
         >
           <Settings className="w-5 h-5 shrink-0" />
           <AnimatePresence>
-            {!collapsed && (
+            {!showIconsOnly && (
               <motion.span variants={textVariants} initial="hidden" animate="visible" exit="hidden" className="ml-3 whitespace-nowrap">
                 {t('settings')}
               </motion.span>
@@ -274,6 +313,7 @@ const Sidebar: React.FC<SidebarProps> = ({ filter, setFilter, onOpenSettings, cu
         </button>
       </div>
     </motion.aside>
+    </>
   );
 };
 
