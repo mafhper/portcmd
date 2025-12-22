@@ -136,8 +136,8 @@
   
   /* Foreground */
   --foreground-base: #fafafa;
-  --foreground-muted: #a3a3a3;
-  --foreground-subtle: #737373;
+  --foreground-muted: #d1d1d1; /* Increased from #a3a3a3 for contrast */
+  --foreground-subtle: #a3a3a3; /* Increased from #737373 for contrast */
   
   /* Borders */
   --border-base: rgba(255, 255, 255, 0.1);

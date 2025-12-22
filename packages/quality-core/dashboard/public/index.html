@@ -626,7 +626,7 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden md:hidden transition-opacity duration-300"></div>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 border-r border-white/5 flex flex-col z-50 shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full" style="background: var(--glass-bg, rgba(15,15,15,0.8)); backdrop-filter: blur(var(--glass-blur, 12px)); -webkit-backdrop-filter: blur(var(--glass-blur, 12px));">
+  <aside id="sidebar" class="w-64 border-r border-white/5 flex flex-col z-[60] shrink-0 transition-transform duration-300 fixed inset-y-0 left-0 md:static md:translate-x-0 -translate-x-full shadow-2xl md:shadow-none" style="background: var(--glass-bg, rgba(15,15,15,0.95)); backdrop-filter: blur(var(--glass-blur, 12px)); -webkit-backdrop-filter: blur(var(--glass-blur, 12px));">
     <!-- Header -->
     <div class="p-6 sidebar-header flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -645,7 +645,10 @@
           document.getElementById('promo-link').href = 'http://localhost:5174/portcmd/';
         }
       </script>
-      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5" title="Toggle Sidebar" aria-label="Toggle sidebar">
+      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5 md:hidden" title="Close Sidebar" aria-label="Close sidebar">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5 hidden md:block" title="Toggle Sidebar" aria-label="Toggle sidebar">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
     </div>
@@ -708,13 +711,26 @@
 
   <!-- Main Content -->
   <main class="flex-1 overflow-auto relative">
-    <div class="max-w-7xl mx-auto p-8 relative z-10" id="content-area">
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-surface/80 backdrop-blur-md sticky top-0 z-30 border-b border-white/5">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            </div>
+            <span class="font-bold text-sm bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-green-500">Quality Core</span>
+        </div>
+        <button onclick="toggleSidebar()" class="p-2 text-muted hover:text-white rounded-lg hover:bg-white/5 transition">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-4 sm:p-8 relative z-10" id="content-area">
       <!-- Content injected via JS -->
     </div>
   </main>
 
   <!-- WindowConsole Viewer Modal -->
-  <div id="viewer-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity duration-300 opacity-0">
+  <div id="viewer-modal" onclick="if(event.target === this) closeViewer()" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/70 backdrop-blur-md transition-opacity duration-300 opacity-0">
     <!-- Main Window Container -->
     <div class="window-console w-full max-w-5xl h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
       
@@ -1541,8 +1557,16 @@
 
       if (isMobile) {
         // Mobile: Toggle Drawer
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
+        const isHidden = sidebar.classList.contains('-translate-x-full');
+        if (isHidden) {
+          sidebar.classList.remove('-translate-x-full');
+          overlay.classList.remove('hidden');
+          document.body.style.overflow = 'hidden'; // Prevent scroll
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          overlay.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
       } else {
         // Desktop: Toggle Collapse
         sidebarCollapsed = !sidebarCollapsed;
@@ -5135,7 +5159,7 @@
             const report = json.data.find(r => r.filename === filename);
             if(report) {
                 const content = report.data?.data || 'No content';
-                showViewer(`Insight: ${filename}`, marked.parse(content), 'html');
+                showViewer(`Insight: ${filename}`, content, 'markdown');
             } else { showToast('Report not found', 'error'); }
         } catch(e) { showToast('Error loading insight', 'error'); }
     }
@@ -5188,10 +5212,18 @@ Provide specific, actionable recommendations.`;
             
             if (json.content) {
                 const resultHtml = `<div class="prose prose-invert max-w-none">${marked.parse(json.content)}</div>`;
+                window._lastAiResult = json.content;
                 if (containerId) {
-                    document.getElementById(containerId).innerHTML = `<div class="glass-card p-8 relative overflow-hidden"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div>${resultHtml}</div>`;
+                    document.getElementById(containerId).innerHTML = `
+                        <div class="glass-card p-8 relative overflow-hidden group">
+                           <div class="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                              <button onclick="copyToClipboard(window._lastAiResult)" class="p-2 bg-black/50 hover:bg-black rounded-lg text-white transition" title="Copy Markdown">📋</button>
+                           </div>
+                           <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div>
+                           ${resultHtml}
+                        </div>`;
                 } else {
-                    showViewer(`AI Analysis: ${pageSource}`, resultHtml, 'html');
+                    showViewer(`AI Analysis: ${pageSource}`, json.content, 'markdown');
                 }
                 showToast('Analysis complete!', 'success');
             } else if (json.error) {
@@ -5401,7 +5433,15 @@ Provide actionable recommendations to improve both quality gate compliance and p
             
             // Backend returns { content: "...", provider: "..." }
             if (json.content) {
-                 resultsEl.innerHTML = `<div class="glass-card p-8 relative overflow-hidden group"><div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div><div class="prose prose-invert max-w-none">${marked.parse(json.content)}</div></div>`;
+                 window._lastAiResult = json.content;
+                 resultsEl.innerHTML = `
+                    <div class="glass-card p-8 relative overflow-hidden group">
+                        <div class="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                            <button onclick="copyToClipboard(window._lastAiResult)" class="p-2 bg-black/50 hover:bg-black rounded-lg text-white transition" title="Copy Markdown">📋</button>
+                        </div>
+                        <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">✨</div>
+                        <div class="prose prose-invert max-w-none">${marked.parse(json.content)}</div>
+                    </div>`;
                  loadInsightsView();
             } else if (json.error) {
                 throw new Error(json.error.message || JSON.stringify(json.error));
@@ -5471,9 +5511,9 @@ Provide actionable recommendations to improve both quality gate compliance and p
     
     function copyCommitMessage() {
         const msg = document.getElementById('commit-message');
-        msg.select();
-        document.execCommand('copy');
-        showToast('Copied to clipboard', 'success');
+        if (msg) {
+            copyToClipboard(msg.value || msg.innerText);
+        }
     }
 
     // --- Terminal Stream Logic ---
@@ -5588,26 +5628,26 @@ Provide actionable recommendations to improve both quality gate compliance and p
         }
     }
 
+    function copyToClipboard(text) {
+        if (!text) return;
+        const textToCopy = typeof text === 'object' ? JSON.stringify(text, null, 2) : text;
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            showToast('Copied to clipboard!', 'success');
+        }).catch(err => {
+            showToast('Failed to copy', 'error');
+            console.error(err);
+        });
+    }
+
     function copyViewerContent() {
         if (window.viewerRawContent) {
-            let text = window.viewerRawContent;
-            if (typeof text === 'object') {
-                text = JSON.stringify(text, null, 2);
-            }
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Full content copied to clipboard!', 'success');
-            }).catch(() => showToast('Failed to copy', 'error'));
+            copyToClipboard(window.viewerRawContent);
             return;
         }
 
         const content = document.getElementById('viewer-content');
         if (content) {
-            const text = content.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                showToast('Content copied', 'success');
-            }).catch(() => {
-                showToast('Failed to copy', 'error');
-            });
+            copyToClipboard(content.innerText);
         }
     }
 
@@ -5697,77 +5737,12 @@ Provide actionable recommendations to improve both quality gate compliance and p
 
 // Duplicate function removed
 
-    async function generateCommitMessage() {
-      const settings = getSettings();
-      const btn = document.getElementById('generate-commit-btn') || document.querySelector('button[onclick="generateCommitMessage()"]');
-      const resultDiv = document.getElementById('commit-result');
-      
-      if (!settings.geminiKey) {
-          showToast('Gemini API Key required in Settings', 'error');
-          return;
+
+    function copyGeneratedCommitMessage() {
+      const el = document.querySelector('#commit-result pre');
+      if (el) {
+          copyToClipboard(el.textContent);
       }
-      
-      if(btn) {
-          btn.innerHTML = '<span class="animate-spin">⏳</span> Generating...';
-          btn.disabled = true;
-      }
-      btn.disabled = true;
-      
-      try {
-        // Get git status
-        const gitRes = await fetch(`${API_BASE}/git/status`);
-        const gitJson = await gitRes.json();
-        
-        if (!gitJson.success || !gitJson.data.hasChanges) {
-          throw new Error('No staged changes found.');
-        }
-        
-        const files = gitJson.data.files.map(f => `${f.status} ${f.file}`).join('\n');
-        
-        const prompt = `Generate a semantic commit message (conventional commits format) for these changes:
-
-${files}
-
-Rules:
-- Use format: type(scope): description
-- Types: feat, fix, refactor, style, docs, test, chore
-- Keep description under 72 characters
-- Be specific and descriptive
-- Return ONLY the commit message, nothing else`;
-
-        const aiRes = await fetch(`${API_BASE}/ai-analyze`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key: settings.geminiKey, prompt })
-        });
-        
-        const aiJson = await aiRes.json();
-        
-        // Use normalized content or fallback to raw (if provider didn't normalize)
-        let content = aiJson.content;
-        
-        if (!content && aiJson.candidates) {
-             content = aiJson.candidates?.[0]?.content?.parts?.[0]?.text;
-        }
-        
-        content = (content || 'chore: update files').trim();
-        
-        resultDiv.classList.remove('hidden');
-        resultDiv.querySelector('pre').textContent = content;
-        
-      } catch (err) {
-        resultDiv.classList.remove('hidden');
-        resultDiv.querySelector('pre').textContent = `Error: ${err.message}`;
-      } finally {
-        btn.innerHTML = '<span>✍️</span> Generate Commit';
-        btn.disabled = false;
-      }
-    }
-
-    function copyCommitMessage() {
-      const msg = document.querySelector('#commit-result pre').textContent;
-      navigator.clipboard.writeText(msg);
-      showToast('Commit message copied!', 'success');
     }
 
     function saveAnalysisToHistory(title, content) {
@@ -5820,50 +5795,6 @@ Rules:
         document.body.appendChild(floatBtn);
     }
   </script>
-  <!-- Viewer Modal -->
-  <!-- WindowConsole Viewer Modal -->
-  <div id="viewer-modal" onclick="if(event.target === this) closeViewer()" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
-    <!-- Main Window Container -->
-    <div class="window-console w-full max-w-5xl h-[85vh] flex flex-col mx-4 transform scale-95 transition-all duration-300 shadow-2xl" id="viewer-container">
-      
-      <!-- Window Header -->
-      <div class="window-header">
-         <!-- Traffic Lights -->
-         <div class="window-controls">
-            <div class="window-dot close" onclick="closeViewer()" title="Close"></div>
-            <div class="window-dot min" title="Minimize"></div>
-            <div class="window-dot max" title="Maximize"></div>
-         </div>
-
-         <!-- Title -->
-         <div class="flex-1 text-center font-mono text-xs text-gray-400 font-bold tracking-wide truncate px-4" id="viewer-title">
-            Terminal
-         </div>
-
-         <!-- Actions -->
-         <div class="flex items-center gap-3">
-             <div class="flex items-center gap-1 bg-white/5 rounded px-2 py-1" id="viewer-nav-controls" style="display: none;">
-                 <button id="viewer-prev-btn" class="text-gray-400 hover:text-white transition disabled:opacity-30">◄</button>
-                 <span id="viewer-counter" class="text-[10px] font-mono text-muted min-w-[40px] text-center"></span>
-                 <button id="viewer-next-btn" class="text-gray-400 hover:text-white transition disabled:opacity-30">►</button>
-             </div>
-             <button onclick="copyViewerContent()" class="text-gray-500 hover:text-white transition text-xs" title="Copy Full Content">📋</button>
-             <button onclick="closeViewer()" class="text-gray-500 hover:text-white transition text-xs">✕</button>
-         </div>
-      </div>
-
-      <!-- Content Area -->
-      <div id="viewer-content" class="flex-1 p-6 overflow-y-auto custom-scrollbar terminal-content text-sm relative">
-         <!-- Content injected here -->
-      </div>
-      
-      <!-- Footer/Status Bar -->
-      <div class="bg-[#1a1a1a] px-4 py-2 border-t border-white/5 flex justify-between items-center text-[10px] text-muted font-mono" id="viewer-footer">
-         <span id="viewer-status">Ready</span>
-         <span id="viewer-meta">UTF-8</span>
-      </div>
-    </div>
-  </div>
 
   <!-- Confirm Modal -->
   <div id="confirm-modal" class="fixed inset-0 z-[110] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0">

@@ -281,55 +281,51 @@ async function handleAiAnalyze(req, res) {
                 technical: `
 IMPORTANT: Format your response using clean Markdown headers and tables.
 Do NOT use emojis.
-Respond entirely in ${langName}.
-Be extremely specific and clinical in your analysis. Include exact values, thresholds, and file paths when relevant.
+Respond entirely in \${langName}.
+Be extremely specific, clinical, and demanding in your analysis. Act as a strict Lead Performance Engineer. 
+A "PASS" is only awarded if ALL Core Web Vitals are within Google's "Good" range.
+
+## Audit Verdict: [READY / NOT READY FOR PRODUCTION]
+**Status:** [SUCCESS / FAILURE / WARNING]
+**Performance Score:** [0-100]
+**Critical Blockers:** [Count of issues requiring immediate fix before deployment]
 
 ## Executive Summary
-[2-3 sentence overview with PASS/FAIL status, critical issue count, and primary concern]
+[2-3 sentence overview. If NOT READY, specify the single biggest technical bottleneck that prevents a high Lighthouse score.]
 
-## Metrics Audit
+## Performance Budget Compliance
+| Category | Metric | Actual | Budget (Target) | Status |
+|----------|--------|--------|-----------------|--------|
+| Loading  | LCP    | [Val]  | ≤ 2.5s          | [OK/FAIL] |
+| Interactivity | INP | [Val]  | ≤ 200ms         | [OK/FAIL] |
+| Stability | CLS    | [Val]  | ≤ 0.1           | [OK/FAIL] |
+| Size     | Bundle | [Val]  | ≤ 600KB         | [OK/FAIL] |
 
-### Quality Gate Metrics
-| Metric | Score | Threshold | Status | Priority |
-|--------|-------|-----------|--------|----------|
-[Include ALL metrics from the data with their actual values, acceptable thresholds (90+ green, 70-89 yellow, <70 red), and a priority ranking]
+## Deep Technical Analysis
 
-### Lighthouse Core Web Vitals
-| Metric | Value | Target | Impact |
-|--------|-------|--------|--------|
-[List LCP, FCP, CLS, INP, TTI, SI with their values and Google's recommended thresholds]
+### [Metric Name] - Critical Analysis
+- **Observed Value:** [exact value]
+- **Target Threshold:** [threshold value]  
+- **Technical Severity:** [Critical/High/Medium]
+- **Lighthouse Diagnostic:** [Technical explanation using terms like "Render-blocking", "Main-thread blocking", "TBT contribution", etc.]
+- **Remediation Specification (Required for Compliance):**
+  1. [Exact code modification or configuration change]
+  2. [Specific file path and line number if possible]
+  3. [Verification command to run]
 
-## Violations Analysis
+## Priority Action Matrix (Impact/Effort)
 
-For EACH violation found, provide:
+| Proposed Action | Technical Impact | Complexity | Priority |
+|-----------------|------------------|------------|----------|
+| [Action Name]   | [90-100%]        | [Low-High] | [P0-P3]  |
 
-### [Violation Area]: [Metric Name]
-- **Current Value:** [exact value]
-- **Required Threshold:** [threshold value]  
-- **Severity:** [Critical/High/Medium/Low]
-- **Root Cause:** [Technical explanation of why this violation occurs]
-- **Impact:** [How this affects performance, SEO, or user experience]
-- **Remediation:**
-  1. [Specific step with file path or command]
-  2. [Code change if applicable]
-  3. [Verification step]
+## Implementation Roadmap
 
-## Priority Action Matrix
+### Phase 1: Critical Compliance (P0)
+[List actions that MUST be done to achieve a Performance Score > 90]
 
-| Action | Impact | Effort | Priority |
-|--------|--------|--------|----------|
-[List top 5 actions sorted by impact/effort ratio]
-
-## Technical Recommendations
-
-### Immediate (This Sprint)
-[List 2-3 critical fixes with exact implementation steps]
-
-### Short-term (Next 2 Weeks)  
-[List 2-3 important improvements]
-
-### Long-term (Backlog)
-[List optimization opportunities]
+### Phase 2: Optimization (P1)
+[List actions for further refinement]
 `,
                 educational: `
 IMPORTANT: Format your response using clean Markdown headers.

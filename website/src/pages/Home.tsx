@@ -176,7 +176,7 @@ const Home = ({ onNavigate }: { onNavigate?: (view: string) => void }) => {
                 <p className="text-xl text-zinc-400 mb-8 leading-relaxed">
                     {t('qcPromoDesc')}
                 </p>
-                <button onClick={() => onNavigate && onNavigate('quality')} className="inline-flex items-center space-x-2 text-cyan-400 font-bold hover:text-cyan-300 transition-colors group">
+                <button onClick={() => onNavigate && onNavigate('quality')} className="inline-flex items-center space-x-2 text-cyan-400 font-bold hover:text-cyan-300 transition-colors group py-3 pr-4 min-h-[48px]">
                     <span>{t('qcPromoButton')}</span>
                     <ArrowRight className="group-hover:translate-x-1 transition-transform" />
                 </button>

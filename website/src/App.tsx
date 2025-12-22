@@ -45,7 +45,7 @@ const App = () => {
   const NavLink = ({ view, label }: { view: string, label: string }) => (
     <button 
       onClick={() => { setCurrentView(view); window.scrollTo(0, 0); }}
-      className={`text-sm font-medium transition-colors ${currentView === view ? 'text-white' : 'text-zinc-400 hover:text-white'}`}
+      className={`text-sm font-medium transition-colors py-2 px-3 rounded-lg hover:bg-white/5 ${currentView === view ? 'text-white' : 'text-zinc-400 hover:text-white'} min-h-[40px] flex items-center`}
     >
       {label}
     </button>
@@ -84,7 +84,7 @@ const App = () => {
             <div className="relative">
               <button 
                 onClick={() => setIsLangOpen(!isLangOpen)}
-                className="p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="p-3 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-brand-500 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Change Language"
                 aria-expanded={isLangOpen}
                 aria-haspopup="listbox"
@@ -117,7 +117,7 @@ const App = () => {
               href="https://github.com/mafhper/portcmd" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-zinc-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded-lg p-1"
+              className="text-zinc-400 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500 rounded-lg p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="View project on GitHub"
             >
               <Github size={20} aria-hidden="true" />

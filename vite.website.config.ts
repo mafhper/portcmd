@@ -15,6 +15,14 @@ export default defineConfig({
   build: {
     outDir: '../dist', // Builds to the root 'dist' folder
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'i18next', 'react-i18next'],
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+        }
+      }
+    }
   },
   publicDir: '../public', // Serve assets from root public folder
   server: {
