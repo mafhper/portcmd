@@ -36,7 +36,10 @@ const CONFIG = {
     reportsDir: path.join(process.cwd(), 'performance-reports'),
     lighthouseDir: path.join(process.cwd(), 'performance-reports', 'lighthouse'),
     qualityDir: path.join(process.cwd(), 'performance-reports', 'quality'),
-    manualDir: path.join(process.cwd(), 'performance-reports', 'manual'),
+    manualDir: process.env.LIGHTHOUSE_MANUAL_PATH || path.join(process.cwd(), 'performance-reports', 'manual'),
+    get manualPath() {
+        return process.env.LIGHTHOUSE_MANUAL_PATH || (global.serverSettings?.manualReportsPath) || path.join(process.cwd(), 'performance-reports', 'manual');
+    },
     logsDir: path.join(process.cwd(), 'docs/logs'),
     settingsFile: path.join(process.cwd(), 'performance-reports', 'settings.json'),
     retentionPeriods: {
@@ -126,30 +129,40 @@ async function ensureDirectory(dirPath) {
     try { await fs.access(dirPath); } catch { await fs.mkdir(dirPath, { recursive: true }); }
 }
 
-async function readJsonFiles(dirPath, limit = 100) {
+async function readJsonFiles(dirPath, limit = 50) {
     try {
         await ensureDirectory(dirPath);
         const files = await fs.readdir(dirPath);
-        // Optimize: Sort filenames desc (assuming timestamp/chronological naming) and slice
-        const jsonFiles = files
-            .filter(f => f.endsWith('.json'))
-            .sort()
-            .reverse() // Newest first
+        const jsonFiles = files.filter(f => f.endsWith('.json'));
+
+        // 1. Stat all files first to sort by real date (IO cheap compared to content read)
+        const fileStats = await Promise.all(jsonFiles.map(async f => {
+            try {
+                const s = await fs.stat(path.join(dirPath, f));
+                return { file: f, mtime: s.mtime.getTime() };
+            } catch { return null; }
+        }));
+
+        // 2. Sort by mtime desc and take top N
+        const sortedFiles = fileStats
+            .filter(Boolean)
+            .sort((a, b) => b.mtime - a.mtime)
             .slice(0, limit);
 
+        // 3. Read content ONLY for the top N files
         const data = await Promise.all(
-            jsonFiles.map(async (file) => {
+            sortedFiles.map(async ({ file, mtime }) => {
                 try {
                     const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
                     return {
                         filename: file,
                         data: JSON.parse(content),
-                        timestamp: (await fs.stat(path.join(dirPath, file))).mtime
+                        timestamp: mtime
                     };
                 } catch { return null; }
             })
         );
-        return data.filter(Boolean).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        return data.filter(Boolean);
     } catch { return []; }
 }
 
@@ -542,6 +555,7 @@ async function handleEnvConfig(req, res) {
         appUrl: process.env.VITE_APP_URL || '',
         promoUrl: process.env.VITE_PROMO_URL || '',
         githubRepo: process.env.VITE_GITHUB_REPO || '',
+        manualPath: CONFIG.manualPath
     };
 
     // Check if any values are set
@@ -686,7 +700,7 @@ async function handleApiReports(req, res) {
         const [quality, lighthouse, manual] = await Promise.all([
             readJsonFiles(CONFIG.qualityDir, 50),
             readJsonFiles(CONFIG.lighthouseDir, 50),
-            readMarkdownFiles(CONFIG.manualDir)
+            readJsonFiles(CONFIG.manualPath, 50)
         ]);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ quality, lighthouse, manual }));
@@ -796,6 +810,26 @@ async function handleRequest(req, res) {
         return handleRunCommand(req, res, 'lighthouse');
     }
 
+    // --- Manual Lighthouse Reports ---
+    if (url.pathname === '/api/lighthouse/manual/list') {
+        const data = await readJsonFiles(CONFIG.manualPath);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ success: true, data }));
+    }
+
+    if (url.pathname.startsWith('/api/lighthouse/manual/report/')) {
+        const filename = url.pathname.replace('/api/lighthouse/manual/report/', '');
+        const filePath = path.join(CONFIG.manualPath, filename);
+        try {
+            const content = await fs.readFile(filePath, 'utf-8');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            return res.end(content);
+        } catch {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ error: 'Manual report not found' }));
+        }
+    }
+
     // --- Delete Endpoint ---
     if (url.pathname === '/api/delete' && req.method === 'POST') return handleDelete(req, res);
 
@@ -837,7 +871,7 @@ async function ensureAllDirs() {
     await ensureDirectory(CONFIG.reportsDir);
     await ensureDirectory(CONFIG.qualityDir);
     await ensureDirectory(CONFIG.lighthouseDir);
-    await ensureDirectory(CONFIG.manualDir);
+    await ensureDirectory(CONFIG.manualPath);
     await ensureDirectory(CONFIG.pagespeedDir);
     await ensureDirectory(CONFIG.insightsDir);
 }
@@ -936,19 +970,26 @@ async function handleDelete(req, res) {
 
 const DEFAULT_SETTINGS = {
     retentionPolicy: 'all', // 'all', '1y', '6m', '3m', '1m', '15d', '1w', '1d'
-    autoCleanup: true
+    autoCleanup: true,
+    manualReportsPath: ''
 };
+
+// Global state to store settings for CONFIG.manualPath reference
+global.serverSettings = DEFAULT_SETTINGS;
 
 async function loadSettings() {
     try {
         const content = await fs.readFile(CONFIG.settingsFile, 'utf-8');
-        return { ...DEFAULT_SETTINGS, ...JSON.parse(content) };
+        const settings = { ...DEFAULT_SETTINGS, ...JSON.parse(content) };
+        global.serverSettings = settings;
+        return settings;
     } catch {
         return DEFAULT_SETTINGS;
     }
 }
 
 async function saveSettings(settings) {
+    global.serverSettings = settings;
     await ensureDirectory(CONFIG.reportsDir);
     await fs.writeFile(CONFIG.settingsFile, JSON.stringify(settings, null, 2));
 }
@@ -1110,10 +1151,11 @@ async function startServer() {
     const INTEGRATED = process.env.PORTCMD_INTEGRATED === 'true';
 
     try {
+        // Load settings first (needed for dynamic paths in CONFIG)
+        const settings = await loadSettings();
         await ensureAllDirs();
 
         // Auto-cleanup old reports based on retention policy
-        const settings = await loadSettings();
         if (settings.autoCleanup) {
             await cleanupOldReports();
         }

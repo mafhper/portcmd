@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useState, Suspense, lazy } from 'react';
 
 // Eagerly load Home since it's the first page shown
-import Home from './pages/Home';
+// Lazy load Home
+const Home = lazy(() => import('./pages/Home'));
 
 // Lazy load other pages to reduce initial bundle size
 const QualityCore = lazy(() => import('./pages/QualityCore'));

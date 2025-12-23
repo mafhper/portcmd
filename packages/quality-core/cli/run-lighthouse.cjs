@@ -138,40 +138,55 @@ function checkPrerequisites() {
  * Creates a static file server that correctly serves the dist folder
  * mapping /portcmd/app/* to dist/app/* paths and /portcmd/* to dist/*
  */
+/**
+ * Creates a static file server that correctly serves the dist folder
+ * mapping /portcmd/app/* to dist/app/* paths and /portcmd/* to dist/*
+ */
 function createStaticServer(projectRoot, port) {
     return new Promise((resolve, reject) => {
         const server = http.createServer((req, res) => {
             // Remove query string and decode URI
             let urlPath = decodeURIComponent(req.url.split('?')[0]);
+            const distPath = path.join(projectRoot, 'dist');
+            const hasAppDir = fs.existsSync(path.join(distPath, 'app'));
 
             // Map paths correctly for GitHub Pages structure
-            // /portcmd/app/* -> dist/app/*
-            // /portcmd/* -> dist/*
             let filePath;
-            if (urlPath.startsWith('/portcmd/app/')) {
-                filePath = path.join(projectRoot, 'dist/app', urlPath.replace('/portcmd/app/', '/'));
+
+            if (urlPath.startsWith('/portcmd/app/') && hasAppDir) {
+                // If dist/app exists, use it
+                filePath = path.join(distPath, 'app', urlPath.replace('/portcmd/app/', '/'));
+            } else if (urlPath.startsWith('/portcmd/app/')) {
+                // SPA Route: Map /portcmd/app/* to dist/* (flat structure)
+                // We strip the prefix to find assets
+                filePath = path.join(distPath, urlPath.replace('/portcmd/app/', '/'));
             } else if (urlPath.startsWith('/portcmd/')) {
-                filePath = path.join(projectRoot, 'dist', urlPath.replace('/portcmd/', '/'));
+                // Root Route: Map /portcmd/* to dist/*
+                filePath = path.join(distPath, urlPath.replace('/portcmd/', '/'));
             } else {
-                // Fallback to dist/app for root path
-                filePath = path.join(projectRoot, 'dist/app', urlPath);
+                // Fallback to dist root
+                filePath = path.join(distPath, urlPath);
             }
 
             // Default to index.html for root or directory requests
-            if (filePath.endsWith('/') || !path.extname(filePath)) {
-                const possibleIndex = path.join(filePath, 'index.html');
-                if (fs.existsSync(possibleIndex)) {
-                    filePath = possibleIndex;
+            if (filePath.endsWith(path.sep) || filePath.endsWith('/') || !path.extname(filePath)) {
+                // If it doesn't have an extension, it might be a directory or an SPA route
+                let potentialIndex = path.join(filePath, 'index.html');
+
+                // If we mapped /portcmd/app/ to dist/app/ and it's missing, or we're in /portcmd/app/
+                // and it doesn't have its own index.html, we might need a fallback
+                if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
+                    filePath = potentialIndex;
                 } else if (!path.extname(filePath)) {
-                    filePath = filePath + '/index.html';
+                    // Start of SPA fallback logic - if it's a dir without index, maybe it's a route
+                    filePath = potentialIndex;
                 }
             }
 
             const normalizedPath = path.normalize(filePath);
-            const distDir = path.join(projectRoot, 'dist');
 
             // Security check - prevent directory traversal
-            if (!normalizedPath.startsWith(distDir)) {
+            if (!normalizedPath.startsWith(distPath)) {
                 res.writeHead(403);
                 res.end('Forbidden');
                 return;
@@ -179,13 +194,18 @@ function createStaticServer(projectRoot, port) {
 
             fs.readFile(normalizedPath, (err, data) => {
                 if (err) {
-                    // Try with index.html for SPA routing (App only)
-                    if (urlPath.startsWith('/portcmd/app/')) {
-                        const indexPath = path.join(projectRoot, 'dist/app/index.html');
+                    // Try with index.html for SPA routing (App fallback)
+                    // If the specific file (e.g. assets) is missing, this might return index.html (which is ok for routes, bad for assets)
+                    // Better to only fallback if it looks like a page navigation (no ext)
+                    if (urlPath.startsWith('/portcmd/app/') && !path.extname(urlPath)) {
+                        const indexPath = hasAppDir
+                            ? path.join(distPath, 'app/index.html')
+                            : path.join(distPath, 'index.html');
+
                         fs.readFile(indexPath, (err2, indexData) => {
                             if (err2) {
                                 res.writeHead(404);
-                                res.end(`Not Found: ${urlPath}`);
+                                res.end(`Not Found: ${urlPath} (SPA Fallback failed)`);
                             } else {
                                 res.writeHead(200, { 'Content-Type': 'text/html' });
                                 res.end(indexData);
@@ -222,12 +242,44 @@ function createStaticServer(projectRoot, port) {
             });
         });
 
-        server.on('error', reject);
+        server.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                log(`Porta ${port} em uso. Tentando liberar...`, 'warn');
+                try {
+                    // Try to kill process on port (Windows)
+                    execSync(`npx kill-port ${port}`);
+                    log(`Porta ${port} liberada. Tentando novamente em 1s...`, 'info');
+                    setTimeout(() => {
+                        server.close();
+                        server.listen(port, '127.0.0.1');
+                    }, 1000);
+                } catch (e) {
+                    reject(err);
+                }
+            } else {
+                reject(err);
+            }
+        });
+
         server.listen(port, '127.0.0.1', () => {
             log(`Servidor estático iniciado na porta ${port}`, 'success');
             resolve(server);
         });
     });
+}
+
+function ensureDistExists() {
+    const distPath = path.resolve(__dirname, '../../../dist');
+    if (!fs.existsSync(distPath) || fs.readdirSync(distPath).length === 0) {
+        log('Diretório dist/ não encontrado ou vazio. Executando build...', 'warn');
+        try {
+            execSync('npm run build', { stdio: 'inherit', cwd: path.resolve(__dirname, '../../../') });
+            log('Build concluído com sucesso!', 'success');
+        } catch (e) {
+            log('Falha ao executar build. Abortando.', 'error');
+            process.exit(1);
+        }
+    }
 }
 
 async function isPortInUse(port) {
@@ -245,20 +297,42 @@ async function isPortInUse(port) {
     });
 }
 
-function startServer() {
-    // Wrapper to maintain interface with main()
-    // but in this version we return the promise of the server instance
+async function startServer() {
+    ensureDistExists();
+
+    // Check port usage before starting
+    const inUse = await isPortInUse(CONFIG.port);
+    if (inUse) {
+        log(`Porta ${CONFIG.port} ocupada. Tentando encerrar processo anterior...`, 'warn');
+        try {
+            execSync(`npx kill-port ${CONFIG.port}`);
+            // Wait a bit
+            await new Promise(r => setTimeout(r, 1000));
+        } catch (e) {
+            log('Não foi possível liberar a porta automaticamente.', 'warn');
+        }
+    }
+
     return createStaticServer(path.resolve(__dirname, '../../../'), CONFIG.port);
 }
 
 async function stopServer(serverInstance) {
     if (!serverInstance) return;
     log('Encerrando servidor...', 'wait');
-    return new Promise((resolve) => {
-        serverInstance.close(() => {
+    await new Promise((resolve) => {
+        serverInstance.close((err) => {
+            if (err) log('Erro ao fechar servidor: ' + err.message, 'warn');
             resolve();
         });
     });
+
+    // Force kill port to be sure
+    try {
+        execSync(`npx kill-port ${CONFIG.port}`, { stdio: 'ignore' });
+        log('Porta liberada (Kill Port enforcement)', 'debug');
+    } catch { /* ignore */ }
+
+    log('Servidor parado.', 'success');
 }
 
 // ========================================
@@ -533,13 +607,16 @@ async function main() {
 }
 
 // Tratamento de sinais para cleanup
+// Tratamento de sinais para cleanup
 process.on('SIGINT', async () => {
-    log('\nInterrompido pelo usuário', 'warn');
+    log('\nInterrompido pelo usuário. Limpando porta...', 'warn');
+    try { execSync(`npx kill-port ${CONFIG.port}`, { stdio: 'ignore' }); } catch { }
     process.exit(130);
 });
 
 process.on('SIGTERM', async () => {
-    log('\nEncerrando...', 'warn');
+    log('\nEncerrando. Limpando porta...', 'warn');
+    try { execSync(`npx kill-port ${CONFIG.port}`, { stdio: 'ignore' }); } catch { }
     process.exit(143);
 });
 
