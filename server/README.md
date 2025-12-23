@@ -2,15 +2,15 @@
 > **Context**: `/server`
 > **Purpose**: Backend API for PortCmd (System Operations & File System).
 
-## 🔌 Overview
+## Overview
 The Server module acts as the bridge between the React Frontend (UI) and the Operating System. Since a browser-based UI cannot directly kill processes or read disk files, this Express.js server exposes these capabilities via a REST API.
 
-## 🏗️ Architecture
+## Architecture
 - **Framework**: Express.js
 - **Runtime**: Node.js (ES Modules)
 - **Library**: `systeminformation` (for process stats)
 
-## 🛣️ API Endpoints
+## API Endpoints
 
 ### System & Processes
 - `GET /api/processes`: List active development processes.
@@ -24,11 +24,11 @@ The Server module acts as the bridge between the React Frontend (UI) and the Ope
 ### File System
 - `POST /api/fs/validate`: Check if a path exists and is valid.
 
-## 🔧 Configuration
+## Configuration
 - Port: `3001` (Default)
 - Config File: `server/projects.json` (Database of saved projects).
 
-## 🚀 Local Development
+## Local Development
 ```bash
 # Start Server in Watch Mode
 npm run dev --prefix server

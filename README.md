@@ -1,8 +1,6 @@
-# PortCmd
-
 # PortCmd - Process Manager & Quality Dashboard
 
-> *A premium process manager for **developers and designers** who demand excellence.*
+> *A process manager for **developers and designers** who demand excellence.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Quality Gate](https://img.shields.io/badge/Quality-Passing-success)](https://github.com/mafhper/port-command)
@@ -16,15 +14,15 @@
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🚀 **Process Orchestration**
+### Process Orchestration
 
 - **Kill & Restart**: Terminate or restart processes stuck on specific ports (3000, 5173, 8080...) with a single click.
 - **Smart Detection**: Automatic identification of "Zombie", "Suspended", or high-memory consumption processes.
 - **Project Context**: Groups processes by project (e.g., API + Client + Database) for easier management.
 
-### 🎨 **Premium UI/UX (For Designers)**
+### Premium UI/UX (For Designers)
 
 - **Glassmorphism Design**: Modern interface with configurable blur effects, gradients, and transparency.
 - **Theme Engine**:
@@ -33,22 +31,22 @@
 - **Accessibility**: Dedicated modes for Deuteranopia, Protanopia, and Tritanopia.
 - **Pixel Perfection**: Built for high-DPI displays with a focus on visual fidelity.
 
-### 🌐 **Internationalization (i18n)**
+### Internationalization (i18n)
 
 - Native support for **English (US)**, **Portuguese (BR)**, and **Spanish**.
 - Automatic system-based detection.
 
-### 📊 **Quality Core**
+### Quality Core
 
 A centralized engine for technical excellence. See dedicated section below.
 
 ---
 
-## 💎 Quality Core: In Pursuit of Excellence
+## Quality Core: In Pursuit of Excellence
 
 The **Quality Core** (`@port/quality-core`) is a modular subsystem integrated into PortCmd designed to act as the "Guardian of Quality" for your projects. It is not just a runner; it is a philosophy of **Continuous Improvement**.
 
-### **How it Works**
+### How it Works
 
 1.  **Validators**: Modular scripts that check specific quality attributes:
     -   `lint`: Static code analysis (ESLint/TSC).
@@ -58,7 +56,7 @@ The **Quality Core** (`@port/quality-core`) is a modular subsystem integrated in
 2.  **Aggregation**: All results are compiled into a canonical JSON Report (`quality-report.json`).
 3.  **Visualization**: The **Quality Dashboard** consumes these reports to render Trend Charts, Pass Rates, and detailed insights.
 
-### **Usage**
+### Usage
 
 - **Run Full Gate**: `npm run quality:gate` (Runs all validators + Logic Engine)
 - **Performance Only**: `npm run perf:lighthouse` (Trigger Lighthouse Audits)
@@ -68,7 +66,7 @@ The **Quality Core** (`@port/quality-core`) is a modular subsystem integrated in
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 
@@ -101,7 +99,7 @@ npm run deploy
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 | Directory | Description |
 |-----------|-------------|
@@ -113,7 +111,7 @@ npm run deploy
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see `docs/CONTRIBUTING.md` (if available) or follow the standard PR process.
 
@@ -123,11 +121,6 @@ We welcome contributions! Please see `docs/CONTRIBUTING.md` (if available) or fo
 4. Push and Open PR
 
 ---
-
-## 📄 License
-
-MIT © mafhper
-This will start both the backend API (port 3001) and the frontend Application (port 5173).
 
 ## Deployment (GitHub Pages)
 
@@ -146,6 +139,8 @@ The project is configured to deploy a Promo Site to the root and the App to `/ap
 
 **Note:** The web version of the App on GitHub Pages is a **demo only**. It cannot interact with your local system processes (Node backend is required). To use the full features, run it locally.
 
+---
+
 ## License
 
-MIT
+MIT © mafhper

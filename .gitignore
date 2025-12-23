@@ -10,6 +10,7 @@ dist-ssr/
 _dev/
 _desenvolvimento/
 _template/
+docs/
 
 # Reports (generated)
 performance-reports/

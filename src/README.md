@@ -2,10 +2,10 @@
 > **Context**: `/src`
 > **Purpose**: Frontend Logic and UI Components for the PortCmd Application.
 
-## 🎨 Overview
+## Overview
 This directory contains the source code for the main React Application (The Dashboard). It is built with **Vite**, **TypeScript**, and **TailwindCSS**.
 
-## 📂 Structure
+## Structure
 
 | Folder | Content |
 |--------|---------|
@@ -16,7 +16,7 @@ This directory contains the source code for the main React Application (The Dash
 | `locales/` | i18n JSON translation files. |
 | `types/` | TypeScript interfaces and shared types. |
 
-## 🧩 Key Components
+## Key Components
 
 ### `App.tsx`
 The main entry point. Handles the Layout shell, Routing (via View State), and global refresh intervals.
@@ -30,12 +30,12 @@ The main navigation component.
 ### `SystemService.ts`
 The bridge to the Backend API. All `fetch` calls reside here.
 
-## 🌈 Theming System
+## Theming System
 The app uses a dynamic CSS variable system injected by `PreferencesContext`.
 - **Modes**: toggled via `html.class="dark"` or light.
 - **Palettes**: injected as style tags or CSS variables on the `:root`.
 
-## 🛠️ Development
+## Development
 ```bash
 # Run Client (HMR)
 npm run dev:client

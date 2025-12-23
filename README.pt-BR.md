@@ -1,6 +1,6 @@
 # PortCmd - Gerenciador de Processos & Dashboard de Qualidade
 
-> *Um gerenciador de processos premium para **desenvolvedores e designers** que exigem excelência.*
+> *Um gerenciador de processos para **desenvolvedores e designers** que exigem excelência.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Quality Gate](https://img.shields.io/badge/Quality-Passing-success)](https://github.com/mafhper/port-command)
@@ -14,15 +14,15 @@
 
 ---
 
-## ✨ Funcionalidades Principais
+## Funcionalidades Principais
 
-### 🚀 **Orquestração de Processos**
+### Orquestração de Processos
 
 - **Encerrar e Reiniciar**: Encerre ou reinicie processos travados em portas específicas (3000, 5173, 8080...) com um clique.
 - **Detecção Inteligente**: Identificação automática de processos "Zumbi", "Suspenso" ou com alto consumo de memória.
 - **Contexto de Projeto**: Agrupa processos por projeto (ex: API + Cliente + Banco de Dados) para um gerenciamento mais fácil.
 
-### 🎨 **UI/UX Premium (Para Designers)**
+### UI/UX Premium (Para Designers)
 
 - **Design Glassmorphism**: Interface moderna com efeitos de desfoque, gradientes e transparência configuráveis.
 - **Motor de Temas**:
@@ -31,22 +31,22 @@
 - **Acessibilidade**: Modos dedicados para Deuteranopia, Protanopia e Tritanopia.
 - **Pixel Perfect**: Feito para telas de alta resolução com foco em fidelidade visual.
 
-### 🌐 **Internacionalização (i18n)**
+### Internacionalização (i18n)
 
 - Suporte nativo para **Inglês (US)**, **Português (BR)** e **Espanhol**.
 - Detecção automática baseada no sistema.
 
-### 📊 **Quality Core**
+### Quality Core
 
 Um motor centralizado para excelência técnica. Veja a seção dedicada abaixo.
 
 ---
 
-## 💎 Quality Core: Em Busca da Excelência
+## Quality Core: Em Busca da Excelência
 
 O **Quality Core** (`@port/quality-core`) é um subsistema modular integrado ao PortCmd projetado para agir como o "Guardião da Qualidade" para seus projetos. Não é apenas um executor; é uma filosofia de **Melhoria Contínua**.
 
-### **Como Funciona**
+### Como Funciona
 
 1.  **Validadores**: Scripts modulares que verificam atributos de qualidade específicos:
     - `lint`: Análise estática de código (ESLint/TSC).
@@ -56,7 +56,7 @@ O **Quality Core** (`@port/quality-core`) é um subsistema modular integrado ao 
 2. **Agregação**: Todos os resultados são compilados em um Relatório JSON canônico (`quality-report.json`).
 3. **Visualização**: O **Dashboard de Qualidade** consome esses relatórios para renderizar Gráficos de Tendência, Taxas de Aprovação e insights detalhados.
 
-### **Uso**
+### Uso
 
 - **Executar Gate Completo**: `npm run quality:gate` (Executa todos os validadores + Motor Lógico)
 - **Apenas Desempenho**: `npm run perf:lighthouse` (Aciona auditorias do Lighthouse)
@@ -66,7 +66,7 @@ O **Quality Core** (`@port/quality-core`) é um subsistema modular integrado ao 
 
 ---
 
-## 🛠️ Instalação e Configuração
+## Instalação e Configuração
 
 ### Pré-requisitos
 
@@ -99,7 +99,7 @@ npm run deploy
 
 ---
 
-## 📂 Estrutura do Projeto
+## Estrutura do Projeto
 
 | Diretório | Descrição |
 |-----------|-------------|
@@ -111,7 +111,7 @@ npm run deploy
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são bem-vindas! Consulte `docs/CONTRIBUTING.md` (se disponível) ou siga o processo padrão de PR.
 
@@ -122,6 +122,6 @@ Contribuições são bem-vindas! Consulte `docs/CONTRIBUTING.md` (se disponível
 
 ---
 
-## 📄 Licença
+## Licença
 
 MIT © mafhper

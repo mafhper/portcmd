@@ -2,16 +2,16 @@
 > **Context**: `packages/quality-core`
 > **Purpose**: Centralized Quality Assurance Engine and Dashboard 2.0 system.
 
-## 🧠 Overview
+## Overview
 The **Quality Core** is a standalone workspace responsible for maintaining the health, stability, and quality of the PortCmd ecosystem. It provides CLI tools to run validators, aggregate results, and a dashboard to visualize metrics.
 
-## 📦 Architecture
+## Architecture
 The core is divided into three layers:
 
 ### 1. CLI & Validators (`/cli`)
 Entry points for execution.
 - `run.cjs`: Main orchestrator. Runs a suite of validators (Lint, Unit, E2E, Structure).
-- `run-lighthouse.cjs`: specialized runner for Google Lighthouse performance audits.
+- `run-lighthouse.cjs`: Specialized runner for Google Lighthouse performance audits.
 - Output: Generates standardized JSON reports in `performance-reports/`.
 
 ### 2. Logic Engines (`/src/logic`)
@@ -24,7 +24,7 @@ A dedicated visualization frontend.
 - **Server**: `dashboard/server.cjs` (Lightweight Express server to serve reports).
 - **Client**: `dashboard/public/index.html` (Single-file vanilla JS/Tailwind app for maximum portability).
 
-## 🚀 Usage
+## Usage
 
 ### As a Library
 Can be imported by other projects to run standard gates.
@@ -44,7 +44,7 @@ npm run quality:gate
 npm run perf:lighthouse
 ```
 
-## 📊 Reports
+## Reports
 Reports are stored in `root/performance-reports/` and follow a canonical schema:
 ```json
 {
