@@ -428,7 +428,8 @@ For each issue, explain:
                     data: result.content,
                     model: result.model,
                     reportType,
-                    language
+                    language,
+                    target
                 }, null, 2));
             } catch (e) { console.error('Failed to save insight file:', e); }
 

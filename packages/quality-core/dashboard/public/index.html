@@ -613,7 +613,151 @@
          color: #000 !important;
       }
 
-      /* Metric Card Updates */
+      /* ===== SIDEBAR - Replicating App's Sidebar.tsx Pattern =====
+         - Desktop: Full (260px) by default, collapsible to mini (80px)
+         - Mobile: Hidden by default, slides in as overlay (280px)
+         - Toggle button: Positioned at edge (-right-3), circular, primary color
+      */
+      
+      #sidebar {
+          transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          flex-shrink: 0;
+          overflow: hidden;
+      }
+      
+      /* Desktop (≥768px): Inline, full width by default */
+      @media (min-width: 768px) {
+          #sidebar {
+              width: 260px;
+          }
+          #sidebar.collapsed {
+              width: 80px;
+          }
+          /* Hide text in collapsed state */
+          #sidebar.collapsed .sidebar-text,
+          #sidebar.collapsed .link-text {
+              display: none !important;
+          }
+          /* Center icons in collapsed state */
+          #sidebar.collapsed .sidebar-link {
+              justify-content: center;
+              padding-left: 0;
+              padding-right: 0;
+          }
+          #sidebar.collapsed .sidebar-header {
+              justify-content: center;
+          }
+          #sidebar.collapsed .sidebar-header .logo-heart {
+              margin: 0;
+          }
+          /* Rotate toggle icon */
+          #sidebar.collapsed .toggle-icon {
+              transform: rotate(180deg);
+          }
+      }
+      
+      /* Mobile (<768px): Fixed overlay, off-screen by default */
+      @media (max-width: 767px) {
+          #sidebar {
+              position: fixed;
+              inset: 0 auto 0 0;
+              width: 280px;
+              transform: translateX(-100%);
+              z-index: 100;
+              box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+          }
+          #sidebar.mobile-open {
+              transform: translateX(0);
+          }
+      }
+      
+      /* Toggle Button - Positioned at edge of sidebar (like Sidebar.tsx line 148-154) */
+      .sidebar-toggle-btn {
+          position: absolute;
+          right: -12px; /* -right-3 equivalent */
+          top: 24px;    /* top-6 equivalent */
+          background: var(--color-primary, #10B981);
+          color: white;
+          border-radius: 9999px;
+          padding: 4px;
+          z-index: 50;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          transition: background-color 0.2s;
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      .sidebar-toggle-btn:hover {
+          background: var(--color-primary-hover, #059669);
+      }
+      @media (max-width: 767px) {
+          /* Hide edge toggle on mobile, use floating button instead */
+          .sidebar-toggle-btn {
+              display: none;
+          }
+      }
+      
+      /* Mobile Floating Button - Bottom right, blue, circular */
+      .mobile-toggle {
+          display: none;
+      }
+      @media (max-width: 767px) {
+          .mobile-toggle {
+              display: flex;
+              position: fixed;
+              bottom: 24px;
+              right: 24px;
+              z-index: 110;
+              padding: 16px;
+              background: #2563EB; /* blue-600 */
+              color: white;
+              border-radius: 9999px;
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+              border: none;
+              cursor: pointer;
+              align-items: center;
+              justify-content: center;
+              transition: background-color 0.2s;
+          }
+          .mobile-toggle:hover {
+              background: #1D4ED8; /* blue-700 */
+          }
+          /* Hide when sidebar is open */
+          body.sidebar-open .mobile-toggle {
+              display: none;
+          }
+      }
+      
+      /* Overlay for mobile */
+      #sidebar-overlay {
+          display: none;
+      }
+      @media (max-width: 767px) {
+          body.sidebar-open #sidebar-overlay {
+              display: block;
+          }
+      }
+      
+      /* Quick Actions alignment in collapsed state */
+      #sidebar.collapsed .quick-actions,
+      #sidebar.collapsed .sidebar-bottom {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0.5rem;
+      }
+      #sidebar.collapsed .quick-actions button,
+      #sidebar.collapsed .sidebar-bottom button {
+          width: 100%;
+          justify-content: center;
+          padding: 0.75rem;
+      }
   </style>
 </head>
 <body class="h-screen flex overflow-hidden selection:bg-primary selection:text-black">
@@ -622,32 +766,26 @@
   <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm hidden md:hidden transition-opacity duration-300"></div>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="w-64 border-r border-white/5 flex flex-col shrink-0 transition-all duration-300 fixed inset-y-0 left-0 translate-x-0 shadow-2xl md:shadow-none md:relative md:inset-auto md:translate-x-0" style="background: var(--glass-bg, rgba(15,15,15,0.95)); backdrop-filter: blur(var(--glass-blur, 12px)); -webkit-backdrop-filter: blur(var(--glass-blur, 12px)); z-index: 40 !important; position: relative !important; top: auto !important; bottom: auto !important; left: auto !important;">
+  <aside id="sidebar" class="border-r border-white/5 flex flex-col shrink-0" style="background: var(--glass-bg, rgba(15,15,15,0.95)); backdrop-filter: blur(var(--glass-blur, 12px)); -webkit-backdrop-filter: blur(var(--glass-blur, 12px));">
     <!-- Header -->
-    <div class="p-6 sidebar-header flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <a id="promo-link" href="/portcmd/" class="group logo-heart" title="Back to PortCmd">
-          <div class="relative w-10 h-10 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-xl flex items-center justify-center overflow-hidden group-hover:from-emerald-500 group-hover:to-green-500 transition-all duration-300">
-            <!-- Heart icon representing health/core -->
-            <svg class="w-6 h-6 text-emerald-400 group-hover:text-white transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          </div>
-        </a>
-        <div class="sidebar-text">
-          <button onclick="window.scrollTo(0,0); window.location.reload()" class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-green-500 hover:opacity-80 transition-opacity text-left">Quality Core</button>
+    <div class="h-16 flex items-center relative border-b shrink-0 px-3" style="border-color: var(--border-color, rgba(255,255,255,0.05));">
+      <a id="promo-link" href="/portcmd/" class="flex items-center justify-center p-2 rounded-lg hover:bg-white/5 transition-colors group logo-heart" title="Back to PortCmd">
+        <div class="relative w-8 h-8 bg-emerald-500/10 rounded-lg flex items-center justify-center overflow-hidden group-hover:bg-emerald-500 transition-all duration-300">
+          <svg class="w-5 h-5 text-emerald-400 group-hover:text-white transition-colors duration-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
         </div>
-      </div>
-      <script>
-        if (window.location.port === '3333') {
-          document.getElementById('promo-link').href = 'http://localhost:5174/portcmd/';
-        }
-      </script>
-      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5 md:hidden" title="Close Sidebar" aria-label="Close sidebar">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-      </button>
-      <button onclick="toggleSidebar()" class="text-muted hover:text-white transition p-2 rounded-lg hover:bg-white/5 hidden md:block" title="Toggle Sidebar" aria-label="Toggle sidebar">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </a>
+      <span class="sidebar-text ml-2 font-bold text-lg tracking-tight whitespace-nowrap text-emerald-400">Quality Core</span>
+      
+      <!-- Toggle Button: Positioned at edge of sidebar (like App's Sidebar.tsx) -->
+      <button onclick="toggleSidebar()" class="sidebar-toggle-btn" aria-label="Toggle sidebar">
+        <svg class="w-3 h-3 toggle-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
       </button>
     </div>
+    <script>
+      if (window.location.port === '3333') {
+        document.getElementById('promo-link').href = 'http://localhost:5174/portcmd/';
+      }
+    </script>
 
     <!-- Nav Items -->
     <nav class="flex-1 px-4 space-y-2 mt-2 overflow-y-auto" id="nav-links">
@@ -710,18 +848,7 @@
 
   <!-- Main Content -->
   <main class="flex-1 overflow-auto relative">
-    <!-- Mobile Header -->
-    <div class="md:hidden flex items-center justify-between p-4 bg-surface/80 backdrop-blur-md sticky top-0 z-30 border-b border-white/5">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-gradient-to-br from-emerald-500/20 to-green-500/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            </div>
-            <span class="font-bold text-sm bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-green-500">Quality Core</span>
-        </div>
-        <button onclick="toggleSidebar()" class="p-2 min-h-[44px] min-w-[44px] text-muted hover:text-white rounded-lg hover:bg-white/5 transition flex items-center justify-center">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-        </button>
-    </div>
+    <!-- Mobile Header removed - using floating button (.mobile-toggle) instead -->
 
     <div class="max-w-7xl mx-auto p-4 sm:p-8 relative" id="content-area">
       <!-- Content injected via JS -->
@@ -772,6 +899,11 @@
          </div>
       </div>
     </div>
+  </div>
+
+  <!-- AI Results Modal -->
+  <div id="ai-results" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto" onclick="if(event.target === this) this.classList.add('hidden')">
+      <!-- Content injected via JS -->
   </div>
 
   <!-- Settings Modal -->
@@ -2312,13 +2444,20 @@
         const title = report.filename || 'Unknown Report';
         
         if (title.endsWith('.json')) {
-          // Format JSON report with syntax highlighting
+          // Format JSON report based on viewerType
           const data = report.data;
           if (!data) {
             showViewer(title, '<div class="text-muted">Report data is empty</div>', 'html');
             return;
           }
-          const formattedContent = formatQualityReport(data, title);
+          
+          // Route to appropriate formatter based on viewerType
+          let formattedContent;
+          if (viewerType === 'lighthouse' || viewerType === 'manual' || viewerType === 'pagespeed' || report.isLighthouse) {
+            formattedContent = formatLighthouseReport(data, title);
+          } else {
+            formattedContent = formatQualityReport(data, title);
+          }
           showViewer(title, formattedContent, 'html', data);
         } else if (title.endsWith('.md')) {
           // Markdown report
@@ -2420,6 +2559,146 @@
       // Raw data
       html += `
         <details class="mt-8">
+          <summary class="text-sm text-muted cursor-pointer hover:text-white transition select-none">Show Raw JSON Data</summary>
+          <pre class="mt-3 text-[10px] text-blue-300 font-mono leading-relaxed bg-[#0d1117] p-4 rounded-xl border border-white/5 overflow-auto max-h-96 shadow-inner">${JSON.stringify(data, null, 2)}</pre>
+        </details>
+      `;
+      
+      html += '</div>';
+      return html;
+    }
+
+    function formatLighthouseReport(data, filename) {
+      if (!data) return '<div class="text-muted">No data available</div>';
+      
+      // Support both direct data and nested data.categories structure
+      const cats = data.categories || {};
+      const audits = data.audits || {};
+      const finalUrl = data.finalUrl || data.requestedUrl || 'Unknown URL';
+      const fetchTime = data.fetchTime || data.timestamp;
+      const device = data.configSettings?.formFactor || data.configSettings?.emulatedFormFactor || 'mobile';
+      
+      // Extract scores (convert from 0-1 to 0-100 if needed)
+      const getScore = (cat) => {
+        const score = cats[cat]?.score;
+        if (score === null || score === undefined) return 0;
+        return score <= 1 ? Math.round(score * 100) : Math.round(score);
+      };
+      
+      const perfScore = getScore('performance');
+      const a11yScore = getScore('accessibility');
+      const bpScore = getScore('best-practices');
+      const seoScore = getScore('seo');
+      
+      const getColor = (score) => score >= 90 ? 'text-success' : (score >= 50 ? 'text-warning' : 'text-error');
+      const getBg = (score) => score >= 90 ? 'bg-success' : (score >= 50 ? 'bg-warning' : 'bg-error');
+      
+      // Get Core Web Vitals
+      const lcp = audits['largest-contentful-paint']?.displayValue || '-';
+      const cls = audits['cumulative-layout-shift']?.displayValue || '-';
+      const tbt = audits['total-blocking-time']?.displayValue || '-';
+      const fcp = audits['first-contentful-paint']?.displayValue || '-';
+      const tti = audits['interactive']?.displayValue || audits['time-to-interactive']?.displayValue || '-';
+      const si = audits['speed-index']?.displayValue || '-';
+      
+      // Get failed audits
+      const failedAudits = Object.values(audits)
+        .filter(a => a && a.score !== null && a.score < 0.5 && a.title)
+        .sort((a, b) => (a.score || 0) - (b.score || 0))
+        .slice(0, 10);
+      
+      let html = `
+        <div class="space-y-6">
+          <!-- Header -->
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/10">
+            <div class="min-w-0 flex-1">
+              <h2 class="text-xl font-bold text-white truncate">${filename.replace('.json', '').replace('lighthouse-', '').replace('pagespeed-', '')}</h2>
+              <p class="text-sm text-muted truncate">${finalUrl}</p>
+              <p class="text-xs text-muted mt-1">${fetchTime ? new Date(fetchTime).toLocaleString() : ''} • ${device.charAt(0).toUpperCase() + device.slice(1)}</p>
+            </div>
+          </div>
+          
+          <!-- Score Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            ${[
+              { label: 'Performance', score: perfScore, icon: '⚡' },
+              { label: 'Accessibility', score: a11yScore, icon: '♿' },
+              { label: 'Best Practices', score: bpScore, icon: '✅' },
+              { label: 'SEO', score: seoScore, icon: '🔍' }
+            ].map(item => `
+              <div class="bg-surfaceHighlight/50 p-4 rounded-xl border border-white/5 flex flex-col items-center">
+                <span class="text-2xl mb-2">${item.icon}</span>
+                <span class="text-3xl font-mono font-bold ${getColor(item.score)}">${item.score}</span>
+                <span class="text-xs text-muted uppercase font-bold mt-1">${item.label}</span>
+                <div class="w-full bg-white/5 h-1.5 mt-3 rounded-full overflow-hidden">
+                  <div class="h-full ${getBg(item.score)} transition-all" style="width: ${item.score}%"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <!-- Core Web Vitals -->
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-bold text-muted uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span class="text-primary">●</span> Core Web Vitals
+            </h3>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-center p-3 bg-white/5 rounded-lg">
+                <div class="text-lg font-mono font-bold text-white">${lcp}</div>
+                <div class="text-[10px] text-muted uppercase">LCP</div>
+                <div class="text-[9px] text-muted">Largest Contentful Paint</div>
+              </div>
+              <div class="text-center p-3 bg-white/5 rounded-lg">
+                <div class="text-lg font-mono font-bold text-white">${cls}</div>
+                <div class="text-[10px] text-muted uppercase">CLS</div>
+                <div class="text-[9px] text-muted">Cumulative Layout Shift</div>
+              </div>
+              <div class="text-center p-3 bg-white/5 rounded-lg">
+                <div class="text-lg font-mono font-bold text-white">${tbt}</div>
+                <div class="text-[10px] text-muted uppercase">TBT</div>
+                <div class="text-[9px] text-muted">Total Blocking Time</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Other Metrics -->
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-bold text-muted uppercase tracking-widest mb-4">Other Metrics</h3>
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div><div class="text-white font-mono">${fcp}</div><div class="text-[10px] text-muted">FCP</div></div>
+              <div><div class="text-white font-mono">${tti}</div><div class="text-[10px] text-muted">TTI</div></div>
+              <div><div class="text-white font-mono">${si}</div><div class="text-[10px] text-muted">Speed Index</div></div>
+            </div>
+          </div>
+      `;
+      
+      // Failed Audits
+      if (failedAudits.length > 0) {
+        html += `
+          <div class="glass-card p-6">
+            <h3 class="text-sm font-bold text-error uppercase tracking-widest mb-4 flex items-center gap-2">
+              <span>⚠️</span> Failed Audits (${failedAudits.length})
+            </h3>
+            <div class="space-y-2">
+              ${failedAudits.map(a => `
+                <div class="p-3 bg-error/5 border-l-2 border-error rounded-r-lg">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-medium text-sm text-white">${a.title}</span>
+                    ${a.displayValue ? `<span class="text-xs font-mono text-error bg-error/10 px-2 py-0.5 rounded">${a.displayValue}</span>` : ''}
+                  </div>
+                  <p class="text-xs text-muted">${a.description?.split('.')[0] || ''}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else {
+        html += `<div class="p-6 text-center bg-success/5 border border-success/10 rounded-xl text-success">✨ All audits passed! Great job.</div>`;
+      }
+      
+      // Raw data toggle
+      html += `
+        <details class="mt-4">
           <summary class="text-sm text-muted cursor-pointer hover:text-white transition select-none">Show Raw JSON Data</summary>
           <pre class="mt-3 text-[10px] text-blue-300 font-mono leading-relaxed bg-[#0d1117] p-4 rounded-xl border border-white/5 overflow-auto max-h-96 shadow-inner">${JSON.stringify(data, null, 2)}</pre>
         </details>
@@ -5617,15 +5896,24 @@ function filterDataByTime(data, filter) {
                 document.getElementById('ai-insights-content').innerHTML = marked.parse(latestInsight.insights || t('noInsightsYet'));
                 document.getElementById('ai-recommendations-content').innerHTML = marked.parse(latestInsight.recommendations || t('noRecommendationsYet'));
 
-                document.getElementById('ai-analyses-list').innerHTML = json.data.map(insight => `
+                document.getElementById('ai-analyses-list').innerHTML = json.data.map(insight => {
+                    const target = insight.target || (insight.filename.includes('promo') ? 'promo' : 'app');
+                    const badge = target === 'promo' 
+                        ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 ml-2">PROMO</span>' 
+                        : (target === 'app' ? '<span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 ml-2">APP</span>' : '');
+                    
+                    return `
                     <div class="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition cursor-pointer" onclick="viewAIInsight('${insight.filename}')">
                         <div>
-                            <div class="text-sm font-medium text-white">${insight.filename.replace('.json', '')}</div>
+                            <div class="flex items-center">
+                                <span class="text-sm font-medium text-white">${insight.filename.replace('.json', '')}</span>
+                                ${badge}
+                            </div>
                             <div class="text-xs text-muted">${new Date(insight.timestamp).toLocaleString()}</div>
                         </div>
                         <span class="text-primary">→</span>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
                 document.getElementById('ai-insights-content').innerHTML = `<div class="text-muted">${t('noInsightsYet')}</div>`;
                 document.getElementById('ai-recommendations-content').innerHTML = `<div class="text-muted">${t('noRecommendationsYet')}</div>`;
@@ -6498,6 +6786,12 @@ Provide actionable recommendations to improve both quality gate compliance and p
             // aggregate scores
             let count = filtered.length;
             let perf = 0, a11y = 0, bp = 0, seo = 0;
+            
+            // Sort by latest to get specific metrics from the most recent run
+            filtered.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const latest = filtered[0];
+            const latestAudits = latest.data?.audits || {};
+            
             filtered.forEach(r => {
                 const cats = r.data?.categories || {};
                 perf += (cats.performance?.score || 0) * 100;
@@ -6506,15 +6800,51 @@ Provide actionable recommendations to improve both quality gate compliance and p
                 seo += (cats.seo?.score || 0) * 100;
             });
 
-            const prompt = `Analyze these ${count} manual Lighthouse reports for ${currentTarget.toUpperCase()}:
+            // Extract key metrics from latest report
+            const getMetric = (key) => latestAudits[key]?.displayValue || 'N/A';
+            const lcp = getMetric('largest-contentful-paint');
+            const tbt = getMetric('total-blocking-time');
+            const cls = getMetric('cumulative-layout-shift');
+            const inp = latestAudits['interaction-to-next-paint']?.displayValue || 'N/A';
             
-            **Average Scores:**
-            - Performance: ${Math.round(perf/count)}/100
-            - Accessibility: ${Math.round(a11y/count)}/100
-            - Best Practices: ${Math.round(bp/count)}/100
-            - SEO: ${Math.round(seo/count)}/100
+            // Extract top failing audits
+            const failingAudits = Object.values(latestAudits)
+                .filter(a => a.score !== null && a.score < 0.5 && !['performance-budget'].includes(a.id))
+                .sort((a, b) => (a.score || 0) - (b.score || 0))
+                .slice(0, 5)
+                .map(a => `- **${a.title}**: ${a.displayValue || ''} (${a.description})`)
+                .join('\n');
+
+            const isPromo = currentTarget === 'promo';
+            const contextType = isPromo ? 'GitHub Pages (Static Site)' : 'React SPA (GitHub Pages)';
+            const stackContext = `Stack: React, TailwindCSS, Vite. Deployment: GitHub Pages (Static Hosting - NO Backend).`;
             
-            Manual reports often indicate specific ad-hoc audits. Review these averages and provide a summary of the current state and what should be the focus for the next optimization sprint.`;
+            const prompt = `Analyze these ${count} manual Lighthouse reports for ${currentTarget.toUpperCase()} (${contextType}).
+            
+            **Context & Constraints:**
+            - ${stackContext}
+            - **CRITICAL:** Do NOT suggest server-side optimizations (Redis, Varnish) or generic frontend tips (Optimize Images) if the root cause is Architecture.
+            - **Architectural Rule:** If LCP > 2.5s and LCP ≈ TTI, the cause is **Client-Side Rendering (SPA Pattern)**. Explicitly flag this.
+            - **JS Budget:** "Initial JS Bundle (before paint) must be < 150KB". Total bundle size matters less than initial payload.
+            - **INP Inference:** If TBT > 200ms, assume INP is "Poor". INP "N/A" usually means no user interaction data, so rely on TBT.
+            
+            **Current Metrics (Latest Run):**
+            - Performance Score: ${Math.round(perf/count)}/100 (Avg)
+            - LCP: ${lcp}
+            - TBT: ${tbt}
+            - CLS: ${cls}
+            - INP: ${inp} (If N/A, estimate based on TBT)
+            
+            **Top Failed Audits:**
+            ${failingAudits}
+            
+            **Task:**
+            Provide a surgical, engineering-focused action plan. 
+            1. **Diagnose:** Is the LCP caused by heavy JS (SPA pattern)? Confirm if TTI matches LCP.
+            2. **Prescribe:** Propose 3 high-impact architecture changes.
+               - If SPA Pattern: Suggest "Static Site Generation (SSG)" for the LCP element (Hero/Header).
+               - If TBT High: Suggest "Code Splitting" (lazy load routes) and "Defer Hydration".
+            3. **Clarify:** Explain that Web Workers improve TTI/Interaction but do NOT fix LCP.`;
 
             const aiRes = await fetch(`${API_BASE}/ai-analyze`, {
                 method: 'POST',
@@ -6529,21 +6859,22 @@ Provide actionable recommendations to improve both quality gate compliance and p
             });
             const aiJson = await aiRes.json();
             
+            // Hide loading modal
+            resultsEl.classList.add('hidden');
+
             if (aiJson.content) {
-                window._lastAiResult = aiJson.content;
-                resultsEl.innerHTML = `
-                    <div class="glass-card p-8 relative overflow-hidden group">
-                        <div class="absolute top-4 right-4 z-20 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
-                            <button onclick="copyToClipboard(window._lastAiResult)" class="p-2 bg-black/50 hover:bg-black rounded-lg text-white transition" title="Copy Markdown">📋</button>
-                        </div>
-                        <div class="prose prose-invert max-w-none">${marked.parse(aiJson.content)}</div>
-                    </div>`;
-                switchTab('insights');
+                // Use Standard Viewer Modal
+                showViewer(
+                    `🤖 AI Analysis: Manual Reports (${count})`, 
+                    aiJson.content, 
+                    'markdown'
+                );
             } else {
                 throw new Error(aiJson.error || 'AI Analysis failed');
             }
         } catch (e) {
-            resultsEl.innerHTML = `<div class="glass-card p-6 text-error">Analysis failed: ${e.message}</div>`;
+            resultsEl.classList.add('hidden'); // Ensure loading is hidden
+            showToast(`Analysis failed: ${e.message}`, 'error');
         }
     }
 
@@ -7170,27 +7501,64 @@ Provide actionable recommendations to improve both quality gate compliance and p
     }
 
 
-    // Add toggle button to header for mobile (if not present)
-    const content = document.getElementById('content-area');
-    // Ensure header has hamburger if we are on mobile? 
-    // Actually, we placed the button in sidebar header. But sidebar is hidden on mobile!
-    // We need a trigger button in the MAIN CONTENT area.
-    
-    // Inject a floating toggle button if looking at mobile?
-    // Or add it to standard header template.
-    // For now, let's assume user needs a way to open it.
-    
-    // Add a floating button for mobile only
-    const floatBtn = document.createElement('button');
-    floatBtn.className = 'md:hidden fixed top-4 right-4 z-50 p-2 bg-surface border border-white/10 rounded-lg text-white shadow-lg';
-    floatBtn.setAttribute('title', 'Toggle Menu');
-    floatBtn.setAttribute('aria-label', 'Toggle navigation menu');
-    floatBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>';
-    floatBtn.onclick = toggleSidebar;
-    if(!document.querySelector('.mobile-toggle')) {
-        floatBtn.classList.add('mobile-toggle');
-        document.body.appendChild(floatBtn);
+
+    // --- Sidebar Toggle for Mobile ---
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      if (!sidebar) return;
+
+      // Check if we are in desktop mode (md: breakpoint is 768px in Tailwind)
+      const isDesktop = window.innerWidth >= 768;
+
+      if (isDesktop) {
+          // Desktop: Toggle between full sidebar and mini (icon-only) sidebar
+          const isCollapsed = sidebar.classList.contains('collapsed');
+          if (isCollapsed) {
+              sidebar.classList.remove('collapsed');
+              document.body.classList.add('sidebar-open');
+          } else {
+              sidebar.classList.add('collapsed');
+              document.body.classList.remove('sidebar-open');
+          }
+      } else {
+          // Mobile/Tablet: Toggle between mini (default) and full overlay
+          const isOpen = sidebar.classList.contains('mobile-open');
+          if (isOpen) {
+            // Close sidebar (back to mini)
+            sidebar.classList.remove('mobile-open');
+            if(overlay) overlay.classList.add('hidden');
+            document.body.style.overflow = '';
+            document.body.classList.remove('sidebar-open');
+          } else {
+            // Open sidebar (full overlay mode)
+            sidebar.classList.add('mobile-open');
+            if(overlay) overlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('sidebar-open');
+          }
+      }
     }
+
+    // Add toggle button to header for mobile (if not present)
+
+    const content = document.getElementById('content-area');
+    
+    // Add a floating button for MOBILE ONLY (hidden on desktop)
+    // Remove any existing toggles first to prevent duplicates
+    const existingToggles = document.querySelectorAll('.mobile-toggle');
+    existingToggles.forEach(el => el.remove());
+
+    const floatBtn = document.createElement('button');
+    floatBtn.id = 'mobile-menu-toggle';
+    floatBtn.className = 'mobile-toggle';
+    floatBtn.setAttribute('title', 'Open Menu');
+    floatBtn.setAttribute('aria-label', 'Open navigation menu');
+    // Chevron Right icon (like App's Sidebar.tsx line 106)
+    floatBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+    floatBtn.onclick = toggleSidebar;
+    
+    document.body.appendChild(floatBtn);
   </script>
 
   <!-- Confirm Modal -->
